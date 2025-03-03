@@ -1,0 +1,10 @@
+import aggregate.cms.credit_account_steps
+import aggregate.cms.customer_profile_steps
+import aggregate.cms.end_customer_profile_steps
+import aggregate.cms.transaction_steps
+import aggregate.cms.product_steps
+import aggregate.cms.fund_account_steps
+import aggregate.cms.demo_steps
+import aggregate.profile.customer_profile_steps
+import aggregate.profile.customer_steps
+import aggregate.profile.end_customer_profile_steps

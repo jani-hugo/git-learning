@@ -1,0 +1,11 @@
+./dist/hugo_lib-0.0.140-py3-none-any.whl
+autoflake==2.3.1
+allure-behave==2.13.5
+behave==1.2.6
+black==24.8.0
+dacite==1.8.1
+beaupy==3.9.2
+retry2==0.9.5
+
+pyyaml==6.0.2
+requests~=2.32.3

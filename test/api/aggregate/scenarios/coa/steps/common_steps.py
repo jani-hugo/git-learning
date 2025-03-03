@@ -1,0 +1,4 @@
+import aggregate.coa.customer_book_steps
+import aggregate.coa.coa_config_steps
+import aggregate.coa.general_ledger_steps
+import aggregate.coa.transaction_steps

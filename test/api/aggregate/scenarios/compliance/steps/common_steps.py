@@ -1,0 +1,6 @@
+import aggregate.compliance.compliance_customer_profile_steps
+import aggregate.compliance.compliance_provider_steps
+import aggregate.compliance.compliance_steps
+import aggregate.profile.customer_profile_steps
+import aggregate.profile.customer_steps
+import aggregate.profile.end_customer_profile_steps

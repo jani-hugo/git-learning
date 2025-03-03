@@ -1,0 +1,16 @@
+import aggregate.card.card_account_steps
+import aggregate.card.card_steps
+import aggregate.card.customer_profile_steps
+import aggregate.card.dds_transaction_steps
+import aggregate.card.end_customer_profile_steps
+import aggregate.cash.account_steps
+import aggregate.cash.beneficiary_steps
+import aggregate.cash.product_steps
+import aggregate.cash.customer_end_customer_profile_steps
+import aggregate.cash.dbs_sg_deposits_steps
+import aggregate.compliance.compliance_customer_profile_steps
+import aggregate.compliance.compliance_steps
+import aggregate.profile.customer_profile_steps
+import aggregate.profile.customer_steps
+import aggregate.profile.end_customer_profile_steps
+import aggregate.card.nymcard_transaction_steps

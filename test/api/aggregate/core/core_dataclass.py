@@ -2,8 +2,6 @@ from enum import Enum
 from typing import Optional
 import dataclasses
 
-from aggregate.cash.cash_dataclass import Double
-
 # Dataclasses for Workalendar services
 
 @dataclasses.dataclass

@@ -1,12 +1,13 @@
-from aggregate.payment import helper as payment_helper
-from aggregate.payment.payment_dataclass import (
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.payment import helper as payment_helper
+from test.api.aggregate.payment.payment_dataclass import (
     DevDepositRequestDTO,
     RefundRequestDTO,
     TransferOutRequestDTO,
     BillPaymentRequestDTO,
 )
 from behave import *
-from common.utils import DataClassParser
 from retry import retry
 
 use_step_matcher("re")

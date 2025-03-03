@@ -1,6 +1,9 @@
-from aggregate.compliance.compliance_dataclass import CustomerProfileDTO
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.compliance.compliance_dataclass import CustomerProfileDTO
 from behave import *
-from common.utils import DataClassParser, check_status
+
+from test.util.common_util import check_status
 
 use_step_matcher("re")
 compliance_customer_profile_url = '/compliance/v1'

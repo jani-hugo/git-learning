@@ -1,6 +1,8 @@
 import uuid
 
-from aggregate.ledger.ledger_dataclass import (
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.ledger.ledger_dataclass import (
     CreateLedgerDTO,
     CreateLedgerTransactionDTO,
     LedgerDTO,
@@ -10,7 +12,6 @@ from aggregate.ledger.ledger_dataclass import (
     UpdateTransactionRequestDTO,
 )
 from behave import Given, Step, Then, use_step_matcher
-from common.utils import DataClassParser, parse_rows_as_dict
 from requests import HTTPError
 
 use_step_matcher("re")
@@ -70,7 +71,7 @@ def verify_ledger_exist(context):
 def delete_ledger(context):
     request = context.request
 
-    ledgers_to_delete = parse_rows_as_dict(context.table.rows)
+    ledgers_to_delete = DataClassParser.row_to_dict(context.table.rows)
 
     for ledger_to_delete in ledgers_to_delete:
         identifier = ledger_to_delete["identifier"]
@@ -92,7 +93,7 @@ def delete_ledger(context):
 def verify_ledger_not_exist(context):
     request = context.request
 
-    deleted_ledgers = parse_rows_as_dict(context.table.rows)
+    deleted_ledgers = DataClassParser.row_to_dict(context.table.rows)
 
     for deleted_ledger in deleted_ledgers:
         identifier = deleted_ledger["identifier"]
@@ -118,7 +119,7 @@ def verify_ledger_not_exist(context):
 def create_ledger_with_invalid_datatype_verify_fail(context):
     request = context.request
 
-    ledger_dto = parse_rows_as_dict(context.table.rows)[0]
+    ledger_dto = DataClassParser.row_to_dict(context.table.rows)[0]
 
     http_error_raised = False
     try:

@@ -1,0 +1,11 @@
+# Global owners
+# requested for review only when any rule does not match
+* @st-hugo @khaleelHS
+
+# dist
+dist/** @HugoSave-SG/common-utility
+
+# API
+test/api/** @HugoSave-SG/Testing
+test/ui/** @HugoSave-SG/Testing
+test/util/** @HugoSave-SG/Testing

@@ -1,8 +1,11 @@
 from behave import *
-from common.utils import DataClassParser, check_status
-from aggregate.cms.cms_dataclass import ContextParams, DevTransaction
-from aggregate.cms import cms_helper
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.cms.cms_dataclass import ContextParams, DevTransaction
+from test.api.aggregate.cms import cms_helper
 from retry import retry
+
+from test.util.common_util import check_status
 
 use_step_matcher("re")
 

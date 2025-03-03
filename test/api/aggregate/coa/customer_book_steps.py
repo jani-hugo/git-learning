@@ -1,10 +1,13 @@
-from aggregate.coa import coa_helper
-from aggregate.coa.coa_dataclass import (
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.coa import coa_helper
+from test.api.aggregate.coa.coa_dataclass import (
     CustomerBookDTO,
 )
 
 from behave import *
-from common.utils import DataClassParser, check_status
+
+from test.util.common_util import check_status
 
 use_step_matcher("re")
 

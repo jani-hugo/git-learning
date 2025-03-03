@@ -1,10 +1,10 @@
 from behave import *
+from hugoutils.utilities.dataclass_util import DataClassParser
 
-from tests.integrations.common.utils import DataClassParser, check_status
-
-from tests.integrations.aggregate.core.core_dataclass import CreateTracker, GetTrackerReferenceDetails, \
+from test.api.aggregate.core.core_dataclass import CreateTracker, GetTrackerReferenceDetails, \
     GetTrackerDetails, AddTrackerEntityDetails, UpdateEntityTransactionCodes, GetAllTrackerDetails, \
     GetListTrackerReferencesDetails
+from test.util.common_util import check_status
 
 tracker_callback_url = '/core/v1/tracker'
 header_customer_profile_id = 'x-customer-profile-id'

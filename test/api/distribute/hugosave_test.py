@@ -3,7 +3,7 @@ import logging
 import subprocess
 import time
 
-from distribute.app.app_helper import compliance_urls
+from test.api.distribute.app.app_helper import compliance_urls
 import requests
 import yaml
 

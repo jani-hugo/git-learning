@@ -1,7 +1,7 @@
 from behave.model import Scenario
 from hugoutils.telemetry.logger import LogManager
 
-from aggregate.hugoserve_test import HugoserveTest
+from test.api.aggregate.hugoserve_test import HugoserveTest
 
 logger = LogManager.get_logger("Environment")
 

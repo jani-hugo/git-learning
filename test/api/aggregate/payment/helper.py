@@ -1,7 +1,8 @@
 from typing import Optional
 
-from aggregate.payment.payment_dataclass import AccountDTO, MasterAccountDTO
-from common.utils import DataClassParser
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.payment.payment_dataclass import AccountDTO, MasterAccountDTO
 
 payment_providers_config = {
     "DBS Bank Ltd": {"supports_integration_test": True, "max_wait_time": 120},

@@ -1,6 +1,7 @@
-from aggregate.payment import helper as payment_helper
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.payment import helper as payment_helper
 from behave import *
-from common.utils import parse_rows_as_dict
 from retry import retry
 
 use_step_matcher("re")
@@ -22,7 +23,7 @@ def onboard_end_customer_profile_on_payment(
         end_customer_profile_identifier
     ].end_customer_profile_id
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
-    provider_name_list = parse_rows_as_dict(context.table.rows)
+    provider_name_list = DataClassParser.row_to_dict(context.table.rows)
     provider_name_id_list = []
     provider_id_list = []
     for each_provider in provider_name_list:

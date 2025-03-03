@@ -1,9 +1,12 @@
-from aggregate.profile.profile_dataclass import (
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.profile.profile_dataclass import (
     CreateUpdateEndCustomerProfileDTO,
     EndCustomerProfileDTO,
 )
 from behave import *
-from common.utils import DataClassParser, check_status, parse_rows_as_dict
+
+from test.util.common_util import check_status
 
 use_step_matcher("re")
 profile_end_customer_profile_url = '/profile/v1/end-customer'
@@ -113,7 +116,7 @@ def create_end_customer_profile_with_incorrect_data_verify_fail(context):
 def delete_end_customer_profile(context):
     request = context.request
 
-    customers_to_delete = parse_rows_as_dict(context.table.rows)
+    customers_to_delete = DataClassParser.row_to_dict(context.table.rows)
 
     for end_customer_profile_to_delete in customers_to_delete:
         customer_profile_id = context.data[
@@ -133,7 +136,7 @@ def delete_end_customer_profile(context):
 def verify_end_customer_profile_not_exist(context):
     request = context.request
 
-    deleted_customers = parse_rows_as_dict(context.table.rows)
+    deleted_customers = DataClassParser.row_to_dict(context.table.rows)
 
     for deleted_customer in deleted_customers:
         customer_profile_id = context.data[

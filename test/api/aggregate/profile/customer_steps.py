@@ -1,21 +1,18 @@
 import uuid as uuid
 
-from aggregate.onboard_customer import OnboardCustomer
-from aggregate.profile.profile_dataclass import (
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.profile.profile_dataclass import (
     CreateUpdateCustomerDTO,
     CustomerDTO,
     CustomerProfileDTO,
 )
 from behave import *
-from common.utils import DataClassParser, check_status, parse_rows_as_dict
+
+from test.util.common_util import check_status
 
 use_step_matcher("re")
 profile_customer_admin_url = '/profile/v1/admin/customer/'
-
-
-@Given("I create Customer, Customer Profile, Onboard to ([^']*)")
-def onboard_customer(context, services: str):
-    context = OnboardCustomer(context, services.split(',')).run()
 
 
 @Given("I create below Customer")
@@ -90,7 +87,7 @@ def create_customer_with_incorrect_data_verify_fail(context):
 def delete_customer(context):
     request = context.request
 
-    customers_to_delete = parse_rows_as_dict(context.table.rows)
+    customers_to_delete = DataClassParser.row_to_dict(context.table.rows)
 
     for customer_to_delete in customers_to_delete:
         identifier = customer_to_delete["customer_identifier"]
@@ -103,7 +100,7 @@ def delete_customer(context):
 def verify_customer_not_exist(context):
     request = context.request
 
-    deleted_customers = parse_rows_as_dict(context.table.rows)
+    deleted_customers = DataClassParser.row_to_dict(context.table.rows)
 
     for deleted_customer in deleted_customers:
         identifier = deleted_customer["identifier"]

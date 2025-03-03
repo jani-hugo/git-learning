@@ -1,9 +1,12 @@
-from aggregate.notification.notification_dataclass import (
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.notification.notification_dataclass import (
     CallbackDTO,
     CreateUpdateCallbackRequestDTO,
 )
 from behave import *
-from common.utils import DataClassParser, check_status
+
+from test.util.common_util import check_status
 
 use_step_matcher("re")
 notification_customer_callback_url = '/notification/v1/customer-profile/callback'

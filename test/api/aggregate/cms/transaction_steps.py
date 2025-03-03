@@ -1,9 +1,10 @@
 import uuid
 from behave import *
+from hugoutils.utilities.dataclass_util import DataClassParser
 from retry import retry
 
-from aggregate.cms import cms_helper
-from aggregate.cms.cms_dataclass import (
+from test.api.aggregate.cms import cms_helper
+from test.api.aggregate.cms.cms_dataclass import (
     AttachCardRequest,
     AuthorizationDTO,
     TransactionRequest,
@@ -14,7 +15,7 @@ from aggregate.cms.cms_dataclass import (
     ReconcileClearingRequest,
     SendRequest,
 )
-from common.utils import DataClassParser, check_status
+from test.util.common_util import check_status
 
 use_step_matcher("re")
 

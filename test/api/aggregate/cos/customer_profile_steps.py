@@ -1,8 +1,11 @@
-from aggregate.cos import cos_helper
-from aggregate.cos.cos_dataclass import CustomerProfileDTO
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.cos import cos_helper
+from test.api.aggregate.cos.cos_dataclass import CustomerProfileDTO
 from behave import *
-from common.utils import DataClassParser, check_status, parse_rows_as_dict
 from retry import retry
+
+from test.util.common_util import check_status
 
 use_step_matcher("re")
 

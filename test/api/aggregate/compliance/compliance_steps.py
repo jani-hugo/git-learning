@@ -5,10 +5,13 @@ import os
 import random
 import time
 
-from aggregate.compliance.compliance_dataclass import ComplianceImageDTO, ProcessComplianceDTO
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.compliance.compliance_dataclass import ComplianceImageDTO, ProcessComplianceDTO
 from behave import *
-from common.utils import DataClassParser, check_status
 from retry import retry
+
+from test.util.common_util import check_status
 
 use_step_matcher("re")
 compliance_url = '/compliance/v1'

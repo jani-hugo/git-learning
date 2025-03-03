@@ -4,7 +4,7 @@ import json
 from enum import Enum
 from typing import Optional
 
-import distribute.app.app_helper as ah
+import test.api.distribute.app.app_helper as ah
 
 # non prod
 # hugosave_profile_id = "375d0aa6-dfe8-4e3d-8a0d-5d6dece088bc"

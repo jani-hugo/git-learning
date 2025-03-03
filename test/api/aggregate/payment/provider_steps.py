@@ -1,6 +1,6 @@
 from behave import *
 
-from aggregate.payment import helper as payment_helper
+from test.api.aggregate.payment import helper as payment_helper
 
 use_step_matcher("re")
 

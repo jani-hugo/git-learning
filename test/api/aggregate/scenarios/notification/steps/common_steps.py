@@ -1,4 +1,4 @@
-import aggregate.notification.notification_callback_steps
-import aggregate.notification.notification_steps
-import aggregate.profile.customer_profile_steps
-import aggregate.profile.customer_steps
+import test.api.aggregate.notification.notification_callback_steps
+import test.api.aggregate.notification.notification_steps
+import test.api.aggregate.profile.customer_profile_steps
+import test.api.aggregate.profile.customer_steps

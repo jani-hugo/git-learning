@@ -1,11 +1,11 @@
 import decimal
 
 from behave import *
+from hugoutils.utilities.dataclass_util import DataClassParser
 from retry import retry
 
-from tests.integrations.aggregate.investment import helper as investment_helper
-from tests.integrations.aggregate.investment.investment_dataclass import *
-from tests.integrations.common.utils import DataClassParser, parse_rows_as_dict
+from test.api.aggregate.investment import helper as investment_helper
+from test.api.aggregate.investment.investment_dataclass import *
 
 use_step_matcher("re")
 

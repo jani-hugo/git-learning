@@ -1,16 +1,19 @@
 from datetime import datetime
 import time
 
-from aggregate.notification.notification_callback_steps import (
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.notification.notification_callback_steps import (
     notification_customer_callback_url,
 )
-from aggregate.notification.notification_dataclass import (
+from test.api.aggregate.notification.notification_dataclass import (
     CallbackDTO,
     CreateUpdateCallbackRequestDTO,
     NotificationDTO,
 )
 from behave import *
-from common.utils import DataClassParser, check_status
+
+from test.util.common_util import check_status
 
 
 @Step("I create Callback for the Customer-Profile")

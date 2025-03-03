@@ -1,10 +1,11 @@
 from behave import *
+from hugoutils.utilities.dataclass_util import DataClassParser
 
-from aggregate.coa import coa_helper
-from aggregate.coa.coa_dataclass import (
+from test.api.aggregate.coa import coa_helper
+from test.api.aggregate.coa.coa_dataclass import (
     GeneralLedgerDTO,
 )
-from common.utils import DataClassParser, check_status
+from test.util.common_util import check_status
 
 use_step_matcher("re")
 

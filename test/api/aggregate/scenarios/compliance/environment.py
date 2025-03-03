@@ -1,4 +1,4 @@
-from aggregate.hugoserve_test import HugoserveTest
+from test.api.aggregate.hugoserve_test import HugoserveTest
 
 
 def before_scenario(context, scenario):

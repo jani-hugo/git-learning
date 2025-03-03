@@ -1,7 +1,8 @@
-from aggregate.cms import cms_helper
+from test.api.aggregate.cms import cms_helper
 from behave import *
-from common.utils import check_status
 from retry import retry
+
+from test.util.common_util import check_status
 
 use_step_matcher("re")
 

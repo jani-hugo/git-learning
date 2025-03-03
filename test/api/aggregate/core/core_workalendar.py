@@ -1,7 +1,8 @@
 from behave import *
-from tests.integrations.common.utils import DataClassParser, check_status
+from hugoutils.utilities.dataclass_util import DataClassParser
 
-from tests.integrations.aggregate.core.core_dataclass import AddHoliday, GetHoliday, RemoveHoliday
+from test.api.aggregate.core.core_dataclass import AddHoliday, GetHoliday, RemoveHoliday
+from test.util.common_util import check_status
 
 workalendar_callback_url = "/core/v1/workalendar"
 header_customer_profile_id = 'x-customer-profile-id'

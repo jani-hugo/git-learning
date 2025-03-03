@@ -1,14 +1,15 @@
 import uuid
 
-from aggregate.payment.payment_dataclass import (
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.payment.payment_dataclass import (
     AccountDTO,
     CreateCustomerProfileAccountDTO,
     CreateEndCustomerProfileAccountDTO,
 )
 from behave import *
-from common.utils import DataClassParser
 from retry import retry
-import aggregate.payment.helper as payment_helper
+import test.api.aggregate.payment.helper as payment_helper
 
 use_step_matcher("re")
 

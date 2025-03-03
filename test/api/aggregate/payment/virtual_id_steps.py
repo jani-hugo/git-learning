@@ -1,9 +1,10 @@
-from aggregate.payment import helper as payment_helper
-from aggregate.payment.payment_dataclass import (
+from hugoutils.utilities.dataclass_util import DataClassParser
+
+from test.api.aggregate.payment import helper as payment_helper
+from test.api.aggregate.payment.payment_dataclass import (
     VirtualIdRequestDTO,
 )
 from behave import *
-from common.utils import DataClassParser
 
 use_step_matcher("re")
 

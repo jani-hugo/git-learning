@@ -1,0 +1,16 @@
+AGGREGATE_ENDPOINT: https://int-api.hugohub.com
+customer_id: fb6763ff-cab4-5865-848a-c2cb4f00abb8
+customer_profile_id: 72b98ad6-ddd9-553a-8576-50d407709d4f
+customer_id_2: 9f9e3490-29f2-5f81-bd98-80ae83b30a73
+customer_profile_id_2: 05fb0435-f833-51da-9a04-d6766b3a1ee9
+card_config_id: 2fbde953-dd16-4458-a30c-e633213e66a0
+card_account_product_id: 947b4bae-12cb-4843-ae71-ae9940a3a254
+card_product_id: a003488a-c40a-481d-8c96-eb267b0b491b
+sg_customer_profile_id: 72b98ad6-ddd9-553a-8576-50d407709d4f
+clowd9_card_config_id: 2fbde953-dd16-4458-a30c-e633213e66a0
+clowd9_card_account_product_id: 947b4bae-12cb-4843-ae71-ae9940a3a254
+clowd9_card_product_id: a003488a-c40a-481d-8c96-eb267b0b491b
+pk_customer_profile_id: e411f0d2-28a3-11ef-9eac-0242ac110008
+nymcard_card_config_id: 5c48b40d-ac1e-4155-a24d-3a3d15dfdd49
+nymcard_card_account_product_id: 4140dfba-5ac3-4028-ba32-c92da110bea7
+nymcard_card_product_id: ce8f47d6-f962-4462-ae5f-7451025b371f

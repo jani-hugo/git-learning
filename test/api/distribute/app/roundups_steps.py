@@ -1,7 +1,7 @@
 from behave import *
 
 import test.api.distribute.app.app_helper as ah
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 use_step_matcher("re")
 
@@ -36,4 +36,4 @@ def update_sweep_vault(context, sweep_vault: str, user_identifier):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    check_status(response, "200")
+    check_status_distribute(response, "200")

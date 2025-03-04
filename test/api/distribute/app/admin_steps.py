@@ -1,6 +1,6 @@
 from behave import *
 import test.api.distribute.app.app_helper as ah
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 use_step_matcher("re")
 
@@ -25,7 +25,7 @@ def block_deposits(context, case, user):
             headers=ah.get_user_header(user_prof_id, context),
         )
 
-    if not check_status(response, "200"):
+    if not check_status_distribute(response, "200"):
         assert False, f"Failed to {case} deposits.\nReceived : {response}"
 
 
@@ -48,5 +48,5 @@ def block_merchant_transactions(context, case, user):
             headers=ah.get_user_header(user_prof_id, context),
         )
 
-    if not check_status(response, "200"):
+    if not check_status_distribute(response, "200"):
         assert False, f"Failed to {case} merchant transactions.\nReceived : {response}"

@@ -4,7 +4,7 @@ from hugoutils.utilities.dataclass_util import DataClassParser
 from test.api.distribute.app.app_dataclass import OpenAccountDTO, UserStatusDTO
 from retry import retry
 import test.api.distribute.app.app_helper as ah
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 use_step_matcher("re")
 
@@ -50,7 +50,7 @@ def open_account(context, case: str):
         auth_response = request.hugosave_post_request(
             ah.auth_user_urls["create"], data=auth_create_user, headers=ah.get_header(context)
         )
-        if not check_status(auth_response, "200"):
+        if not check_status_distribute(auth_response, "200"):
             assert False, f"User Creation Failed.\nReceived : {auth_response}"
 
         user_profile_id = auth_response['data']['userProfileId']
@@ -64,7 +64,7 @@ def open_account(context, case: str):
                 ah.user_profile_urls["root"],
                 headers=app_headers,
             )
-            if not check_status(response, "200"):
+            if not check_status_distribute(response, "200"):
                 assert False, f"Open account Failed.\nReceived : {response}"
 
             context.data['users'][open_account_dto.user_profile_identifier] = user_profile_id
@@ -93,7 +93,7 @@ def check_account_status(context):
                 ah.user_profile_urls["status"],
                 headers=ah.get_user_header(user_profile_id, context),
             )
-            if not check_status(response, "200"):
+            if not check_status_distribute(response, "200"):
                 assert False, f"Fetch User status Failed.\nReceived : {response}"
             assert response['data']['status'] == user.status
 
@@ -101,7 +101,7 @@ def check_account_status(context):
                 ah.user_profile_urls["details"],
                 headers=ah.get_user_header(user_profile_id, context),
             )
-            if not check_status(response, "200"):
+            if not check_status_distribute(response, "200"):
                 assert (
                     False
                 ), f"Error getting user details for user profile id {user_profile_id}"

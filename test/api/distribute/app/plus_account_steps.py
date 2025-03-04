@@ -10,7 +10,7 @@ from test.api.distribute.app.app_dataclass import (
     ComplianceInitiateRequestDTO,
     ComplianceSubmitRequestDTO,
 )
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 use_step_matcher("re")
 
@@ -29,7 +29,7 @@ def manual_upgrade(context, compliance_type: str, user, status: str):
         data=body,
     )
 
-    if not check_status(response, "200"):
+    if not check_status_distribute(response, "200"):
         assert False, f"Manual User verification failed.\nReceived : {response}"
 
 
@@ -111,7 +111,7 @@ def process_trust_success(context, user_profile_identifier):
         headers=ah.get_user_header(user_profile_id, context),
     )
 
-    if not check_status(response, "200"):
+    if not check_status_distribute(response, "200"):
         assert False, f"Unable to process trust compliance.\nReceived : {response}"
 
 
@@ -133,7 +133,7 @@ def initiate_compliance_success(
         data=request_dto,
     )
 
-    assert check_status(
+    assert check_status_distribute(
         initiate_compliance_response, status_code
     ), f"""
             \nExpected Status: {status_code}\n
@@ -207,5 +207,5 @@ def initiate_compliance_success(
         data=request_dto,
     )
 
-    if not check_status(submit_compliance_response, "200"):
+    if not check_status_distribute(submit_compliance_response, "200"):
         assert False, f"Unable to initiate compliance.Received :\n {submit_compliance_response}"

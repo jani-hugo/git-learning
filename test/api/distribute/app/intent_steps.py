@@ -3,7 +3,7 @@ from datetime import datetime
 from behave import *
 from retry import retry
 
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 date_format = '%Y-%m-%dT%H:%M:%S.%fZ'
 import test.api.distribute.app.app_helper as ah
@@ -31,7 +31,7 @@ def check_intents(
             url,
             headers=ah.get_user_header(user_prof_id, context),
         )
-        check_status(response, "200")
+        check_status_distribute(response, "200")
 
         intent_views = response['data']['intentViews']
         intent_status_count = 0

@@ -6,7 +6,7 @@ from hugoutils.utilities.dataclass_util import DataClassParser
 
 import test.api.distribute.app.app_helper as ah
 from test.api.distribute.app.app_dataclass import CreditAccountMockTxnRequestDTO
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 use_step_matcher("re")
 
@@ -25,7 +25,7 @@ def initiate_mock_transactions(context, user_profile_id):
         ah.user_profile_urls["details"],
         headers=ah.get_user_header(user_profile_id, context),
     )
-    if not check_status(user_details_response, "200"):
+    if not check_status_distribute(user_details_response, "200"):
         assert (
             False
         ), f"Error getting user details for user profile id {user_profile_id}"
@@ -37,7 +37,7 @@ def initiate_mock_transactions(context, user_profile_id):
         headers=ah.get_user_header(user_profile_id, context),
     )
 
-    if not check_status(credit_accounts_response, "200"):
+    if not check_status_distribute(credit_accounts_response, "200"):
         assert (
             False
         ), f"Error getting user credit account list for user profile id {user_profile_id}"
@@ -74,7 +74,8 @@ def initiate_mock_transactions(context, user_profile_id):
         headers=ah.get_user_header(user_profile_id, context),
     )
 
-    check_status(mock_txn_response, '200')
+    check_status_distribute(mock_txn_response, '200')
+    time.sleep(7.5)
 
     # TODO: add steps to check same no of credit txn intents in DB (priyanka@)
 
@@ -92,7 +93,7 @@ def step_impl(context):
         headers=ah.get_user_header(user_profile_id, context),
     )
 
-    check_status(get_credit_limit_response, '200')
+    check_status_distribute(get_credit_limit_response, '200')
 
 
 @then("I request to generate bill for ([^']*) for date ([^']*)")
@@ -112,7 +113,7 @@ def step_impl(context, user_profile_id, bill_date):
         data=generate_bill_request_dto
     )
 
-    check_status(get_credit_limit_response, '200')
+    check_status_distribute(get_credit_limit_response, '200')
     time.sleep(5)
 
 
@@ -128,6 +129,6 @@ def step_impl(context):
         headers=ah.get_user_header(user_profile_id, context),
     )
 
-    check_status(credit_account_bills_response, '200')
+    check_status_distribute(credit_account_bills_response, '200')
 
     print("Bill for account - ", credit_account_bills_response['data'])

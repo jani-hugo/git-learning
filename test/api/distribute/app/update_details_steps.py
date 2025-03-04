@@ -1,6 +1,6 @@
 from behave import *
 import test.api.distribute.app.app_helper as ah
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 use_step_matcher("re")
 
@@ -23,7 +23,7 @@ def update_user_details(context, fields: str, user_identifier: str):
         headers=ah.get_user_header(user_profile_id, context),
     )
 
-    passed = check_status(response, "200")
+    passed = check_status_distribute(response, "200")
     if not passed:
         print(f"Expected: 200 received: {response['data']['status']}")
     else:

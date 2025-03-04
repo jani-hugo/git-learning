@@ -10,7 +10,7 @@ from test.api.distribute.app.app_dataclass import (
     WeekDay,
 )
 import test.api.distribute.app.app_helper as ah
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 use_step_matcher("re")
 
@@ -24,7 +24,7 @@ def get_schedule_map_invest_data(
         headers=ah.get_user_header(user_profile_id, context),
     )
 
-    if not check_status(response, "200"):
+    if not check_status_distribute(response, "200"):
         assert False, f"Unable to fetch map details.\nReceived : {response}"
 
     return ScheduleMapInvest(
@@ -83,7 +83,7 @@ def create_map_schedule(context, map_identifier: str, status: str):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    if not check_status(response, status):
+    if not check_status_distribute(response, status):
         assert False, f"Map Schedule creation failed.\nReceived : {response}"
     if "data" in response:
         context.data[schedule_map_dto.schedule_identifier] = response["data"]
@@ -99,14 +99,14 @@ def trigger_schedule(context, schedule_identifier: str, user_identifier: str):
             path=ah.dev_urls["clear_roundup_schedule"],
             headers=ah.get_user_header(user_prof_id, context),
         )
-        check_status(round_up_schedule_repsonse, "200")
+        check_status_distribute(round_up_schedule_repsonse, "200")
     else:
         schedule_id = context.data[schedule_identifier]['scheduleId']
         response = request.hugosave_put_request(
             ah.dev_urls["schedule_trigger"].replace("schedule-id", schedule_id),
             headers=ah.get_user_header(user_prof_id, context),
         )
-        check_status(response, "200")
+        check_status_distribute(response, "200")
 
 
 @then("I check if the schedule ([^']*) status ([^']*) for user ([^']*)")
@@ -119,7 +119,7 @@ def step_impl(context, schedule_identifier: str, status: str, user_identifier: s
         ah.map_schedule_urls["detail"].replace("schedule-id", schedule_id),
         headers=ah.get_user_header(user_prof_id, context),
     )
-    check_status(response, status)
+    check_status_distribute(response, status)
 
 
 @then("I delete schedule ([^']*) for user ([^']*)")
@@ -132,7 +132,7 @@ def step_impl(context, schedule_identifier: str, user_identifier: str):
         ah.map_schedule_urls["root"] + "/" + schedule_id,
         headers=ah.get_user_header(user_prof_id, context),
     )
-    check_status(response, "200")
+    check_status_distribute(response, "200")
 
 
 @then("I check schedule status as ([^']*) for schedule ([^']*) for user ([^']*)")
@@ -145,7 +145,7 @@ def step_impl(context, status: str, schedule_identifier: str, user_profile_ident
         ah.map_schedule_urls["detail"].replace('schedule-id', schedule_id),
         headers=ah.get_user_header(user_prof_id, context),
     )
-    check_status(response, "200")
+    check_status_distribute(response, "200")
     assert (
         response["data"]["scheduleStatus"] == status
     ), f'Schedule status expected to be {status}. But received: {response["data"]}'

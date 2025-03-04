@@ -11,7 +11,7 @@ from test.api.distribute.app.app_dataclass import (
 from test.api.distribute.app.cash_map_steps import get_maps
 from retry import retry
 import test.api.distribute.app.app_helper as ah
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 use_step_matcher("re")
 
@@ -89,7 +89,7 @@ def invest_gold_map(context, asset_name: str, rate_case):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    assert check_status(
+    assert check_status_distribute(
         response, invest_map_dto.status_code
     ), f"""
         \nExpected Status: {invest_map_dto.status_code}\n
@@ -104,7 +104,7 @@ def get_fee_amount(context, user_prof_id, map_id, transaction_amount, txn_type: 
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    assert check_status(response, "200"), f"Unable to fetch map for {map_id}"
+    assert check_status_distribute(response, "200"), f"Unable to fetch map for {map_id}"
     fee_percent = 0
 
     if txn_type == 'buy':
@@ -198,7 +198,7 @@ def withdraw_gold_map(context, asset_name: str, rate_case):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    assert check_status(
+    assert check_status_distribute(
         response, withdraw_map_dto.status_code
     ), f"""
         \nExpected Status: {withdraw_map_dto.status_code}\n
@@ -224,7 +224,7 @@ def settle_sell_gold(context, user):
             headers=ah.get_user_header(user_prof_id, context),
         )
 
-        assert check_status(response, "200")
+        assert check_status_distribute(response, "200")
 
     retry_for_settle_transaction()
 
@@ -240,7 +240,7 @@ def step_impl(context, schedule_identifier: str, action, user_profile_identifier
             path=ah.dev_urls["roundup_schedule"],
             headers=ah.get_user_header(user_prof_id, context),
         )
-        check_status(round_up_schedule_repsonse, "200")
+        check_status_distribute(round_up_schedule_repsonse, "200")
         schedule_id = round_up_schedule_repsonse["data"]["scheduleId"]
     else:
         schedule_id = context.data[schedule_identifier]['scheduleId']
@@ -250,4 +250,4 @@ def step_impl(context, schedule_identifier: str, action, user_profile_identifier
         data=update_status_dto.get_dict(),
         headers=ah.get_user_header(user_prof_id, context),
     )
-    check_status(response, "200")
+    check_status_distribute(response, "200")

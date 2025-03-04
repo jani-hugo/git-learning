@@ -5,7 +5,7 @@ from yaml import SafeLoader
 import test.api.distribute.app.app_helper as ah
 import yaml
 
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 use_step_matcher("re")
 
@@ -16,7 +16,7 @@ def list_questionnaire_success(context):
     response = request.hugosave_get_request(
         path=ah.questionnaire_urls["list"], headers=ah.get_user_header("HUGOSAVE_SG", context)
     )
-    assert check_status(
+    assert check_status_distribute(
         response, "200"
     ), f"""
         \nExpected Status: 200\n
@@ -30,7 +30,7 @@ def create_questionnaire_success(context, questionnaire_name: str):
     list_response = request.hugosave_get_request(
         path=ah.questionnaire_urls["list"], headers=ah.get_user_header("HUGOSAVE_SG", context)
     )
-    assert check_status(list_response, "200")
+    assert check_status_distribute(list_response, "200")
 
     questionnaire_created = False
     for questionnaire_dto in list_response["data"]['questionnaires']:
@@ -81,7 +81,7 @@ def create_questionnaire_success(context, questionnaire_name: str):
         response = request.hugosave_post_request(
             path=ah.dev_urls["questionnaire"], data=questionnaire_dto
         )
-        assert check_status(list_response, "200")
+        assert check_status_distribute(list_response, "200")
         context.data[questionnaire_name] = response["data"]
 
 
@@ -94,7 +94,7 @@ def get_questionnaire_success(context, questionnaire_name: str, questionnaire_st
         path=ah.questionnaire_urls["details"].replace("questionnaire-name", questionnaire_id),
     )
 
-    assert check_status(response, "200")
+    assert check_status_distribute(response, "200")
     if "data" in response:
         assert (
             response["data"]["questionnaireStatus"] == questionnaire_status
@@ -117,7 +117,7 @@ def create_user_questionnaire_success(
         data={"questionnaire_name": questionnaire_id},
     )
 
-    assert check_status(response, "200")
+    assert check_status_distribute(response, "200")
     if "data" in response:
         context.data["users"][user_profile_identifier][user_questionnaire_identifier] = (
             response["data"]
@@ -139,7 +139,7 @@ def step_impl(context, user_questionnaire_identifier: str, user_profile_identifi
         ),
     )
 
-    assert check_status(response, "200")
+    assert check_status_distribute(response, "200")
 
 
 @then(
@@ -164,14 +164,14 @@ def step_impl(
         ),
     )
 
-    assert check_status(get_user_questionnaire_response, "200")
+    assert check_status_distribute(get_user_questionnaire_response, "200")
     user_questionnaire_dto = get_user_questionnaire_response["data"]
 
     get_questionnaire_response = request.hugosave_get_request(
         path=ah.questionnaire_urls["details"].replace("questionnaire-name", questionnaire_name),
         headers=ah.get_user_header("HUGOSAVE_SG", context),
     )
-    assert check_status(get_user_questionnaire_response, "200")
+    assert check_status_distribute(get_user_questionnaire_response, "200")
     questionnaire_dto = get_questionnaire_response["data"]
 
     # update answer, check if client answer then answer
@@ -191,7 +191,7 @@ def step_impl(
                 ),
                 data=user_questionnaire_dto,
             )
-            assert check_status(response, "200")
+            assert check_status_distribute(response, "200")
         else:
             score = round(score + question['options'][int(option_id) - 1]['score'], 2)
 
@@ -215,7 +215,7 @@ def step_impl(context, user_questionnaire_identifier: str, user_profile_identifi
             'user-questionnaire-id', user_questionnaire_id
         ),
     )
-    assert check_status(response, "200")
+    assert check_status_distribute(response, "200")
 
 
 @then("I verify score ([^']*) for user ([^']*)")
@@ -233,7 +233,7 @@ def step_impl(context, user_questionnaire_identifier: str, user_profile_identifi
         ),
     )
 
-    assert check_status(get_user_questionnaire_response, "200")
+    assert check_status_distribute(get_user_questionnaire_response, "200")
     user_questionnaire_dto = get_user_questionnaire_response["data"]
     stored_user_questionnaire_dto = context.data["users"][user_profile_identifier][
         user_questionnaire_identifier

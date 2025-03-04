@@ -1,6 +1,6 @@
 from behave import *
 import test.api.distribute.app.app_helper as ah
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 use_step_matcher("re")
 
@@ -23,7 +23,7 @@ def reward_gold_for_user(context, amount, user):
         data=data,
         headers=ah.get_user_header(user_prof_id, context),
     )
-    check_status(response, "200")
+    check_status_distribute(response, "200")
 
 
 @Step("I deposit ([^']*) SGD in hugosave account type ([^']*)")
@@ -35,4 +35,4 @@ def deposit_hugosave_account(context, amount, acc_type):
         data={"account_type": acc_type, "amount": float(amount)},
         headers=ah.get_user_header("HUGOSAVE_SG", context),
     )
-    check_status(response, "200")
+    check_status_distribute(response, "200")

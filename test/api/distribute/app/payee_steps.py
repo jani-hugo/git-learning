@@ -4,7 +4,7 @@ from hugoutils.utilities.dataclass_util import DataClassParser
 from test.api.distribute.app.app_dataclass import SubmitOTPDTO
 from retry import retry
 import test.api.distribute.app.app_helper as ah
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 use_step_matcher("re")
 
@@ -29,9 +29,9 @@ def add_payee(
         ah.payee_urls["root"], payee_data, headers=ah.get_user_header(user_prof_id, context)
     )
     if case == "invalid_currency":
-        passed = check_status(response, "HSA_9116")
+        passed = check_status_distribute(response, "HSA_9116")
     else:
-        passed = check_status(response, "200")
+        passed = check_status_distribute(response, "200")
     if not passed:
         print(
             f"Error adding payee to user : {user_prof_id}, with payee user : {payee['user_profile_id']}"
@@ -52,7 +52,7 @@ def submit_otp_success(context, user: str, payee_identifier: str):
             otp_dto.get_dict(),
             headers=ah.get_user_header(user_prof_id, context),
         )
-        assert check_status(
+        assert check_status_distribute(
             response, "200"
         ), f"Payee submit otp not success.\nReceived : {response}"
 
@@ -157,7 +157,7 @@ def check_delete_payee(context, acc_subtype, payee, user):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    assert check_status(
+    assert check_status_distribute(
         response, "HSA_9104"
     ), f"Payee is not deleted successfully.\nReceived : {response}"
 
@@ -174,7 +174,7 @@ def deposit_test_money(context, amount: str, acc_subtype: str, user: str):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    if not check_status(response, "200"):
+    if not check_status_distribute(response, "200"):
         assert False, f"Dev Deposit request failed.\nReceived : {response}"
 
 
@@ -226,9 +226,9 @@ def transfer_hugo_payee(context, amount, from_user, to_user, reference, case):
     )
 
     if case == "invalid":
-        passed = check_status(response, "HSA_9104")
+        passed = check_status_distribute(response, "HSA_9104")
     else:
-        passed = check_status(response, "200")
+        passed = check_status_distribute(response, "200")
     if not passed:
         assert False, f"Pay payee failed.\nReceived : {response}"
 
@@ -245,6 +245,6 @@ def delete_payee(context, payee, user):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    passed = check_status(response, "200")
+    passed = check_status_distribute(response, "200")
     if not passed:
         assert False, f"Delete payee failed.\nReceived : {response}"

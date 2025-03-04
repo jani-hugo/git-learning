@@ -9,7 +9,7 @@ from test.api.distribute.app.app_dataclass import (
 )
 from retry import retry
 import test.api.distribute.app.app_helper as ah
-from test.util.common_util import check_status
+from test.util.common_util import check_status_distribute
 
 use_step_matcher("re")
 
@@ -19,7 +19,7 @@ def get_maps(request, user_prof_id, context):
         ah.user_profile_urls["map-list"], headers=ah.get_user_header(user_prof_id, context)
     )
 
-    if not check_status(response, "200"):
+    if not check_status_distribute(response, "200"):
         print("Error getting maps")
 
     return response["data"]["maps"]
@@ -43,7 +43,7 @@ def create_map(context, map_identifier: str):
             headers=ah.get_user_header(user_prof_id, context),
         )
 
-        passed = check_status(response, "200")
+        passed = check_status_distribute(response, "200")
         if not passed:
             print(f"Creating map failed with the given details.\nReceived : {response}")
 
@@ -89,7 +89,7 @@ def invest_map(context, map_identifier: str):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    assert check_status(
+    assert check_status_distribute(
         response, invest_map_dto.status_code
     ), f"""
         \nExpected Status: {invest_map_dto.status_code}\n
@@ -115,7 +115,7 @@ def check_map_invest_status(context, map_identifier, user, expected_balance):
             headers=ah.get_user_header(user_prof_id, context),
         )
 
-        assert check_status(response, "200"), "Error getting map balance"
+        assert check_status_distribute(response, "200"), "Error getting map balance"
         actual_balance = response["data"]["currentValue"]
 
         if actual_balance != expected_balance:
@@ -146,7 +146,7 @@ def withdraw_map(context, map_identifier: str):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    assert check_status(
+    assert check_status_distribute(
         response, withdraw_map_dto.status_code
     ), f"""
         \nExpected Status: {withdraw_map_dto.status_code}\n
@@ -173,7 +173,7 @@ def update_map(context, map_identifier):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    assert check_status(
+    assert check_status_distribute(
         response, update_map_dto.status_code
     ), f"""
         \nExpected Status: {update_map_dto.status_code}\n
@@ -213,7 +213,7 @@ def delete_map(context, map_identifier: str, user_identifier):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    if not check_status(response, "200"):
+    if not check_status_distribute(response, "200"):
         print(f"Error deleting map.\nReceived : {response}")
 
 

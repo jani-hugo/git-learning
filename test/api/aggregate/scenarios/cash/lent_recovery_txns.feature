@@ -58,12 +58,6 @@ Feature: Banking Service Settle transactions various cases
 
     Then I wait until max time to verify bank account CustomerProfileBA1 with an increased balance of 1000 for customerProfileId BCPID1
 
-    When I add External Bank Account as beneficiary to bank account BankAccId1 of CustomerProfile BCPID1 for provider <bank_name> and expect status 200
-      | identifier     | beneficiary_name | address                                                                                                                                                                    | beneficiary_email     | is_hidden | metadata              | is_overdraft_allowed                  | beneficiary_account_details                                                                                                                                   | overdraft_funding_account_id |
-      | BeneficiaryId1 | Beneficiary1     | {"address_line_1":"line1","address_line_2":"line2","address_line_3":"line3","address_line_4":"line4","city":"Tokyo","state":"Tokyo","country_code":"JP","local_code":"JP"} | beneficiary1@test.com | false     | {"key": "MyMetaData"} | <is_overdraft_allowed> | {"bank_name":"SBI","currency":"SGD", "account_number": "1123344455","country":"SGP","code_details":{"sg_code_details":{"swift_bic":"DBSSSGSGXXX"}}} | CustomerProfileBA1           |
-
-    Then I wait until max time to verify beneficiary BeneficiaryId1 create status as BENEFICIARY_CREATED with provider <bank_name> for customerProfileId BCPID1
-
     Given I deposit an amount of <deposit_amount> into BankAccId1 using cash DevDeposit and expect the header status 200
       | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
       | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
@@ -71,8 +65,8 @@ Feature: Banking Service Settle transactions various cases
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | beneficiary_id | amount                        | purpose          | is_overdraft_allowed        | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | BeneficiaryId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed        | metadata              | currency | sub_txn_type |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -126,12 +120,6 @@ Feature: Banking Service Settle transactions various cases
 
     Then I wait until max time to verify bank account CustomerProfileBA1 with an increased balance of 1000 for customerProfileId BCPID1
 
-    When I add External Bank Account as beneficiary to bank account BankAccId1 of CustomerProfile BCPID1 for provider <bank_name> and expect status 200
-      | identifier     | beneficiary_name | address                                                                                                                                                                    | beneficiary_email     | is_hidden | metadata              | is_overdraft_allowed   | beneficiary_account_details                                                                                                                                   | overdraft_funding_account_id |
-      | BeneficiaryId1 | Beneficiary1     | {"address_line_1":"line1","address_line_2":"line2","address_line_3":"line3","address_line_4":"line4","city":"Tokyo","state":"Tokyo","country_code":"JP","local_code":"JP"} | beneficiary1@test.com | false     | {"key": "MyMetaData"} | <is_overdraft_allowed> | {"bank_name":"SBI","currency":"SGD", "account_number": "1123344455","country":"SGP","code_details":{"sg_code_details":{"swift_bic":"DBSSSGSGXXX"}}} | CustomerProfileBA1           |
-
-    Then I wait until max time to verify beneficiary BeneficiaryId1 create status as BENEFICIARY_CREATED with provider <bank_name> for customerProfileId BCPID1
-
     Given I deposit an amount of <deposit_amount> into BankAccId1 using cash DevDeposit and expect the header status 200
       | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
       | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
@@ -139,8 +127,8 @@ Feature: Banking Service Settle transactions various cases
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | beneficiary_id | amount                        | purpose          | is_overdraft_allowed        | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | BeneficiaryId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed        | metadata              | currency | sub_txn_type |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -159,8 +147,8 @@ Feature: Banking Service Settle transactions various cases
 #    Then I wait until max time to verify bank account CustomerProfileBA1 with lent recovery available balance of <recovered_available_balance> and total balance of <recovered_total_balance> for customerProfileId BCPID1
 
     Examples:
-      | deposit_amount | initiate_transaction_amount | requested_amount | external_deposit_amount | currency | bank_name          | account_type | is_overdraft_allowed | is_overdraft_allowed                | is_overdraft_allowed | initial_total_balance | initial_available_balance | transaction_rail | status_code | txn_status          | available_balance | total_balance | recovered_total_balance | recovered_available_balance | country | balance_policy_type | balance_policy_limit |
-      | 80             | 100                         | 100              | 10                      | SGD      | DBS Bank Ltd       | e-money      | true                 | true                                | true                 | 80                    | -20                       | FAST             | 200         | TRANSACTION_SETTLED | -10               | -10           | 990                     | 990                         | SGP     | LENIENT             | 0                    |
+      | deposit_amount | initiate_transaction_amount | requested_amount | external_deposit_amount | currency | bank_name          | account_type | is_overdraft_allowed | is_overdraft_allowed                | is_overdraft_allowed | initial_total_balance | initial_available_balance | transaction_rail | status_code | txn_status          | available_balance | total_balance | country | balance_policy_type | balance_policy_limit |
+      | 80             | 100                         | 100              | 10                      | SGD      | DBS Bank Ltd       | e-money      | true                 | true                                | true                 | 80                    | -20                       | FAST             | 200         | TRANSACTION_SETTLED | -10               | -10           | SGP     | LENIENT             | 0                    |
 
   Scenario Outline: Settle transaction for Internal beneficiary with 0 balance and lent required --- deposit matching test case.
 
@@ -214,19 +202,9 @@ Feature: Banking Service Settle transactions various cases
 
     Then I verify for bank account BankAccId2 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
-    When I add bank account BankAccId2 as beneficiary to bank account BankAccId1 of CustomerProfile BCPID1 for provider <bank_name> and expect status 200
-      | identifier     | beneficiary_name | address                                                                                                                                                                    | beneficiary_email     | is_hidden | metadata              | is_overdraft_allowed | overdraft_funding_account_id |
-      | BeneficiaryId1 | Beneficiary1     | {"address_line_1":"line1","address_line_2":"line2","address_line_3":"line3","address_line_4":"line4","city":"Tokyo","state":"Tokyo","country_code":"JP","local_code":"JP"} | beneficiary1@test.com | false     | {"key": "MyMetaData"} | true                                | CustomerProfileBA1           |
-
-    Then I wait until max time to verify beneficiary BeneficiaryId1 create status as BENEFICIARY_CREATED with provider <bank_name> for customerProfileId BCPID1
-
-    Then I verify bank account BankAccId1 has bank account BankAccId2 as beneficiary on provider <bank_name> with values for customerProfileId BCPID1
-      | identifier     | beneficiary_name | address                                                                                                                                                                    | beneficiary_email     | is_hidden | metadata              | is_overdraft_allowed |
-      | BeneficiaryId1 | Beneficiary1     | {"address_line_1":"line1","address_line_2":"line2","address_line_3":"line3","address_line_4":"line4","city":"Tokyo","state":"Tokyo","country_code":"JP","local_code":"JP"} | beneficiary1@test.com | false     | {"key": "MyMetaData"} | true                                |
-
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | beneficiary_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | BeneficiaryId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
 
     Then I settle transaction to transfer funds with below details for requested amount less than blocked amount and expect the header statuscode <status_code> and transaction_status as <txn_status>
       | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed   | metadata              |

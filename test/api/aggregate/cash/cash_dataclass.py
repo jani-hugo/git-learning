@@ -207,7 +207,6 @@ class BeneficiaryDataTable:
 
 @dataclasses.dataclass
 class BeneficiaryRequestDTO:
-    beneficiary_id: Optional[str]
     account_id: str
     beneficiary_name: str
     beneficiary_account_details: BankAccountDetailsDTO
@@ -220,7 +219,6 @@ class BeneficiaryRequestDTO:
 
     def get_dict(self):
         beneficiary_request_dict = dataclasses.asdict(self)
-        beneficiary_request_dict.pop("beneficiary_id")  # This won't be set
         return beneficiary_request_dict
 
 
@@ -261,7 +259,6 @@ class UpdateAccountDTO:
 class TransactionInitiationRequestDTO:
     identifier: str
     account_id: str
-    beneficiary_id: str
     amount: float
     purpose: str
     is_overdraft_allowed: bool
@@ -271,7 +268,6 @@ class TransactionInitiationRequestDTO:
     def get_dict(self):
         return {
             "account_id": self.account_id,
-            "beneficiary_id": self.beneficiary_id,
             "amount": self.amount,
             "purpose": self.purpose,
             "is_overdraft_allowed": self.is_overdraft_allowed,
@@ -323,7 +319,6 @@ class DepositRequestDTO:
 class InitiateTransactionRequestDTO:
     identifier: str
     account_id: str
-    beneficiary_id: str
     amount: float
     currency: str
     purpose: str
@@ -336,7 +331,6 @@ class InitiateTransactionRequestDTO:
     def get_dict(self):
         return {
             "account_id": self.account_id,
-            "beneficiary_id": self.beneficiary_id,
             "amount": self.amount,
             "currency": self.currency,
             "purpose": self.purpose,
@@ -421,7 +415,6 @@ class BeneficiaryTransactionRequestDTO:
     identifier: str
     customer_profile_id: str
     account_id: str
-    beneficiary_id: str
     amount: float
     purpose: str
     transaction_rail: str
@@ -433,7 +426,6 @@ class BeneficiaryTransactionRequestDTO:
     def get_dict(self):
         return {
             "account_id": self.account_id,
-            "beneficiary_id": self.beneficiary_id,
             "amount": self.amount,
             "purpose": self.purpose,
             "transaction_rail": self.transaction_rail,

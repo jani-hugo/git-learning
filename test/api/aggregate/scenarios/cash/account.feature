@@ -163,6 +163,6 @@ Feature: Cash service CustomerProfile, EndCustomerProfile Profile and Platform a
       | BankAccId  | <customer_profile_id> | <end_customer_profile_id> | <currency> | <country> | <in_trust> | <on_behalf_of> | <metadata> |
 
     Examples:
-      | customer_profile_identifier | end_customer_profile_identifier | account_type | currency | country | in_trust | balance_policy_limit | balance_policy_type | on_behalf_of | metadata                    | bank_name    | status_code |
-      | BCPID1                      | ECPID1                          | PPA          | SGD      | SGP     | false    | 0                    | STRICT              | INVESTMENT   | {"key": "IntegrationTest1"} | DBS Bank Ltd | CSSM_9710   |
-      | BCPID1                      | ECPID1                          | PPA          | SGD      | SGP     | false    | 0                    | STRICT              | CARD         | {"key": "IntegrationTest1"} | DBS Bank Ltd | CSSM_9710   |
+      | customer_profile_identifier | end_customer_profile_identifier | account_type | currency | country | in_trust | balance_policy_limit | balance_policy_type | on_behalf_of       | metadata                    | bank_name    | status_code |
+      | BCPID1                      | ECPID1                          | PPA          | SGD      | SGP     | false    | 0                    | STRICT              | INVESTMENT_SERVICE | {"key": "IntegrationTest1"} | DBS Bank Ltd | CSSM_9710   |
+      | BCPID1                      | ECPID1                          | PPA          | SGD      | SGP     | false    | 0                    | STRICT              | CARD_SERVICE       | {"key": "IntegrationTest1"} | DBS Bank Ltd | CSSM_9710   |

@@ -55,8 +55,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as <txn_status>
-      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <total_balance> and available balance is <available_balance> for customerProfileId BCPID1
 
@@ -97,8 +97,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as <txn_status>
-      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <total_balance> and available balance is <available_balance> for customerProfileId BCPID1
 
@@ -139,8 +139,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as <txn_status>
-      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <total_balance> and available balance is <available_balance> for customerProfileId BCPID1
 
@@ -176,8 +176,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I verify for bank account BankAccId1 total balance is 0 and available balance is 0 for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as <txn_status>
-      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <total_balance> and available balance is <available_balance> for customerProfileId BCPID1
 
@@ -214,8 +214,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I verify for bank account BankAccId1 total balance is 0 and available balance is 0 for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code>
-      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Examples:
       | amount | currency | bank_name    | account_type | is_overdraft_allowed | is_overdraft_allowed | is_overdraft_allowed | status_code | country | balance_policy_limit | balance_policy_type |
@@ -253,8 +253,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as <txn_status>
-      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | true                 | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | true                 | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is 10 and available balance is -10 for customerProfileId BCPID1
 
@@ -267,8 +267,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I verify for bank account BankAccId1 total balance is 20 and available balance is 0 for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode CSSM_9801 and transaction status as <txn_status>
-      | identifier | customer_profile_id | account_id | amount | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type |
-      | TxId2      | BCPID1              | BankAccId1 | 10     | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId2      | BCPID1              | BankAccId1 | 10     | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Examples:
       | deposit_amount | amount | currency | bank_name    | account_type | status_code | txn_status                 | country | balance_policy_limit | balance_policy_type |
@@ -308,8 +308,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code>
-      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | true                 | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | true                 | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
 
     Examples:
@@ -349,8 +349,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode 200 and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -399,8 +399,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode 200 and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -441,8 +441,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an available balance of 0 and total balance of 0 for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode 200 and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -495,14 +495,14 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an available balance of 200 and total balance of 200 for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode 200 and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <total_balance> and available balance is <available_balance> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode 200 and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId2      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId2      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -549,8 +549,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode 200 and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -595,8 +595,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -642,8 +642,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -692,8 +692,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode 200 and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -745,8 +745,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -792,8 +792,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -843,8 +843,8 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode 200 and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -896,14 +896,14 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as <txn_status>
-      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | idempotency_key |
-      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | IDMPTKey5       |
+      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | idempotency_key | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | IDMPTKey5       |                     |
 
     Then I verify for bank account BankAccId1 total balance is <total_balance> and available balance is <available_balance> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as <txn_status>
-      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | idempotency_key |
-      | TxId2      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | IDMPTKey5       |
+      | identifier | customer_profile_id | account_id | amount   | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | idempotency_key | receiver_account_id |
+      | TxId2      | BCPID1              | BankAccId1 | <amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | IDMPTKey5       |                     |
 
     Then I verify for bank account BankAccId1 total balance is <total_balance> and available balance is <available_balance_final> for customerProfileId BCPID1
 
@@ -946,12 +946,12 @@ Feature: Banking service negative balance transactions - initiate, update and se
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | idempotency_key |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | IDMPTKey1       |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | idempotency_key | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | IDMPTKey1       |                     |
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | idempotency_key |
-      | TxId2      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | IDMPTKey1       |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | idempotency_key | receiver_account_id |
+      | TxId2      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | IDMPTKey1       |                     |
 
     Then  I settle transaction to transfer funds with below details and expect the header statuscode <status_code>
       | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed   | metadata              | idempotency_key |

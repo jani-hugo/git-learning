@@ -84,6 +84,7 @@ class BankCodeDetailsDTO:
 @dataclasses.dataclass
 class BankAccountDetailsDTO:
     account_number: Optional[str]
+    account_holder_name: Optional[str]
     bank_name: str
     currency: str
     country: str
@@ -106,9 +107,9 @@ class AccountDTO:
         other.identifier = None
         other.account_id = None
         other.on_behalf_of = None
+        other.account_details.account_holder_name = None
         other.account_details.code_details = None
         other.account_details.account_number = None
-        other.account_details.bank_code_details = None
         return other
 
 
@@ -256,6 +257,38 @@ class UpdateAccountDTO:
 
 
 @dataclasses.dataclass
+class SgBankDetails:
+    account_number: str
+    swift_bic: str
+
+
+@dataclasses.dataclass
+class TransferOutCodeDetails:
+    sg_bank_details: SgBankDetails
+
+
+@dataclasses.dataclass
+class TransferOutAccountDetails:
+    account_holder_name: str
+    country: str
+    currency: str
+    code_details: TransferOutCodeDetails
+
+    def get_dict(self):
+        return {
+            "account_holder_name": self.account_holder_name,
+            "country": self.country,
+            "currency": self.currency,
+            "code_details": {
+                "sg_bank_details": {
+                    "account_number": self.code_details.sg_bank_details.account_number,
+                    "swift_bic": self.code_details.sg_bank_details.swift_bic,
+                }
+            }
+        }
+
+
+@dataclasses.dataclass
 class TransactionInitiationRequestDTO:
     identifier: str
     account_id: str
@@ -327,6 +360,7 @@ class InitiateTransactionRequestDTO:
     sub_txn_type: str
     customer_profile_id: str
     idempotency_key: Optional[str]
+    transfer_out_details: Optional[TransferOutAccountDetails] = None
 
     def get_dict(self):
         return {
@@ -337,6 +371,7 @@ class InitiateTransactionRequestDTO:
             "is_overdraft_allowed": self.is_overdraft_allowed,
             "metadata": self.metadata,
             "sub_txn_type": self.sub_txn_type,
+            "transfer_out_details": self.transfer_out_details
         }
 
 
@@ -424,7 +459,7 @@ class BeneficiaryTransactionRequestDTO:
     currency: str
 
     def get_dict(self):
-        return {
+        result = {
             "account_id": self.account_id,
             "amount": self.amount,
             "purpose": self.purpose,

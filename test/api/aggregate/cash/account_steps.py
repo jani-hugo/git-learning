@@ -56,7 +56,7 @@ def create_customer_profile_bank_account(
 
     assert context.data[cust_profile_bank_acc_dto.product_id].profile_type == "CUSTOMER", (
         f"Expect profile_type: CUSTOMER\n"
-        f"Actual status_code: {context.data[cust_profile_bank_acc_dto.product_id].profile_type}"
+        f"Actual profile_type: {context.data[cust_profile_bank_acc_dto.product_id].profile_type}"
     )
 
     response = request.hugoserve_post_request(
@@ -126,6 +126,10 @@ def wait_to_create_bank_account(
             f"data: {response['data']}"
         )
 
+        context.data[identifier] = DataClassParser.dict_to_object(
+            response["data"], data_class=AccountDTO
+        )
+
     retry_for_creation_status()
 
 
@@ -184,7 +188,9 @@ def verify_bank_account_exist(
         f"\nActual bank_account_dto: {sanitized_actual}"
     )
 
-    context.data[identifier] = actual_bank_acc_dto
+    context.data[identifier] = DataClassParser.dict_to_object(
+        response["data"], data_class=AccountDTO
+    )
 
 
 @Given(
@@ -232,7 +238,7 @@ def create_end_customer_profile_bank_account(
         context.data[end_cust_profile_bank_acc_dto.product_id].profile_type == "END_CUSTOMER"
     ), (
         f"Expect profile_type: END_CUSTOMER\n"
-        f"Actual status_code: {context.data[end_cust_profile_bank_acc_dto.product_id].profile_type}"
+        f"Actual profile_type: {context.data[end_cust_profile_bank_acc_dto.product_id].profile_type}"
     )
 
     data = end_cust_profile_bank_acc_dto.get_dict()

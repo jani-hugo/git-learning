@@ -65,14 +65,14 @@ Feature: Banking Service Settle transactions various cases
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed        | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed        | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed>      | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
     Then I settle transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction_status as <txn_status>
       | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed        | metadata              | overdraft_funding_account_id |
-      | TxId1          | BCPID1              | <requested_amount> | <transaction_rail> | <is_overdraft_allowed> | {"key": "MyMetaData"} | CustomerProfileBA1           |
+      | TxId1          | BCPID1              | <requested_amount> | <transaction_rail> | <is_overdraft_allowed>      | {"key": "MyMetaData"} | CustomerProfileBA1           |
 
     Then I wait until max time to verify the transaction TxId1 status as <txn_status> for customerProfileId BCPID1
 
@@ -127,8 +127,8 @@ Feature: Banking Service Settle transactions various cases
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed        | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed        | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed>      | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -203,12 +203,12 @@ Feature: Banking Service Settle transactions various cases
     Then I verify for bank account BankAccId2 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | BankAccId2          |
 
     Then I settle transaction to transfer funds with below details for requested amount less than blocked amount and expect the header statuscode <status_code> and transaction_status as <txn_status>
-      | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed   | metadata              |
-      | TxId1          | BCPID1              | <requested_amount> | <transaction_rail> | <is_overdraft_allowed> | {"key": "MyMetaData"} |
+      | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed   | metadata              | overdraft_funding_account_id |
+      | TxId1          | BCPID1              | <requested_amount> | <transaction_rail> | <is_overdraft_allowed> | {"key": "MyMetaData"} | CustomerProfileBA1           |
 
     Then I wait until max time to verify the transaction TxId2 status as <txn_status> for customerProfileId BCPID1
 
@@ -217,5 +217,5 @@ Feature: Banking Service Settle transactions various cases
     Then I wait until max time to verify bank account BankAccId1 with an available balance of <updated_available_balance-2> and total balance of <updated_total_balance-2> for customerProfileId BCPID1
 
     Examples:
-      | initiate_transaction_amount | initial_total_balance | initial_available_balance | requested_amount | updated_available_balance-1 | updated_total_balance-1 | updated_available_balance-2 | updated_total_balance-2 | bank_name | is_overdraft_allowed          | transaction_rail     | status_code | txn_status          | country | currency |
+      | initiate_transaction_amount | initial_total_balance | initial_available_balance | requested_amount | updated_available_balance-1 | updated_total_balance-1 | updated_available_balance-2 | updated_total_balance-2 | bank_name          | is_overdraft_allowed | transaction_rail     | status_code | txn_status          | country | currency |
       | 80                          | 0                     | 0                         | 80               | 80                          | 80                      | -80                         | -80                     | DBS Bank Ltd       | true                 | FAST                 | 200         | TRANSACTION_SETTLED | SGP     | SGD      |

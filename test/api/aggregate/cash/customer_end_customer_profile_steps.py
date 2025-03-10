@@ -1,7 +1,7 @@
 from aggregate.cash import helper as cash_helper
 from aggregate.profile.profile_dataclass import CustomerProfileDTO
 from behave import *
-from common.utils import DataClassParser, parse_rows_as_dict
+from hugoutils.utilities.dataclass_util import DataClassParser
 from retry import retry
 
 use_step_matcher("re")
@@ -30,7 +30,7 @@ def setup_customer_profile(
     customer_profile_id = context.data["config_data"]["customer_profile_id"]
     provider_name_id_list = []
     provider_id_list = []
-    provider_name_list = parse_rows_as_dict(context.table.rows)
+    provider_name_list = DataClassParser.row_to_dict(context.table.rows)
 
     customer_profile_dto = DataClassParser.dict_to_object(
         data=customer_profile_dict, data_class=CustomerProfileDTO
@@ -97,7 +97,7 @@ def onboard_customer_profile_on_cash(
     status_code: str,
 ):
     request = context.request
-    provider_name_list = parse_rows_as_dict(context.table.rows)
+    provider_name_list = DataClassParser.row_to_dict(context.table.rows)
     customer_id = context.data[customer_identifier].customer_id
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
     provider_name_id_list = []
@@ -199,7 +199,7 @@ def onboard_end_customer_profile_on_cash(
         end_customer_profile_identifier
     ].end_customer_profile_id
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
-    provider_name_list = parse_rows_as_dict(context.table.rows)
+    provider_name_list = DataClassParser.row_to_dict(context.table.rows)
     provider_name_id_list = []
     provider_id_list = []
     for each_provider in provider_name_list:

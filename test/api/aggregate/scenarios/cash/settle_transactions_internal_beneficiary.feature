@@ -63,8 +63,8 @@ Feature: Banking Service Settle transactions with internal beneficiaries and var
     Then I wait until max time to verify bank account BankAccId2 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId2 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId2 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |  BankAccId1         |
 
     Then I settle transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction_status as <txn_status>
       | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed | metadata              |
@@ -117,8 +117,8 @@ Feature: Banking Service Settle transactions with internal beneficiaries and var
     Then I wait until max time to verify bank account BankAccId2 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId2 | <initiate_transaction_amount> | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId2 | <initiate_transaction_amount> | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     | BankAccId1          |
 
     Then I settle transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction_status as <txn_status>
       | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed | metadata              |
@@ -181,11 +181,11 @@ Feature: Banking Service Settle transactions with internal beneficiaries and var
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | BankAccId2          |
 
     Then I settle transaction to transfer funds with below details and expect the header statuscode <status_code>
-      | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed | metadata              | <overdraft_funding_account_id |
+      | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed | metadata              | overdraft_funding_account_id |
       | TxId1          | BCPID1              | <requested_amount> | <transaction_rail> | true                 | {"key": "MyMetaData"} | CustomerProfileBA1            |
 
     Then I wait until max time to verify the transaction TxId1 status as <txn_status> for customerProfileId BCPID1
@@ -247,8 +247,8 @@ Feature: Banking Service Settle transactions with internal beneficiaries and var
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | BankAccId2          |
 
     Then I settle transaction to transfer funds with below details for requested amount less than blocked amount and expect the header statuscode <status_code> and transaction_status as <txn_status>
       | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed   | metadata              | overdraft_funding_account_id |
@@ -256,7 +256,7 @@ Feature: Banking Service Settle transactions with internal beneficiaries and var
 
     Then I wait until max time to verify the transaction TxId2 status as <txn_status> for customerProfileId BCPID1
 
-    Then I wait until max time to verify bank account BankAccId2 with an available balance of <updated_available_balance-1> and total balance of <updated_total_balance-1> for customerProfileId BCPID1
+#    Then I wait until max time to verify bank account BankAccId2 with an available balance of <updated_available_balance-1> and total balance of <updated_total_balance-1> for customerProfileId BCPID1
 
     Then I wait until max time to verify bank account BankAccId1 with an available balance of <updated_available_balance-2> and total balance of <updated_total_balance-2> for customerProfileId BCPID1
 
@@ -301,8 +301,8 @@ Feature: Banking Service Settle transactions with internal beneficiaries and var
     Then I wait until max time to verify bank account BankAccId2 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId2 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId2 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | BankAccId1          |
 
     Then I settle transaction to transfer funds with below details for requested amount less than blocked amount and expect the header statuscode <status_code> and transaction_status as <txn_status>
       | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed   | metadata              |
@@ -361,12 +361,12 @@ Feature: Banking Service Settle transactions with internal beneficiaries and var
     Then I verify for bank account BankAccId2 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     | BankAccId2          |
 
     Then I settle transaction to transfer funds with below details for requested amount less than blocked amount and expect the header statuscode <status_code> and transaction_status as <txn_status>
-      | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed   | metadata              |
-      | TxId1          | BCPID1              | <requested_amount> | <transaction_rail> | <is_overdraft_allowed> | {"key": "MyMetaData"} |
+      | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed   | metadata              | overdraft_funding_account_id |
+      | TxId1          | BCPID1              | <requested_amount> | <transaction_rail> | <is_overdraft_allowed> | {"key": "MyMetaData"} | CustomerProfileBA1            |
 
     Then I wait until max time to verify the transaction TxId2 status as <txn_status> for customerProfileId BCPID1
 

@@ -5,7 +5,7 @@ Feature: Banking Service DBS Bank Ltd SG ICN and IDN deposits.
      #CustomerProfile verifying and Onboarding on to banking service on given providers
     Given I set and verify customer BCID1, customer profile BCPID1 on cash service on below providers and expect status 200 in the context
       | provider_name |
-      | DBS Bank Ltd           |
+      | DBS Bank Ltd  |
 
     Then I wait until max time to verify CustomerProfile BCPID1 onboard status as ONBOARD_SUCCESS
 
@@ -22,7 +22,7 @@ Feature: Banking Service DBS Bank Ltd SG ICN and IDN deposits.
     # EndCustomerProfile Onboarding
     Given I onboard EndCustomerProfile ECPID1 of CustomerProfile BCPID1 on cash service on below providers and expect status 200
       | provider_name |
-      | DBS Bank Ltd           |
+      | DBS Bank Ltd  |
 
     Then I wait until max time to verify EndCustomerProfile ECPID1 of CustomerProfile BCPID1 onboard status as ONBOARD_SUCCESS
 

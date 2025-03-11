@@ -1,8 +1,8 @@
-AGGREGATE_ENDPOINT: https://int-api.hugohub.com
-customer_id: fb6763ff-cab4-5865-848a-c2cb4f00abb8
-customer_profile_id: 72b98ad6-ddd9-553a-8576-50d407709d4f
-customer_id_2: 9f9e3490-29f2-5f81-bd98-80ae83b30a73
-customer_profile_id_2: 05fb0435-f833-51da-9a04-d6766b3a1ee9
+AGGREGATE_ENDPOINT: https://test-api.hugohub.com
+customer_id: 0f576784-31a0-4691-a5a1-342471307866
+customer_profile_id: 07651956-706a-47f3-ac69-595b26cd60f8
+customer_id_2: 5c10df9e-8bc2-4d72-867f-442be68b855f
+customer_profile_id_2: c3e1570c-3dc6-464a-bc0d-efb2699ec9b2
 card_config_id: 2fbde953-dd16-4458-a30c-e633213e66a0
 card_account_product_id: 947b4bae-12cb-4843-ae71-ae9940a3a254
 card_product_id: a003488a-c40a-481d-8c96-eb267b0b491b

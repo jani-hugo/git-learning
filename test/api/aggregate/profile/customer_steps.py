@@ -14,6 +14,26 @@ from test.util.common_util import check_status
 use_step_matcher("re")
 profile_customer_admin_url = '/profile/v1/admin/customer/'
 
+@Given("I set and verify customer ([^']*), customer profile ([^']*) in the context")
+def setup_customer_profile(context, customer_identifier: str, customer_profile_identifier: str):
+    request = context.request
+    customer_profile_dict = {
+        "customer_identifier": customer_identifier,
+        "customer_id": context.data["config_data"]["customer_id"],
+        "customer_profile_id": context.data["config_data"]["customer_profile_id"],
+        "region": "SGP",
+        "name": "Integration test",
+        "email": "admin@hugosave.com",
+        "phone_number": "+65 1234567890",
+        "status": "SUCCESS",
+    }
+
+    customer_profile_dto = DataClassParser.dict_to_object(
+        data=customer_profile_dict, data_class=CustomerProfileDTO
+    )
+    context.data[customer_identifier] = customer_profile_dto
+    context.data[customer_profile_identifier] = customer_profile_dto
+
 
 @Given("I create below Customer")
 def create_customer(context):
@@ -99,7 +119,6 @@ def delete_customer(context):
 @Step("I verify customer doesn't exist")
 def verify_customer_not_exist(context):
     request = context.request
-
     deleted_customers = DataClassParser.row_to_dict(context.table.rows)
 
     for deleted_customer in deleted_customers:
@@ -118,22 +137,3 @@ def verify_customer_not_exist(context):
         )
 
 
-@Given("I set and verify customer ([^']*), customer profile ([^']*) in the context")
-def setup_customer_profile(context, customer_identifier: str, customer_profile_identifier: str):
-    request = context.request
-    customer_profile_dict = {
-        "customer_identifier": customer_identifier,
-        "customer_id": context.data["config_data"]["customer_id"],
-        "customer_profile_id": context.data["config_data"]["customer_profile_id"],
-        "region": "SGP",
-        "name": "Integration test",
-        "email": "admin@hugosave.com",
-        "phone_number": "+65 1234567890",
-        "status": "SUCCESS",
-    }
-
-    customer_profile_dto = DataClassParser.dict_to_object(
-        data=customer_profile_dict, data_class=CustomerProfileDTO
-    )
-    context.data[customer_identifier] = customer_profile_dto
-    context.data[customer_profile_identifier] = customer_profile_dto

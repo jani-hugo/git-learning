@@ -1,6 +1,5 @@
 from typing import Optional
 import dataclasses
-from time import strftime
 from datetime import datetime
 
 
@@ -30,7 +29,7 @@ class ProductDTO:
     profile_type: Optional[str]
     product_category: Optional[str]
     description: Optional[str]
-
+    param_group:Optional[str]
     def get_dict(self, product_code):
         return {
             "product_id": self.product_id,
@@ -41,18 +40,33 @@ class ProductDTO:
             "product_class": self.product_class,
             "profile_type": self.profile_type,
             "product_category": self.product_category,
+            "param_group":self.param_group,
         }
 
 
 @dataclasses.dataclass
 class ProductIdDTO:
     product_id: Optional[str]
-
+    expected_status_code:Optional[str]
     def get_dict(self):
         return {
             "product_id": self.product_id,
+            "status_code":self.expected_status_code
         }
 
+@dataclasses.dataclass
+class UpdateProductDTO:
+    product_id: str
+    product_code: Optional[str] = None
+    product_name: Optional[str] = None
+    product_description: Optional[str] = None
+    product_class: Optional[str] = None
+    profile_type: Optional[str] = None
+    param_group: Optional[str] = None
+    expected_status_code: Optional[str] = None
+
+    def get_dict(self):
+        return {k: v for k, v in self.__dict__.items() if v is not None}
 
 @dataclasses.dataclass
 class CreateAccountRequestDTO:

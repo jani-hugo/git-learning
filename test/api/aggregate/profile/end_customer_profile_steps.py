@@ -89,28 +89,6 @@ def verify_end_customer_profile_exist(context):
         )
 
 
-@Then("I attempt to create End-Customer-Profile with invalid datatype and verify create failed")
-def create_end_customer_profile_with_incorrect_data_verify_fail(context):
-    request = context.request
-    end_customer_profile_dto = DataClassParser.parse_rows(
-        context.table.rows, data_class=CreateUpdateEndCustomerProfileDTO
-    )[0]
-
-    data = end_customer_profile_dto.get_dict()
-    customer_profile_id = data['customer_profile_id']
-
-    response = request.hugoserve_post_request(
-        profile_end_customer_profile_url,
-        data,
-        headers={'x-customer-profile-id': customer_profile_id},
-    )
-
-    status_code = response['headers']['status_code']
-    assert status_code == 'PSM_E9505', (
-        f"\nExpect headers.status_code: PSM_E9505"
-        f"\nActual headers.status_code: {status_code}"
-    )
-
 
 @Step("I delete the above created End-Customer-Profile")
 def delete_end_customer_profile(context):

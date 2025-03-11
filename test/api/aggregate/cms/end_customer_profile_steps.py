@@ -1,3 +1,5 @@
+import uuid
+
 from test.api.aggregate.cms import cms_helper
 from behave import *
 from retry import retry
@@ -8,17 +10,19 @@ use_step_matcher("re")
 
 
 @Then(
-    "I onboard End Customer Profile ([^']*) to CMS with ([^']*) and verify onboard status as ([^']*)"
+    "I onboard End Customer Profile ([^']*) to CMS and verify onboard status as ([^']*) and status code as ([^']*)"
 )
 def onboard_end_customer_profile(
-    context, end_customer_profile_id, payment_provider, expected_onboard_status
+        context, end_customer_profile_id, expected_onboard_status , expected_status_code
 ):
     request = context.request
 
     customer_profile_id = context.data['config_data']['customer_profile_id']
-    end_customer_profile_id = context.data[end_customer_profile_id].end_customer_profile_id
+    if end_customer_profile_id in context.data:
+        end_customer_profile_id = context.data[end_customer_profile_id].end_customer_profile_id
+    else:
+        end_customer_profile_id = str(uuid.uuid4())
     data = {
-        'payment_provider_id': cms_helper.get_payment_provider_id(payment_provider),
         'end_customer_profile_id': end_customer_profile_id,
     }
 
@@ -27,11 +31,12 @@ def onboard_end_customer_profile(
         data=data,
         headers=cms_helper.get_headers(customer_profile_id),
     )
-    check_status(response, '200')
-    assert (
-        response['data']['onboard_status'] == 'ONBOARD_PENDING'
-        or response['data']['onboard_status'] == expected_onboard_status
-    )
+    check_status(response, expected_status_code)
+    if 'data' in response:
+        assert (
+            response['data']['onboard_status'] == 'ONBOARD_PENDING'
+            or response['data']['onboard_status'] == expected_onboard_status
+        )
 
     @retry(exceptions=AssertionError, tries=30, delay=2, logger=None)
     def retry_for_onboarding():
@@ -41,13 +46,14 @@ def onboard_end_customer_profile(
             ),
             headers=cms_helper.get_headers(customer_profile_id),
         )
-        check_status(response, '200')
+        print(response)
+        check_status(response, expected_status_code)
         cms_helper.assert_values(
             "End Customer Profile Onboard Status",
             end_customer_profile_id,
             expected_onboard_status,
             response['data']['onboard_status'],
         )
+        if 'data' in response and response['data']['onboard_status'] != expected_onboard_status:
+            retry_for_onboarding()
 
-    if response['data']['onboard_status'] != expected_onboard_status:
-        retry_for_onboarding()

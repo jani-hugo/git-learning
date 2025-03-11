@@ -1,25 +1,23 @@
 from test.api.aggregate.cms import cms_helper
 from behave import *
 from retry import retry
-from behave import Then
 
 from test.util.common_util import check_status
 
 use_step_matcher("re")
 
-
 @Given(
-    "I onboard HUGOHUB Customer Profile for CMS with ([^']*) and verify onboard status as ([^']*)"
+    "I onboard HUGOHUB Customer Profile for CMS and verify onboard status as ([^']*)"
 )
-def onboard_hugohub(context, payment_provider, expected_onboard_status):
+def onboard_hugohub(context, expected_onboard_status):
     request = context.request
     response = request.hugoserve_post_request(
         cms_helper.admin_urls['onboard_hugohub'],
     )
     check_status(response, '200')
     assert (
-        response['data']['onboard_status'] == 'ONBOARD_PENDING'
-        or response['data']['onboard_status'] == expected_onboard_status
+            response['data']['onboard_status'] == 'ONBOARD_PENDING'
+            or response['data']['onboard_status'] == expected_onboard_status
     )
 
     @retry(exceptions=AssertionError, tries=30, delay=2, logger=None)
@@ -38,17 +36,18 @@ def onboard_hugohub(context, payment_provider, expected_onboard_status):
     if response['data']['onboard_status'] != expected_onboard_status:
         retry_for_onboarding()
 
-
-@Then("I onboard Customer Profile to CMS with ([^']*) and verify onboard status as ([^']*)")
-def onboard_customer_profile(context, payment_provider, expected_onboard_status):
+@then(
+    "I onboard Customer Profile ([^']*) to CMS and verify onboard status as ([^']*)"
+)
+def onboard_customer_profile(context,customer_identifier, expected_onboard_status):
     request = context.request
+    customer_profile_dto = context.data.get(customer_identifier)
+    customer_id = customer_profile_dto.customer_id
+    customer_profile_id = customer_profile_dto.customer_profile_id
 
-    customer_id = context.data['config_data']['customer_id']
-    customer_profile_id = context.data['config_data']['customer_profile_id']
     data = {
         'customer_id': customer_id,
         'customer_profile_id': customer_profile_id,
-        'payment_provider_id': cms_helper.get_payment_provider_id(payment_provider),
     }
 
     response = request.hugoserve_post_request(
@@ -58,8 +57,8 @@ def onboard_customer_profile(context, payment_provider, expected_onboard_status)
     )
     check_status(response, '200')
     assert (
-        response['data']['onboard_status'] == 'ONBOARD_PENDING'
-        or response['data']['onboard_status'] == expected_onboard_status
+            response['data']['onboard_status'] == 'ONBOARD_PENDING'
+            or response['data']['onboard_status'] == expected_onboard_status
     )
 
     @retry(exceptions=AssertionError, tries=30, delay=2, logger=None)

@@ -90,7 +90,6 @@ class HugoserveTest:
 
     @staticmethod
     def __do_get(url: str, params: dict = None, headers: dict = None):
-        print(url)
         if headers is not None:
             headers = {**default_headers, **headers}
         else:

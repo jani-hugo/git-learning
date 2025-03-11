@@ -31,9 +31,10 @@ fund_account_urls = {
 product_urls = {
     'get_param_config': cms_base_url + '/product/config',
     'create': cms_base_url + '/product',
-    'approve': cms_base_url + '/product/$product_id$/approve',
+    'approve': cms_base_url + '/product/$product_id$/activate',
     'get_details': cms_base_url + '/product/$product_id$',
     'get_products_for_customer_profile': cms_base_url + '/product',
+    'update':cms_base_url+'/product/$product_id$'
 }
 
 credit_account_urls = {
@@ -73,6 +74,51 @@ demo_urls = {
     "get_fund_accounts": cms_base_url + '/customer-profile/fund-accounts'
 }
 
+PRODUCT_PARAMS = {
+    "normal_case_params_group": [
+        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 42}}},
+        {"param_name": "BILLING_DATE", "data_type": "INTEGER_RANGE", "value": {"integer_range_value": {"value": 1}}},
+        {"param_name": "BILLING_FREQUENCY", "data_type": "STRING_LIST", "value": {"string_list_value": {"value": "MONTHLY"}}},
+        {"param_name": "CAN_ATTACH_CARD", "data_type": "BOOLEAN", "value": {"boolean_value": {"value": True}}},
+        {"param_name": "GRACE_PERIOD", "data_type": "INTEGER_RANGE", "value": {"integer_range_value": {"value": 14}}},
+        {"param_name": "CREDIT_LIMIT_RANGE", "data_type": "RANGE_INTEGERS", "value": {"range_integers_value": {"min_value": "1", "max_value": "100000000"}}},
+        {"param_name": "MIN_AMOUNT_DUE_PERCENTAGE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 10}}},
+        {"param_name": "CURRENCY", "data_type": "STRING_LIST", "value": {"string_list_value": {"value": "SGD"}}},
+        {"param_name": "COUNTRY", "data_type": "STRING_LIST", "value": {"string_list_value": {"value": "SGP"}}},
+    ],
+    "update_params_group": [
+        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 45}}},
+        {"param_name": "BILLING_DATE", "data_type": "INTEGER_RANGE", "value": {"integer_range_value": {"value": 1}}},
+        {"param_name": "BILLING_FREQUENCY", "data_type": "STRING_LIST", "value": {"string_list_value": {"value": "MONTHLY"}}},
+        {"param_name": "CAN_ATTACH_CARD", "data_type": "BOOLEAN", "value": {"boolean_value": {"value": False}}},
+        {"param_name": "GRACE_PERIOD", "data_type": "INTEGER_RANGE", "value": {"integer_range_value": {"value": 14}}},
+        {"param_name": "CREDIT_LIMIT_RANGE", "data_type": "RANGE_INTEGERS", "value": {"range_integers_value": {"min_value": "10", "max_value": "100000000"}}},
+        {"param_name": "MIN_AMOUNT_DUE_PERCENTAGE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 14}}},
+    ],
+    "invalid_billing_date":[
+        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 42}}},
+        {"param_name": "BILLING_DATE", "data_type": "INTEGER_RANGE", "value": {"integer_range_value": {"value": 22}}},
+    ],
+    "invalid_annual_percentage_rate":[
+        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 2000}}},
+    ],
+    "invalid_billing_frequency":[
+        {"param_name": "BILLING_FREQUENCY", "data_type": "STRING_LIST", "value": {"string_list_value": {"value": "wrong"}}},
+    ],
+    "missing_min_or_max_value_for_range_integers":[
+        {"param_name": "CREDIT_LIMIT_RANGE", "data_type": "RANGE_INTEGERS", "value": {"range_integers_value": {"min_value": "1"}}},
+    ],
+    "empty_string_list":[
+        {"param_name": "COUNTRY", "data_type": "STRING_LIST", "value": {"string_list_value": {}}},
+    ],
+    "insufficient_detail":[
+        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 42}}},
+        {"param_name": "BILLING_DATE", "data_type": "INTEGER_RANGE", "value": {"integer_range_value": {"value": 1}}},
+    ]
+}
+
+def get_product_params(param_group):
+    return PRODUCT_PARAMS[param_group]
 
 def get_headers(customer_profile_id, origin="CUSTOMER"):
     headers = {

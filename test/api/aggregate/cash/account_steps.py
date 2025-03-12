@@ -9,6 +9,7 @@ from test.api.aggregate.cash.cash_dataclass import (
     CreateEndCustomerProfileAccountDTO,
     CreatePlatformAccountDTO,
     UpdateAccountDTO,
+    CashAccountRequestDTO
 )
 from behave import *
 from retry import retry
@@ -38,6 +39,9 @@ def create_customer_profile_bank_account(
 
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
     cust_profile_bank_acc_dto.customer_profile_id = customer_profile_id
+
+    if cust_profile_bank_acc_dto.cash_account_id != '':
+        cust_profile_bank_acc_dto.cash_account_id = context.data[cust_profile_bank_acc_dto.cash_account_id]
 
     cust_profile_bank_acc_dto.provider_id = cash_helper.__get_provider_id(
         context=context,
@@ -86,6 +90,94 @@ def create_customer_profile_bank_account(
 
         cust_profile_bank_acc_dto.account_id = response["data"]["account_id"]
         context.data[cust_profile_bank_acc_dto.identifier] = cust_profile_bank_acc_dto
+
+
+@Then(
+    "I create a end customer cash account with id ([^']*) customerProfileID ([^']*) with product id ([^']*) and endCustomerProfileId ([^']*) and expect status as ([^']*)"
+)
+def create_cash_account(
+        context,
+        cash_account_identifier: str,
+        customer_profile_identifier: str,
+        product_id_identifier: str,
+        end_customer_profile_identifier: str,
+        status_code: str,
+):
+    request = context.request
+    customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
+
+    cash_account_request_dto = DataClassParser.dict_to_object(
+        {
+            "cash_account_product_id": context.data[product_id_identifier],
+            "end_customer_profile_id": context.data[end_customer_profile_identifier].end_customer_profile_id,
+        },CashAccountRequestDTO
+    )
+
+    response = request.hugoserve_post_request(
+        path="/cash/v1/cash-account",
+        data=cash_account_request_dto.get_dict(),
+        headers=cash_helper.__get_default_cash_headers(customer_profile_id),
+    )
+
+    assert response["headers"]["status_code"] == "200", (
+        f"\nExpected status code" f"\nActual status code: {response['data']}"
+    )
+
+    assert "cash_account_id" in response["data"], (
+        f"\nExpected data object contains account_id" f"\nActual data: {response['data']}"
+    )
+
+    actual_onboard_status = response["data"]["cash_account_status"]
+    assert actual_onboard_status == "CASH_ACCOUNT_CREATED", (
+        f"\nExpect data.account_status: CASH_ACCOUNT_CREATED"
+        f"\nActual data.account_status: {response['data']['cash_account_status']}, "
+        f"data: {response['data']}"
+    )
+
+    context.data[cash_account_identifier] = response["data"]["cash_account_id"]
+
+
+@Then(
+    "I create a cash account with id ([^']*) customerProfileId ([^']*) with product id ([^']*) and expect status as ([^']*)"
+)
+def create_cash_account(
+        context,
+        cash_account_identifier: str,
+        customer_profile_identifier: str,
+        product_id_identifier: str,
+        cash_account_status: str,
+):
+    request = context.request
+    customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
+
+    cash_account_request_dto = DataClassParser.dict_to_object(
+        {
+            "cash_account_product_id": context.data[product_id_identifier],
+        },CashAccountRequestDTO
+    )
+
+    response = request.hugoserve_post_request(
+        path="/cash/v1/cash-account",
+        data=cash_account_request_dto.get_dict(),
+        headers=cash_helper.__get_default_cash_headers(customer_profile_id),
+    )
+
+    assert response["headers"]["status_code"] == "200", (
+        f"\nExpected status code" f"\nActual status code: {response['data']}"
+    )
+
+    assert "cash_account_id" in response["data"], (
+        f"\nExpected data object contains account_id" f"\nActual data: {response['data']}"
+    )
+
+    actual_onboard_status = response["data"]["cash_account_status"]
+    assert actual_onboard_status == "CASH_ACCOUNT_CREATED", (
+        f"\nExpect data.account_status: CASH_ACCOUNT_CREATED"
+        f"\nActual data.account_status: {response['data']['cash_account_status']}, "
+        f"data: {response['data']}"
+    )
+
+    context.data[cash_account_identifier] = response["data"]["cash_account_id"]
 
 
 @Then(
@@ -213,6 +305,9 @@ def create_end_customer_profile_bank_account(
     end_cust_profile_bank_acc_dto = DataClassParser.parse_row(
         context.table.rows[0], data_class=CreateEndCustomerProfileAccountDTO
     )
+
+    if end_cust_profile_bank_acc_dto.cash_account_id != '':
+        end_cust_profile_bank_acc_dto.cash_account_id = context.data[end_cust_profile_bank_acc_dto.cash_account_id]
 
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
     end_cust_profile_bank_acc_dto.end_customer_profile_id = context.data[

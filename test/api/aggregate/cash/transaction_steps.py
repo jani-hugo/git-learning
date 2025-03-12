@@ -109,6 +109,7 @@ def initiate_transaction_and_verify_status(context, status_code, txn_status):
     initiate_tx_request_dto = DataClassParser.parse_row(
         context.table.rows[0], InitiateTransactionRequestDTO
     )
+
     if context.table.rows[0]["receiver_account_id"] == '':
         transfer_out_details = {
             "account_holder_name":"Jane Smith",
@@ -120,7 +121,6 @@ def initiate_transaction_and_verify_status(context, status_code, txn_status):
                     "swift_bic":"DBSSSGSGXXX"}
             }
         }
-
     else:
         account_details = context.data[context.table.rows[0]["receiver_account_id"]].account_details
         transfer_out_details = {
@@ -186,6 +186,33 @@ def initiate_transaction_and_verify_status(context, status_code):
     initiate_tx_request_dto = DataClassParser.parse_row(
         context.table.rows[0], InitiateTransactionRequestDTO
     )
+
+    if context.table.rows[0]["receiver_account_id"] == '':
+        transfer_out_details = {
+            "account_holder_name":"Jane Smith",
+            "country":"SGP",
+            "currency":"SGD",
+            "code_details":{
+                "sg_bank_details":{
+                    "account_number":"9876543210",
+                    "swift_bic":"DBSSSGSGXXX"}
+            }
+        }
+    else:
+        account_details = context.data[context.table.rows[0]["receiver_account_id"]].account_details
+        transfer_out_details = {
+            "account_holder_name": account_details.account_holder_name,
+            "country": account_details.country,
+            "currency": account_details.currency,
+            "code_details": {
+                "sg_bank_details": {
+                    "account_number": account_details.code_details.sg_code_details.account_number,
+                    "swift_bic": account_details.code_details.sg_code_details.swift_bic,
+                }
+            }
+        }
+    initiate_tx_request_dto.transfer_out_details = transfer_out_details
+
 
     initiate_tx_request_dto.account_id = context.data[
         initiate_tx_request_dto.account_id

@@ -4,7 +4,7 @@ import string
 from hugoutils.utilities.dataclass_util import DataClassParser
 from retry import retry
 
-from test.api.aggregate.cash.cash_dataclass import ProductRequestDTO, DoubleList, Double
+from test.api.aggregate.cash.cash_dataclass import ProductRequestDTO, Double
 
 from behave import *
 
@@ -14,7 +14,7 @@ from test.api.aggregate.cash.cash_dataclass import (
     Value,
     StringList,
     MultiString,
-    Boolean,
+    Integer
 )
 
 use_step_matcher("re")
@@ -120,6 +120,75 @@ def create_product(
         )
 
     retry_for_creation_status()
+
+
+@Given(
+    "I create a cash account product with customer profile ([^']*) provider as ([^']*) and expect product_status ([^']*)"
+)
+def create_cash_account_product(
+    context,
+    customer_profile_identifier: str,
+    provider_name: str,
+    expected_status: str,
+):
+    cash_helper.__validate_provider(provider_name)
+
+    customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
+
+    product_request_dto = DataClassParser.parse_row(
+        context.table.rows[0], data_class=ProductRequestDTO
+    )
+
+    provider_id = cash_helper.__get_provider_id(
+        context=context, provider_name=provider_name, customer_profile_id=customer_profile_id
+    )
+
+    @retry(AssertionError, tries=60 / 5, delay=5, logger=None)
+    def retry_for_creation_status():
+        product_request_dto.provider_name = provider_name
+        product_request_dto.product_name = ''.join(random.choices(string.digits, k=9))
+        allowed_chars = string.ascii_letters + string.digits + '_'
+        product_request_dto.product_code = ''.join(
+            random.choices(allowed_chars, k=random.randint(8, 9))
+        )
+        product_request_dto.provider_id = provider_id
+        product_request_dict = product_request_dto.get_dict()
+
+        num_of_active_account = ParamRequestDTO(
+            param_name="NUM_OF_ACTIVE_ACCOUNT",
+            value=Value(
+                integer_range_value=Integer(value=product_request_dto.num_of_active_account).to_dict()
+            ),
+        ).to_dict()
+
+        product_request_dict['product_params'] = [
+            num_of_active_account
+        ]
+
+        response = context.request.hugoserve_post_request(
+            path="/cash/v1/product",
+            data=product_request_dict,
+            headers=cash_helper.__get_default_cash_headers(customer_profile_id),
+        )
+
+        assert response["headers"]["status_code"] == "200", (
+            f"Expect status_code: {200}\n"
+            f"Actual status_code: {response['headers']['status_code']}"
+        )
+
+        assert (
+                "product_id" in response["data"]
+        ), f"Expected data object to contain product_id\nActual data: {response['data']}"
+        context.data[product_request_dto.identifier] = response["data"]["product_id"]
+
+        actual_product_status = response["data"]["product_status"]
+        assert actual_product_status == expected_status, (
+            f"Expect data.product_status: {expected_status}\n"
+            f"Actual data.product_status: {actual_product_status}, data: {response['data']}"
+        )
+
+    retry_for_creation_status()
+
 
 
 @Step(

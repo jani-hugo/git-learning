@@ -18,6 +18,7 @@ class CreateCustomerProfileAccountDTO:
     is_overdraft_allowed: Optional[bool]
     on_behalf_of: Optional[str]
     metadata: Optional[dict]
+    cash_account_id: Optional[str] = ""
 
     # Only add values that would be sent to create an object using REST call
     def get_dict(self):
@@ -32,6 +33,7 @@ class CreateCustomerProfileAccountDTO:
             "is_overdraft_allowed": self.is_overdraft_allowed,
             "on_behalf_of": self.on_behalf_of,
             "metadata": self.metadata,
+            "cash_account_id": self.cash_account_id,
         }
 
 
@@ -44,16 +46,17 @@ class ProductRequestDTO:
     profile_type: str
     product_class: str
     product_type: str
-    currency: str
-    country: str
+    currency: Optional[str]
+    country: Optional[str]
     is_overdraft_allowed: Optional[bool]
-    balance_policy_limit: float
-    balance_policy_type: str
-    account_type: str
+    balance_policy_limit: Optional[float]
+    balance_policy_type: Optional[str]
+    account_type: Optional[str]
+    num_of_active_account: Optional[int] = None
 
     # Only add values that would be sent to create an object using REST call
     def get_dict(self):
-        return {
+        result =  {
             "product_code": self.product_code,
             "product_name": self.product_name,
             "profile_type": self.profile_type,
@@ -61,11 +64,24 @@ class ProductRequestDTO:
             "product_type": self.product_type,
             "currency": self.currency,
             "country": self.country,
-            "balance_policy_limit": self.balance_policy_limit,
-            "balance_policy_type": self.balance_policy_type,
             "is_overdraft_allowed": self.is_overdraft_allowed,
             "account_type": self.account_type,
             "provider_id": self.provider_id,
+        }
+        if self.num_of_active_account:
+            result["num_of_active_account"] = self.num_of_active_account
+        return result
+
+
+@dataclasses.dataclass
+class CashAccountRequestDTO:
+    cash_account_product_id: str
+    end_customer_profile_id: Optional[str] = ""
+
+    def get_dict(self):
+        return {
+            "cash_account_product_id": self.cash_account_product_id,
+            "end_customer_profile_id": self.end_customer_profile_id,
         }
 
 
@@ -128,6 +144,7 @@ class CreateEndCustomerProfileAccountDTO:
     is_overdraft_allowed: Optional[bool]
     on_behalf_of: Optional[str]
     metadata: Optional[dict]
+    cash_account_id: Optional[str] = ""
 
     # Only add values that would be sent to create object using REST call
     def get_dict(self):
@@ -143,6 +160,7 @@ class CreateEndCustomerProfileAccountDTO:
             "is_overdraft_allowed": self.is_overdraft_allowed,
             "on_behalf_of": self.on_behalf_of,
             "metadata": self.metadata,
+            "cash_account_id": self.cash_account_id
         }
 
 
@@ -723,6 +741,9 @@ class IntegerRange:
 @dataclasses.dataclass
 class Integer:
     value: int
+
+    def to_dict(self):
+        return {"value": self.value}
 
 
 @dataclasses.dataclass

@@ -34,13 +34,18 @@ product_urls = {
     'approve': cms_base_url + '/product/$product_id$/activate',
     'get_details': cms_base_url + '/product/$product_id$',
     'get_products_for_customer_profile': cms_base_url + '/product',
-    'update':cms_base_url+'/product/$product_id$'
+    'update': cms_base_url + '/product/$product_id$'
 }
 
 credit_account_urls = {
     'create': cms_base_url + '/credit-account',
     'get_details': cms_base_url + '/credit-account/$account_id$',
     'balance': cms_base_url + '/credit-account/$account_id$/balance',
+}
+
+txn_urls = {
+    'create': cms_base_url + '/transaction',
+    'get': cms_base_url + '/transaction/$transaction_id$'
 }
 
 card_txn_urls = {
@@ -74,51 +79,92 @@ demo_urls = {
     "get_fund_accounts": cms_base_url + '/customer-profile/fund-accounts'
 }
 
+TRANSACTION_RECEIVER_GROUPS = {
+    "create_receiver_group": {
+        "account_holder_name": "HUGOHUB",
+        "country": "SGP",
+        "currency": "SGD",
+        "bank_name": "DBS Bank Ltd",
+        "code_details": {
+            "sg_bank_details": {
+                "swift_bic": "DBSSSGSGXXX",
+                "account_number": "88532699918100558"
+            }
+        }
+    },
+    "empty_code_details": {
+        "account_holder_name": "HUGOHUB",
+        "country": "IND",
+        "currency": "INR",
+        "bank_name": "DBS Bank Ltd",
+    },
+    "empty_receiver_details": {}
+}
+
 PRODUCT_PARAMS = {
     "normal_case_params_group": [
-        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 42}}},
+        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE",
+         "value": {"double_range_value": {"value": 42}}},
         {"param_name": "BILLING_DATE", "data_type": "INTEGER_RANGE", "value": {"integer_range_value": {"value": 1}}},
-        {"param_name": "BILLING_FREQUENCY", "data_type": "STRING_LIST", "value": {"string_list_value": {"value": "MONTHLY"}}},
+        {"param_name": "BILLING_FREQUENCY", "data_type": "STRING_LIST",
+         "value": {"string_list_value": {"value": "MONTHLY"}}},
         {"param_name": "CAN_ATTACH_CARD", "data_type": "BOOLEAN", "value": {"boolean_value": {"value": True}}},
         {"param_name": "GRACE_PERIOD", "data_type": "INTEGER_RANGE", "value": {"integer_range_value": {"value": 14}}},
-        {"param_name": "CREDIT_LIMIT_RANGE", "data_type": "RANGE_INTEGERS", "value": {"range_integers_value": {"min_value": "1", "max_value": "100000000"}}},
-        {"param_name": "MIN_AMOUNT_DUE_PERCENTAGE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 10}}},
+        {"param_name": "CREDIT_LIMIT_RANGE", "data_type": "RANGE_INTEGERS",
+         "value": {"range_integers_value": {"min_value": "1", "max_value": "100000000"}}},
+        {"param_name": "MIN_AMOUNT_DUE_PERCENTAGE", "data_type": "DOUBLE_RANGE",
+         "value": {"double_range_value": {"value": 10}}},
         {"param_name": "CURRENCY", "data_type": "STRING_LIST", "value": {"string_list_value": {"value": "SGD"}}},
         {"param_name": "COUNTRY", "data_type": "STRING_LIST", "value": {"string_list_value": {"value": "SGP"}}},
     ],
     "update_params_group": [
-        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 45}}},
+        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE",
+         "value": {"double_range_value": {"value": 45}}},
         {"param_name": "BILLING_DATE", "data_type": "INTEGER_RANGE", "value": {"integer_range_value": {"value": 1}}},
-        {"param_name": "BILLING_FREQUENCY", "data_type": "STRING_LIST", "value": {"string_list_value": {"value": "MONTHLY"}}},
+        {"param_name": "BILLING_FREQUENCY", "data_type": "STRING_LIST",
+         "value": {"string_list_value": {"value": "MONTHLY"}}},
         {"param_name": "CAN_ATTACH_CARD", "data_type": "BOOLEAN", "value": {"boolean_value": {"value": False}}},
         {"param_name": "GRACE_PERIOD", "data_type": "INTEGER_RANGE", "value": {"integer_range_value": {"value": 14}}},
-        {"param_name": "CREDIT_LIMIT_RANGE", "data_type": "RANGE_INTEGERS", "value": {"range_integers_value": {"min_value": "10", "max_value": "100000000"}}},
-        {"param_name": "MIN_AMOUNT_DUE_PERCENTAGE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 14}}},
+        {"param_name": "CREDIT_LIMIT_RANGE", "data_type": "RANGE_INTEGERS",
+         "value": {"range_integers_value": {"min_value": "10", "max_value": "100000000"}}},
+        {"param_name": "MIN_AMOUNT_DUE_PERCENTAGE", "data_type": "DOUBLE_RANGE",
+         "value": {"double_range_value": {"value": 14}}},
     ],
-    "invalid_billing_date":[
-        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 42}}},
+    "invalid_billing_date": [
+        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE",
+         "value": {"double_range_value": {"value": 42}}},
         {"param_name": "BILLING_DATE", "data_type": "INTEGER_RANGE", "value": {"integer_range_value": {"value": 22}}},
     ],
-    "invalid_annual_percentage_rate":[
-        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 2000}}},
+    "invalid_annual_percentage_rate": [
+        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE",
+         "value": {"double_range_value": {"value": 2000}}},
     ],
-    "invalid_billing_frequency":[
-        {"param_name": "BILLING_FREQUENCY", "data_type": "STRING_LIST", "value": {"string_list_value": {"value": "wrong"}}},
+    "invalid_billing_frequency": [
+        {"param_name": "BILLING_FREQUENCY", "data_type": "STRING_LIST",
+         "value": {"string_list_value": {"value": "wrong"}}},
     ],
-    "missing_min_or_max_value_for_range_integers":[
-        {"param_name": "CREDIT_LIMIT_RANGE", "data_type": "RANGE_INTEGERS", "value": {"range_integers_value": {"min_value": "1"}}},
+    "missing_min_or_max_value_for_range_integers": [
+        {"param_name": "CREDIT_LIMIT_RANGE", "data_type": "RANGE_INTEGERS",
+         "value": {"range_integers_value": {"min_value": "1"}}},
     ],
-    "empty_string_list":[
+    "empty_string_list": [
         {"param_name": "COUNTRY", "data_type": "STRING_LIST", "value": {"string_list_value": {}}},
     ],
-    "insufficient_detail":[
-        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE", "value": {"double_range_value": {"value": 42}}},
+    "insufficient_detail": [
+        {"param_name": "ANNUAL_PERCENTAGE_RATE", "data_type": "DOUBLE_RANGE",
+         "value": {"double_range_value": {"value": 42}}},
         {"param_name": "BILLING_DATE", "data_type": "INTEGER_RANGE", "value": {"integer_range_value": {"value": 1}}},
     ]
 }
 
+
+def get_txn_receiver_group(receiver_group):
+    return TRANSACTION_RECEIVER_GROUPS[receiver_group]
+
+
 def get_product_params(param_group):
     return PRODUCT_PARAMS[param_group]
+
 
 def get_headers(customer_profile_id, origin="CUSTOMER"):
     headers = {

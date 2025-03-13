@@ -1,6 +1,6 @@
-from typing import Optional
 import dataclasses
 from datetime import datetime
+from typing import Optional
 
 
 @dataclasses.dataclass
@@ -29,7 +29,8 @@ class ProductDTO:
     profile_type: Optional[str]
     product_category: Optional[str]
     description: Optional[str]
-    param_group:Optional[str]
+    param_group: Optional[str]
+
     def get_dict(self, product_code):
         return {
             "product_id": self.product_id,
@@ -40,19 +41,21 @@ class ProductDTO:
             "product_class": self.product_class,
             "profile_type": self.profile_type,
             "product_category": self.product_category,
-            "param_group":self.param_group,
+            "param_group": self.param_group,
         }
 
 
 @dataclasses.dataclass
 class ProductIdDTO:
     product_id: Optional[str]
-    expected_status_code:Optional[str]
+    expected_status_code: Optional[str]
+
     def get_dict(self):
         return {
             "product_id": self.product_id,
-            "status_code":self.expected_status_code
+            "status_code": self.expected_status_code
         }
+
 
 @dataclasses.dataclass
 class UpdateProductDTO:
@@ -67,6 +70,7 @@ class UpdateProductDTO:
 
     def get_dict(self):
         return {k: v for k, v in self.__dict__.items() if v is not None}
+
 
 @dataclasses.dataclass
 class CreateAccountRequestDTO:
@@ -258,4 +262,22 @@ class DevTransaction:
             "txn_code": self.txn_code,
             "amount": self.amount,
             "category": 1,
+        }
+
+
+@dataclasses.dataclass
+class TransactionRequestDTO:
+    credit_account_id: str
+    amount: float
+    txn_code: str
+    currency: str
+    receiver: Optional[str]
+
+    def get_dict(self, receiver, account_id):
+        return {
+            "credit_account_id": account_id,
+            "amount": self.amount,
+            "txn_code": self.txn_code,
+            "currency": self.currency,
+            "receiver": receiver
         }

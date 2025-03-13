@@ -1,10 +1,11 @@
 import test.api.aggregate.cms.credit_account_steps
 import test.api.aggregate.cms.customer_profile_steps
 import test.api.aggregate.cms.end_customer_profile_steps
-import test.api.aggregate.cms.transaction_steps
+import test.api.aggregate.cms.card_transaction_steps
 import test.api.aggregate.cms.product_steps
 import test.api.aggregate.cms.fund_account_steps
 import test.api.aggregate.cms.demo_steps
 import test.api.aggregate.profile.customer_profile_steps
 import test.api.aggregate.profile.customer_steps
 import test.api.aggregate.profile.end_customer_profile_steps
+import test.api.aggregate.cms.transaction_steps

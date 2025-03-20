@@ -115,7 +115,7 @@ class RemapTransactionDTO:
     source: str
     mapped_cb_code: str
     mapped_gl_code: str
-    booking_ts: str
+    value_ts: str
     status_code: str
 
     # Only add values that would be sent to create object using REST call
@@ -126,7 +126,7 @@ class RemapTransactionDTO:
             "source": self.source,
             "mapped_cb_code": self.mapped_cb_code,
             "mapped_gl_code": self.mapped_gl_code,
-            "booking_ts": self.booking_ts,
+            "value_ts": self.value_ts,
         }
 
 
@@ -186,13 +186,13 @@ class CoAFinancialEntryDTO:
 class TransactionCodeDTO:
     customer_profile_id: str
     transaction_code: str
-    coa_transaction_code: str
+    iso_code: str
     description: str
     status_code: str
 
     def get_dict(self):
         return {
             "transaction_code": self.transaction_code,
-            "coa_transaction_code": self.coa_transaction_code,
+            "iso_code": self.iso_code,
             "description": self.description
         }

@@ -6,7 +6,7 @@ from test.api.aggregate.card.card_helper import (
     get_currency_precision,
     is_valid_fp_tx_id,
     is_valid_uuid,
-    round_down,
+    round_down, convert_time_expression_to_offset, is_second_ts_smaller,
 )
 
 
@@ -85,8 +85,12 @@ class DynamicDataStreamResponseDTO:
     cardholder_billing_currency_code: Optional[str]
     transaction_currency: Optional[str]
     cardholder_billing_currency: Optional[str]
+    auto_clearing_ts: Optional[str]
+    auto_cleared_ts: Optional[str]
     response_code: Optional[str]
     response_reason: Optional[str]
+    status_code: Optional[str]
+    status_reason: Optional[str]
     is_empty_service_tx_id: Optional[bool]
     error_code: Optional[str]
     case_type: str
@@ -728,6 +732,9 @@ class DynamicDataStreamDTO:
     source: Optional[str]
     transmission_ts: Optional[str]
     transaction_local_ts: Optional[str]
+    auto_clearing_ts: Optional[str]
+    auto_cleared_ts: Optional[str]
+    create_ts: Optional[str]
 
     def get_dict(self):
         request_dict = {
@@ -839,6 +846,14 @@ class DynamicDataStreamDTO:
         if self.clearing != actual_dto.clearing:
             return False
 
+        if self.auto_clearing_ts is not None:
+            auto_clearing_ts = datetime.strptime(actual_dto.auto_clearing_ts, "%Y-%m-%dT%H:%M:%S.%fZ")
+            create_ts = datetime.strptime(actual_dto.create_ts, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+            offset = convert_time_expression_to_offset(self.auto_clearing_ts)
+            if not is_second_ts_smaller(auto_clearing_ts, create_ts + offset):
+                return False
+
         expected_customer_id = '' if self.__is_clearing() else self.customer.customer_id
         expected_card_id = (
             ('UNKNOWN_CARD_ID' if self.clearing.card_id is None else self.clearing.card_id)
@@ -942,8 +957,9 @@ class NymcardTransactionDTO:
     interchange_fee: Optional[float]
     interchange_fee_indicator: Optional[str]
 
-    clearing_ts: Optional[str]
-    cleared_ts: Optional[str]
+    auto_clearing_ts: Optional[str]
+    auto_cleared_ts: Optional[str]
+    processing_status_reason: Optional[str]
 
     status_code: Optional[str]
     status_description: Optional[str]
@@ -1004,8 +1020,6 @@ class NymcardTransactionDTO:
             "three_DS_indicator": self.three_DS_indicator,
             "interchange_fee": self.interchange_fee,
             "interchange_fee_indicator": self.interchange_fee_indicator,
-            "clearing_ts": self.clearing_ts,
-            "cleared_ts": self.cleared_ts,
             "status_code": self.status_code,
             "status_description": self.status_description,
             "create_ts": self.create_ts,
@@ -1030,15 +1044,6 @@ class NymcardTransactionDTO:
 
         return performed_operation_type_mapping.get(self.performed_operation_type)
 
-    def __check_clearing_ts(self, actual_ts):
-        clearing_ts_obj = datetime.strptime(actual_ts.clearing_ts, "%Y-%m-%dT%H:%M:%S.%fZ")
-        create_ts_ts_obj = datetime.strptime(actual_ts.create_ts, "%Y-%m-%dT%H:%M:%S.%fZ")
-
-        if self.clearing_ts.startswith("T+"):
-            return clearing_ts_obj >= create_ts_ts_obj + timedelta(minutes=30)
-        else:
-            return clearing_ts_obj >= create_ts_ts_obj
-
     def __get_parsed_interchange_fee_indicator(self):
         interchange_fee_indicator_mapping = {
             "D": "DEBIT_INTERCHANGE_FEE",
@@ -1062,10 +1067,13 @@ class NymcardTransactionDTO:
         ):
             return False
 
-        if self.clearing_ts is not None and not self.__check_clearing_ts(
-            actual_nymcard_transaction
-        ):
-            return False
+        if self.auto_clearing_ts is not None:
+            auto_clearing_ts_obj = datetime.strptime(actual_nymcard_transaction.auto_clearing_ts, "%Y-%m-%dT%H:%M:%S.%fZ")
+            create_ts_ts_obj = datetime.strptime(actual_nymcard_transaction.create_ts, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+            offset = convert_time_expression_to_offset(self.auto_clearing_ts)
+            if not is_second_ts_smaller(auto_clearing_ts_obj, create_ts_ts_obj + offset):
+                return False
 
         parsed_interchange_fee_indicator = self.__get_parsed_interchange_fee_indicator()
         if actual_nymcard_transaction.interchange_fee_indicator != parsed_interchange_fee_indicator:
@@ -1120,7 +1128,7 @@ class NymcardTransactionDTO:
             and actual_nymcard_transaction.processing_code == self.processing_code
             and actual_nymcard_transaction.three_DS_indicator == self.three_DS_indicator
             and actual_nymcard_transaction.interchange_fee == self.interchange_fee
-            and actual_nymcard_transaction.cleared_ts == self.cleared_ts
+            and actual_nymcard_transaction.auto_cleared_ts == self.auto_cleared_ts
         )
 
 
@@ -1270,7 +1278,7 @@ class TransactionLogDetailDTO:
     tx_currency_code: Optional[str]
     billing_currency_code: Optional[str]
     conversion_rate: Optional[str]
-    cleared_ts: Optional[str]
+    auto_cleared_ts: Optional[str]
     # Transaction statuses
     transaction_type: Optional[str]
     transaction_status: Optional[str]
@@ -1304,8 +1312,8 @@ class TransactionLogDetailDTO:
         if not isinstance(actual_dto, self.__class__):
             return False
 
-        if self.cleared_ts is not None and datetime.fromisoformat(
-            actual_dto.cleared_ts[:-1] + '+00:00'
+        if self.auto_cleared_ts is not None and datetime.fromisoformat(
+            actual_dto.auto_cleared_ts[:-1] + '+00:00'
         ):
             return False
 

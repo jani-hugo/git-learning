@@ -17,6 +17,7 @@ from aggregate.card.card_dataclass import (
 from behave import *
 from common.utils import DataClassParser
 from retry import retry
+from datetime import datetime, timezone
 
 use_step_matcher("re")
 
@@ -338,6 +339,11 @@ def initiate_transaction(context):
         context.data["card_transactions"] if "card_transactions" in context.data else {}
     )
     for expected_dds_response_dto in dds_response_dtos:
+        if expected_dds_response_dto.auto_clearing_ts is not None:
+            context.data["dynamic_data_streams"][expected_dds_response_dto.transaction_identifier].auto_clearing_ts = (
+                expected_dds_response_dto.auto_clearing_ts
+            )
+
         expected_dds_dto = context.data["dynamic_data_streams"][
             expected_dds_response_dto.transaction_identifier
         ]
@@ -571,6 +577,197 @@ def validate_transaction_log_details(context):
         retry_transaction_log_detail_assert_fail(expected_tx_log_detail)
         # TODO @Abhishek
 
+@Then("I update DDS Transaction auto clearing ts to current ts manually and trigger the auto clearing process for DDS Transactions")
+def update_auto_clearing_ts(context):
+    request = context.request
+    dds_response_dtos = DataClassParser.parse_rows(
+        context.table.rows, data_class=DynamicDataStreamResponseDTO
+    )
+
+    card_transactions = (
+        context.data["card_transactions"] if "card_transactions" in context.data else {}
+    )
+    for expected_dds_response_dto in dds_response_dtos:
+        transaction_identifier = expected_dds_response_dto.transaction_identifier
+
+        clowd9_transaction_id = card_transactions[transaction_identifier]['clowd9_transaction_id']
+
+        # Get the current UTC time
+        now = datetime.now(timezone.utc)
+
+        timestamp_json = now.strftime('%Y-%m-%dT%H:%M:%S.%fZ')[:-4] + 'Z'
+
+        timestamp_request_dto = {
+            "timestamp": timestamp_json
+        }
+        actual_clowd9_auto_clear_update_response = request.hugoserve_put_request(
+            path=f"/card/v1/dev/clowd9/dds/{clowd9_transaction_id}/update-auto-clearing-ts",
+            data=timestamp_request_dto,
+        )
+
+        assert actual_clowd9_auto_clear_update_response['headers']['status_code'] == expected_dds_response_dto.status_code, (
+            f"[TraceId: {actual_clowd9_auto_clear_update_response['headers']['trace_id']}]\n"
+            f"Expect status_code: {expected_dds_response_dto.status_code}\n"
+            f"Actual status_code: {actual_clowd9_auto_clear_update_response['headers']['status_code']}"
+        )
+
+    initiate_auto_clearing_response = request.hugoserve_post_request(
+        path=f"/card/v1/admin/clowd9/initiate-auto-clearing"
+    )
+
+    assert  initiate_auto_clearing_response['headers']['status_code'] == "200", (
+        f"[TraceId: {initiate_auto_clearing_response['headers']['trace_id']}]\n"
+        f"Expect status_code: 200\n"
+        f"Actual status_code: {initiate_auto_clearing_response['headers']['status_code']}"
+    )
+
+@Then("I validate DynamicDataStream entry after auto clearing process")
+def validate_clowd9_transaction_post_auto_clearing(context):
+    request = context.request
+    dds_response_dtos = DataClassParser.parse_rows(
+        context.table.rows, data_class=DynamicDataStreamResponseDTO
+    )
+
+    card_transactions = (
+        context.data["card_transactions"] if "card_transactions" in context.data else {}
+    )
+    for expected_dds_response_dto in dds_response_dtos:
+        transaction_identifier = expected_dds_response_dto.transaction_identifier
+
+        clowd9_transaction_id = card_transactions[transaction_identifier]["clowd9_transaction_id"]
+
+        response = request.hugoserve_get_request(
+            path=f"/card/v1/dev/clowd9/dds/{clowd9_transaction_id}"
+        )
+
+        assert response['data']['auto_cleared_ts'] is not None, (
+            "Expected: Auto cleared ts to be not None\n"
+            "Actual: Auto cleared ts is None"
+        )
+
+        assert response['data']['status_reason'] == expected_dds_response_dto.status_reason, (
+            f"[TraceId: {response['headers']['trace_id']}]\n"
+            f"Expected status_reason: {expected_dds_response_dto.status_reason}\n"
+            f"Actual status_reason: {response['data']['status_reason']}"
+        )
+
+@Then("I validate authorization TransactionLog entry for the performed DDS Transaction auto clearing")
+def validate_auth_transaction_log_auto_clear(context):
+    request = context.request
+    transaction_logs_dto = DataClassParser.parse_rows(
+        context.table.rows, data_class=TransactionLogDTO
+    )
+
+    dds_transactions = context.data["dynamic_data_streams"]
+    card_transactions = (context.data["card_transactions"] if "card_transactions" in context.data else {})
+
+    for expected_tx_log in transaction_logs_dto:
+        transaction_identifier = expected_tx_log.transaction_identifier
+
+        dds_transaction = dds_transactions[transaction_identifier]
+        service_transaction_id = card_transactions[transaction_identifier][
+            "service_transaction_id"
+        ]
+
+        expected_tx_log.transaction_id = service_transaction_id
+        expected_tx_log.card_id = (
+            dds_transaction.clearing.card_id if dds_transaction.message_type == 'clearing' else dds_transaction.card.card_id
+        )
+
+        txn_check_max_wait_time = card_helper.card_providers_config["Clowd9"][
+            "txn_check_max_wait_time"
+        ]
+
+        @retry(AssertionError, tries=txn_check_max_wait_time / 5, delay=5, logger=None)
+        def retry_transaction_log_assert_fail(expected_tx_log_dto: TransactionLogDTO):
+            response = request.hugoserve_get_request(
+                path=f"/card/v1/dev/transaction/{service_transaction_id}"
+            )
+
+            assert "data" in response, (
+                f"[Response: {response}] [ServiceTransactionId: {service_transaction_id}]\n"
+                f"Expect transaction in response\n"
+                f"Actual transaction not found in response"
+            )
+
+            actual_tx_log_dto = DataClassParser.parse_row(
+                response["data"], data_class=TransactionLogDTO
+            )
+
+            expected_tx_log_dto = TransactionLogDTO.sanitize_transaction_log(
+                expected_tx_log_dto
+            )
+
+            expected_tx_log_dto.linked_transaction_ids = actual_tx_log_dto.linked_transaction_ids
+            context.data['card_transactions'][transaction_identifier]['linked_transaction_id'] = (
+                actual_tx_log_dto.linked_transaction_ids[2:-2]
+            )
+
+            assert expected_tx_log_dto == actual_tx_log_dto, (
+                f"[TraceId: {response['headers']['trace_id']}]\n"
+                f"Expect TransactionLog: {expected_tx_log_dto}\n"
+                f"Actual TransactionLog: {actual_tx_log_dto}"
+            )
+
+        retry_transaction_log_assert_fail(expected_tx_log)
+
+@Then("I validate clearing TransactionLog entry for the performed DDS Transaction auto clearing")
+def validate_clear_transaction_log_auto_clear(context):
+    request = context.request
+    clear_transaction_logs_dto = DataClassParser.parse_rows(
+        context.table.rows, data_class=TransactionLogDTO
+    )
+
+    dds_transactions = context.data["dynamic_data_streams"]
+    card_transactions = (context.data["card_transactions"] if "card_transactions" in context.data else {})
+
+    for expected_clear_transaction_log in clear_transaction_logs_dto:
+        transaction_identifier = expected_clear_transaction_log.transaction_identifier
+
+        dds_transaction = dds_transactions[transaction_identifier]
+        linked_service_transaction_id = card_transactions[transaction_identifier][
+            "linked_transaction_id"
+        ]
+
+        expected_clear_transaction_log.transaction_id = linked_service_transaction_id
+        expected_clear_transaction_log.card_id = (
+            dds_transaction.clearing.card_id if dds_transaction.message_type == 'clearing' else dds_transaction.card.card_id
+        )
+        expected_clear_transaction_log.linked_transaction_ids = f"""['{(
+            card_transactions[transaction_identifier]['service_transaction_id']
+        )}']"""
+
+        txn_check_max_wait_time = card_helper.card_providers_config["Clowd9"][
+            "txn_check_max_wait_time"
+        ]
+
+        @retry(AssertionError, tries=txn_check_max_wait_time / 5, delay=5, logger=None)
+        def retry_transaction_log_assert_fail(expected_tx_log_dto: TransactionLogDTO):
+            response = request.hugoserve_get_request(
+                path=f"/card/v1/dev/transaction/{linked_service_transaction_id}"
+            )
+
+            assert "data" in response, (
+                f"[Response: {response}] [ServiceTransactionId: {linked_service_transaction_id}]\n"
+                f"Expect transaction in response\n"
+                f"Actual transaction not found in response"
+            )
+
+            actual_tx_log_dto = DataClassParser.parse_row(
+                response["data"], data_class=TransactionLogDTO
+            )
+
+            expected_tx_log_dto = TransactionLogDTO.sanitize_transaction_log(
+                expected_tx_log_dto
+            )
+
+            assert expected_tx_log_dto == actual_tx_log_dto, (
+                f"[TraceId: {response['headers']['trace_id']}]\n"
+                f"Expect TransactionLog: {expected_tx_log_dto}\n"
+                f"Actual TransactionLog: {actual_tx_log_dto}"
+            )
+
+        retry_transaction_log_assert_fail(expected_clear_transaction_log)
 
 def __assert_dds_response_dto(
     expected_dds_dto, expected_dds_response_dto, actual_dds_response_dto

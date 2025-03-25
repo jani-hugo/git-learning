@@ -10,6 +10,7 @@ from test.api.aggregate.card.card_dataclass import (
     TransactionLogDTO,
     TransactionLogDetailDTO,
 )
+from datetime import datetime, timezone
 
 use_step_matcher("re")
 
@@ -153,9 +154,9 @@ def initiate_nymcard_transactions(context):
     for expected_nymcard_txn_response in expected_nymcard_txn_responses:
         transaction_identifier = expected_nymcard_txn_response.transaction_identifier
 
-        if expected_nymcard_txn_response.clearing_ts is not None:
+        if expected_nymcard_txn_response.auto_clearing_ts is not None:
             context.data["nymcard_transactions"][
-                transaction_identifier].clearing_ts = expected_nymcard_txn_response.clearing_ts
+                transaction_identifier].auto_clearing_ts = expected_nymcard_txn_response.auto_clearing_ts
 
         expected_nymcard_transaction = context.data["nymcard_transactions"][
             transaction_identifier
@@ -377,6 +378,191 @@ def validate_transaction_log_detail(context):
 
         retry_transaction_log_detail_assert_fail(expected_tx_log_detail)
 
+@Then("I update Nymcard Transaction auto clearing ts to current ts manually and trigger the auto clearing process for Nymcard Transactions")
+def update_auto_clearing_ts(context):
+    request = context.request
+    expected_nymcard_auto_clear_update_responses = DataClassParser.parse_rows(
+        context.table.rows, data_class=NymcardTransactionDTO
+    )
+
+    card_transactions = (context.data['card_transactions'] if 'card_transactions' in context.data else {})
+
+    for expected_nymcard_auto_clear_update_response in expected_nymcard_auto_clear_update_responses:
+        transaction_identifier = expected_nymcard_auto_clear_update_response.transaction_identifier
+
+        nymcard_transaction_id = card_transactions[transaction_identifier]['nymcard_transaction_id']
+
+        # Get the current UTC time
+        now = datetime.now(timezone.utc)
+
+        timestamp_json = now.strftime('%Y-%m-%dT%H:%M:%S.%fZ')[:-4] + 'Z'
+
+        timestamp_request_dto = {
+            "timestamp": timestamp_json
+        }
+        actual_nymcard_auto_clear_update_response = request.hugoserve_put_request(
+            path=f"/card/v1/dev/nymcard/transaction/{nymcard_transaction_id}/update-auto-clearing-ts",
+            data=timestamp_request_dto,
+        )
+
+        assert actual_nymcard_auto_clear_update_response['headers']['status_code'] == expected_nymcard_auto_clear_update_response.status_code, (
+            f"[TraceId: {actual_nymcard_auto_clear_update_response['headers']['trace_id']}]\n"
+            f"Expect status_code: {expected_nymcard_auto_clear_update_response.status_code}\n"
+            f"Actual status_code: {actual_nymcard_auto_clear_update_response['headers']['status_code']}"
+        )
+
+    initiate_auto_clearing_response = request.hugoserve_post_request(
+        path=f"/card/v1/admin/nymcard/initiate-auto-clearing"
+    )
+
+    assert  initiate_auto_clearing_response['headers']['status_code'] == "200", (
+        f"[TraceId: {initiate_auto_clearing_response['headers']['trace_id']}]\n"
+        f"Expect status_code: 200\n"
+        f"Actual status_code: {initiate_auto_clearing_response['headers']['status_code']}"
+    )
+
+@Then("I validate NymcardTransaction entry after auto clearing process")
+def validate_nymcard_transaction_post_auto_clearing(context):
+    request = context.request
+    expected_nymcard_transaction_responses = DataClassParser.parse_rows(
+        context.table.rows, data_class=NymcardTransactionDTO
+    )
+
+    card_transactions = (context.data["card_transactions"] if "card_transactions" in context.data else {})
+
+    for expected_nymcard_transaction_response in expected_nymcard_transaction_responses:
+        transaction_identifier = expected_nymcard_transaction_response.transaction_identifier
+
+        nymcard_transaction_id = card_transactions[transaction_identifier]["nymcard_transaction_id"]
+
+        response = request.hugoserve_get_request(
+            path=f"/card/v1/dev/nymcard/transaction/{nymcard_transaction_id}"
+        )
+
+        assert response['data']['auto_cleared_ts'] is not None, (
+            "Expected: Auto cleared ts to be not None\n"
+            "Actual: Auto cleared ts is None"
+        )
+
+        assert response['data']['processing_status_reason'] == expected_nymcard_transaction_response.processing_status_reason, (
+            f"[TraceId: {response['headers']['trace_id']}]\n"
+            f"Expected processing_status_reason: {expected_nymcard_transaction_response.processing_status_reason}\n"
+            f"Actual processing_status_reason: {response['data']['processing_status_reason']}"
+        )
+
+@Then("I validate authorization TransactionLog entry for the performed Nymcard Transaction auto clearing")
+def validate_auth_transaction_log_auto_clear(context):
+    request = context.request
+    transaction_logs_dto = DataClassParser.parse_rows(
+        context.table.rows, data_class=TransactionLogDTO
+    )
+
+    nymcard_transactions = context.data["nymcard_transactions"]
+    card_transactions = (context.data["card_transactions"] if "card_transactions" in context.data else {})
+
+    for expected_transaction_log in transaction_logs_dto:
+        transaction_identifier = expected_transaction_log.transaction_identifier
+
+        nymcard_transaction = nymcard_transactions[transaction_identifier]
+        service_transaction_id = card_transactions[transaction_identifier][
+            "service_transaction_id"
+        ]
+
+        expected_transaction_log.transaction_id = service_transaction_id
+        expected_transaction_log.card_id = nymcard_transaction.card_id
+
+        txn_check_max_wait_time = card_helper.card_providers_config["Nymcard"][
+            "txn_check_max_wait_time"
+        ]
+
+        @retry(AssertionError, tries=txn_check_max_wait_time / 5, delay=5, logger=None)
+        def retry_transaction_log_assert_fail(expected_tx_log_dto: TransactionLogDTO):
+            response = request.hugoserve_get_request(
+                path=f"/card/v1/dev/transaction/{service_transaction_id}"
+            )
+
+            assert "data" in response, (
+                f"[Response: {response}] [ServiceTransactionId: {service_transaction_id}]\n"
+                f"Expect transaction in response\n"
+                f"Actual transaction not found in response"
+            )
+
+            actual_tx_log_dto = DataClassParser.parse_row(
+                response["data"], data_class=TransactionLogDTO
+            )
+
+            expected_tx_log_dto = TransactionLogDTO.sanitize_transaction_log(
+                expected_tx_log_dto
+            )
+
+            expected_tx_log_dto.linked_transaction_ids = actual_tx_log_dto.linked_transaction_ids
+            context.data['card_transactions'][transaction_identifier]['linked_transaction_id'] = (
+                actual_tx_log_dto.linked_transaction_ids[2:-2]
+            )
+
+            assert expected_tx_log_dto == actual_tx_log_dto, (
+                f"[TraceId: {response['headers']['trace_id']}]\n"
+                f"Expect TransactionLog: {expected_tx_log_dto}\n"
+                f"Actual TransactionLog: {actual_tx_log_dto}"
+            )
+
+        retry_transaction_log_assert_fail(expected_transaction_log)
+
+@Then("I validate clearing TransactionLog entry for the performed Nymcard Transaction auto clearing")
+def validate_clear_transaction_log_auto_clear(context):
+    request = context.request
+    clear_transaction_logs_dto = DataClassParser.parse_rows(
+        context.table.rows, data_class=TransactionLogDTO
+    )
+
+    nymcard_transactions = context.data["nymcard_transactions"]
+    card_transactions = (context.data["card_transactions"] if "card_transactions" in context.data else {})
+
+    for expected_clear_transaction_log in clear_transaction_logs_dto:
+        transaction_identifier = expected_clear_transaction_log.transaction_identifier
+
+        nymcard_transaction = nymcard_transactions[transaction_identifier]
+        linked_service_transaction_id = card_transactions[transaction_identifier][
+            "linked_transaction_id"
+        ]
+
+        expected_clear_transaction_log.transaction_id = linked_service_transaction_id
+        expected_clear_transaction_log.card_id = nymcard_transaction.card_id
+        expected_clear_transaction_log.linked_transaction_ids = f"""['{(
+            card_transactions[transaction_identifier]['service_transaction_id']
+        )}']"""
+
+        txn_check_max_wait_time = card_helper.card_providers_config["Nymcard"][
+            "txn_check_max_wait_time"
+        ]
+
+        @retry(AssertionError, tries=txn_check_max_wait_time / 5, delay=5, logger=None)
+        def retry_transaction_log_assert_fail(expected_tx_log_dto: TransactionLogDTO):
+            response = request.hugoserve_get_request(
+                path=f"/card/v1/dev/transaction/{linked_service_transaction_id}"
+            )
+
+            assert "data" in response, (
+                f"[Response: {response}] [ServiceTransactionId: {linked_service_transaction_id}]\n"
+                f"Expect transaction in response\n"
+                f"Actual transaction not found in response"
+            )
+
+            actual_tx_log_dto = DataClassParser.parse_row(
+                response["data"], data_class=TransactionLogDTO
+            )
+
+            expected_tx_log_dto = TransactionLogDTO.sanitize_transaction_log(
+                expected_tx_log_dto
+            )
+
+            assert expected_tx_log_dto == actual_tx_log_dto, (
+                f"[TraceId: {response['headers']['trace_id']}]\n"
+                f"Expect TransactionLog: {expected_tx_log_dto}\n"
+                f"Actual TransactionLog: {actual_tx_log_dto}"
+            )
+
+        retry_transaction_log_assert_fail(expected_clear_transaction_log)
 
 def __assert_nymcard_transaction_response(actual_response, expected_response, request_dto):
     assert actual_response["statusCode"] == expected_response.status_code, (
@@ -591,10 +777,10 @@ def __parse_nymcard_transaction_to_dto(actual_nymcard_transaction):
         ['data', 'clearing',
          'interchange_fee_indicator'])
 
-    actual_nymcard_transaction_dto.clearing_ts = __fetch_key_from_map(actual_nymcard_transaction,
-                                                                      ['data', 'clearing_ts'])
-    actual_nymcard_transaction_dto.cleared_ts = __fetch_key_from_map(actual_nymcard_transaction,
-                                                                     ['data', 'cleared_ts'])
+    actual_nymcard_transaction_dto.auto_clearing_ts = __fetch_key_from_map(actual_nymcard_transaction,
+                                                                      ['data', 'auto_clearing_ts'])
+    actual_nymcard_transaction_dto.auto_cleared_ts = __fetch_key_from_map(actual_nymcard_transaction,
+                                                                     ['data', 'auto_cleared_ts'])
 
     actual_nymcard_transaction_dto.create_ts = __fetch_key_from_map(actual_nymcard_transaction,
                                                                     ['data', 'create_ts'])

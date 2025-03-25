@@ -4,7 +4,6 @@ import test.api.aggregate.card.customer_profile_steps
 import test.api.aggregate.card.dds_transaction_steps
 import test.api.aggregate.card.end_customer_profile_steps
 import test.api.aggregate.cash.account_steps
-import test.api.aggregate.cash.beneficiary_steps
 import test.api.aggregate.cash.product_steps
 import test.api.aggregate.cash.customer_end_customer_profile_steps
 import test.api.aggregate.cash.dbs_sg_deposits_steps

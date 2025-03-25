@@ -130,6 +130,65 @@ Feature: Card Transaction test scenarios for provider Clowd9
       | request           | 000           | Approved            | 100                | 100            | 826                       | GBP                  | 702                   | SGD              | GB                         | 900               | 1000          |
       | notification      | 091           | Advice acknowledged | 100                | 100            | 826                       | GBP                  | 702                   | SGD              | GB                         | 900               | 1000          |
 
+  Scenario Outline: Clowd9-Test OCT authorization and auto clearing
+    Given I build below transactions
+      | transaction_identifier | message_type  | message_qualifier   | source |
+      | T1                     | authorization | <message_qualifier> | VISA   |
+
+    Then I set card objects in transaction context
+      | transaction_identifier | card_identifier | card_form_factor | card_status |
+      | T1                     | CardId1         | physical         | active      |
+
+    Then I set customer objects in transaction context
+      | transaction_identifier | customer_identifier |
+      | T1                     | CardAccId1          |
+
+    Then I set transaction objects in transaction context
+      | transaction_identifier | transaction_id | transaction_type | transaction_amount   | transaction_currency_code   | cardholder_billing_amount | cardholder_billing_currency_code | system_trace_audit_number | retrieval_reference_number | network_transaction_id | transaction_local_time | transmission_date | transmission_time | transaction_local_date | dcc_indicator | chip_indicator | pin_indicator | three_ds_indicator | partial_approval_supported | cardholder_condition |
+      | T1                     | TxnId1         | 26               | <transaction_amount> | <transaction_currency_code> | <billing_amount>          | <billing_currency_code>          | STAN1                     | RRN1                       | NT1                    | 192748                 | 1206              | 182751            | 1206                   | n             | contact        | online_passed | n                  | n                          | 00                   |
+
+    Then I set acquirer objects in transaction context
+      | transaction_identifier | card_acceptor_country_code   | acquiring_institution_country_code | acquiring_institution_id_code | merchant_category_code | card_acceptor_terminal_id | card_acceptor_id | card_acceptor_name | card_acceptor_city |
+      | T1                     | <card_acceptor_country_code> | <transaction_currency_code>        | 843759                        | 6011                   | DUMMY_TERMINAL            | NEWBANKMERCHANT  | NEW BANK LIMITED   | Oxford             |
+
+    When I initiate below Dynamic Data Stream transaction requests
+      | transaction_identifier | auto_clearing_ts | message_type  | authorized_tx_amount | transaction_currency_code   | transaction_currency   | cardholder_billing_currency_code | cardholder_billing_currency | response_code   | response_reason   | case_type |
+      | T1                     | T+m15            | authorization | <transaction_amount> | <transaction_currency_code> | <transaction_currency> | <billing_currency_code>          | <billing_currency>          | <response_code> | <response_reason> | positive  |
+
+    Then I update DDS Transaction auto clearing ts to current ts manually and trigger the auto clearing process for DDS Transactions
+      | transaction_identifier | status_code | case_type |
+      | T1                     | 200         | positive  |
+
+    Then I validate DynamicDataStream entry after auto clearing process
+      | transaction_identifier | status_reason                 | case_type |
+      | T1                     | APPROVED: OCT Auto cleared    | positive  |
+
+    Then I wait until max time to verify bank account BankAccId with an available balance of <available_balance> and total balance of <total_balance> for customerProfileId CPID1
+
+    Then I validate authorization TransactionLog entry for the performed DDS Transaction auto clearing
+      | transaction_identifier | bank_transaction_id | transaction_amount | billing_amount | tx_currency_code            | billing_currency_code   | transaction_currency   | billing_currency   | transaction_type | transaction_status | release_auth_ts | release_type     |
+      | T1                     | VALID_UUID          | 0                  | 0              | <transaction_currency_code> | <billing_currency_code> | <transaction_currency> | <billing_currency> | CREDIT_CREATE    | AUTH_CLEARED       | T+30            | SCHEDULED_EXPIRY |
+
+    Then I validate clearing TransactionLog entry for the performed DDS Transaction auto clearing
+      | transaction_identifier | bank_transaction_id | transaction_amount   | billing_amount   | tx_currency_code            | billing_currency_code   | transaction_currency   | billing_currency   | transaction_type | transaction_status | clearing                                                                                                                    |
+      | T1                     | VALID_UUID          | <transaction_amount> | <billing_amount> | <transaction_currency_code> | <billing_currency_code> | <transaction_currency> | <billing_currency> | CREDIT_CLEAR     | CLEARED            | {"interchange_fee": 0.0, "interchange_type": "UNKNOWN_INTERCHANGE_FEE_TYPE", "clearing_outcome": "AUTH_FOUND_AMOUNT_MATCH"} |
+
+    Then I validate below TransactionLog entries
+      | transaction_identifier | idempotency_key | transaction_amount   | billing_amount   | tx_currency_code            | billing_currency_code   | transaction_type | transaction_status |
+      | T1                     | TxnId1          | <transaction_amount> | <billing_amount> | <transaction_currency_code> | <billing_currency_code> | CREDIT_INITIAL   | COMPLETED          |
+
+    Examples:
+      | message_qualifier | response_code | response_reason     | transaction_amount | billing_amount | transaction_currency_code | transaction_currency | billing_currency_code | billing_currency | card_acceptor_country_code | available_balance | total_balance |
+      | request           | 000           | Approved            | 100                | 100            | 702                       | SGD                  | 702                   | SGD              | SG                         | 1100              | 1100          |
+      | notification      | 091           | Advice acknowledged | 100                | 100            | 702                       | SGD                  | 702                   | SGD              | SG                         | 1100              | 1100          |
+      | request           | 000           | Approved            | 10.27              | 10.27          | 702                       | SGD                  | 702                   | SGD              | SG                         | 1010.27           | 1010.27       |
+      | notification      | 091           | Advice acknowledged | 10.27              | 10.27          | 702                       | SGD                  | 702                   | SGD              | SG                         | 1010.27           | 1010.27       |
+      | request           | 000           | Approved            | 1000               | 1000           | 702                       | SGD                  | 702                   | SGD              | SG                         | 2000              | 2000          |
+      | notification      | 091           | Advice acknowledged | 1000               | 1000           | 702                       | SGD                  | 702                   | SGD              | SG                         | 2000              | 2000          |
+      | notification      | 091           | Advice acknowledged | 1000.01            | 1000.01        | 702                       | SGD                  | 702                   | SGD              | SG                         | 2000.01           | 2000.01       |
+      | request           | 000           | Approved            | 100                | 100            | 826                       | GBP                  | 702                   | SGD              | GB                         | 1100              | 1100          |
+      | notification      | 091           | Advice acknowledged | 100                | 100            | 826                       | GBP                  | 702                   | SGD              | GB                         | 1100              | 1100          |
+
   Scenario Outline: Clowd9-Test debit authorization with insufficient funds
     Given I build below transactions
       | transaction_identifier | message_type  | message_qualifier   | source |

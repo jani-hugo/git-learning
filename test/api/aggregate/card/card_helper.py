@@ -1,8 +1,9 @@
 import math
 import random
+import re
 import uuid
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 card_providers_config = {
     "Clowd9": {
@@ -127,3 +128,23 @@ def round_down(number: float, precision: int = 2):
 
     factor = 10**precision
     return math.floor(number * factor) / factor
+
+def convert_time_expression_to_offset(ts_exp: str):
+    minutes = 0
+    seconds = 0
+    if not ts_exp.startswith("T+"):
+        return timedelta(minutes=minutes, seconds=seconds)
+
+    offset_str = ts_exp[2:]  # Remove "T+"
+    minute_match = re.search(r"m(\d+)", offset_str)
+    if minute_match:
+        minutes = int(minute_match.group(1))
+
+    second_match = re.search(r"s(\d+)", offset_str)
+    if second_match:
+        seconds = int(second_match.group(1))
+
+    return timedelta(minutes=minutes, seconds=seconds)
+
+def is_second_ts_smaller(first_ts: datetime, second_ts: datetime):
+    return second_ts < first_ts

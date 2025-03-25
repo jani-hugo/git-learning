@@ -109,6 +109,64 @@ Feature: Card transaction test scenarios for provider Nymcard
       | AUTHORIZATION_ADVICE | PURCHASE         | 4000.99    | JPY          | 1001           | PKR              | 0000        | TRANSACTION_APPROVED | -1                | 1000          |
       | AUTHORIZATION_ADVICE | CASH_WITHDRAWAL  | 7.55       | AUD          | 375.75         | PKR              | 0000        | TRANSACTION_APPROVED | 624.25            | 1000          |
 
+  Scenario Outline: Nymcard Transaction - OCT authorization and auto clearing
+    Given I set the following transaction information
+      | transaction_identifier | network | message_type   | transaction_type   | transaction_description |
+      | T1                     | VISA    | <message_type> | OCT                | OCT                     |
+
+    Then I set card information in the transaction context
+      | transaction_identifier | card_identifier | user_identifier |
+      | T1                     | CardId1         | ECPID1          |
+
+    Then I set merchant information in transaction context
+      | transaction_identifier | acquirer_id | merchant_id | mcc  | merchant_name | merchant_city | merchant_country | terminal_id |
+      | T1                     | 136200      | SCOTIABANK  | 5999 | CAIROO        | CHATTANOOG    | USA              | 99999999    |
+
+    Then I set amount information in transaction context
+      | transaction_identifier | transaction_amount | transaction_currency | billing_amount   | billing_currency   |
+      | T1                     | <txn_amount>       | <txn_currency>       | <billing_amount> | <billing_currency> |
+
+    Then I set the following required indicators in transaction context
+      | transaction_identifier | card_entry   | pos_environment | pin_present | moto  | performed_operation_type | processing_code | three_DS_indicator |
+      | T1                     | PHYSICAL     | E_COMMERCE      | true        | false | C                        | 010000          | true               |
+
+    When I initiate below Nymcard Transaction requests
+      | transaction_identifier | auto_clearing_ts | status_code   | status_description   |
+      | T1                     | T+m1             | <status_code> | <status_description> |
+
+    Then I update Nymcard Transaction auto clearing ts to current ts manually and trigger the auto clearing process for Nymcard Transactions
+      | transaction_identifier | status_code |
+      | T1                     | 200         |
+
+    Then I validate NymcardTransaction entry after auto clearing process
+      | transaction_identifier | processing_status_reason      |
+      | T1                     | APPROVED: Transaction cleared |
+
+    Then I wait until max time to verify bank account BankAccId with an available balance of <available_balance> and total balance of <total_balance> for customerProfileId PKCPID1
+
+    Then I validate authorization TransactionLog entry for the performed Nymcard Transaction auto clearing
+      | transaction_identifier | fp_transaction_id | transaction_amount | billing_amount   | transaction_currency | billing_currency   | transaction_type | transaction_status | release_auth_ts | release_type     |
+      | T1                     | VALID_UUID        | 0                  | 0                | <txn_currency>       | <billing_currency> | CREDIT_CREATE    | AUTH_CLEARED       | T+30            | SCHEDULED_EXPIRY |
+
+    Then I validate clearing TransactionLog entry for the performed Nymcard Transaction auto clearing
+      | transaction_identifier | fp_transaction_id | transaction_amount | billing_amount   | transaction_currency | billing_currency   | transaction_type | transaction_status | clearing                                                                                                                     |
+      | T1                     | VALID_UUID        | <txn_amount>       | <billing_amount> | <txn_currency>       | <billing_currency> | CREDIT_CLEAR     | CLEARED            | {"interchange_fee": 0.0, "interchange_type": "UNKNOWN_INTERCHANGE_FEE_TYPE", "clearing_outcome": "UNKNOWN_CLEARING_OUTCOME"} |
+
+    Then I validate TransactionLogDetail entries for the performed Nymcard Transactions
+      | transaction_identifier | idempotency_key | transaction_amount | billing_amount   | transaction_currency | billing_currency   | transaction_type | transaction_status |
+      | T1                     | T1              | <txn_amount>       | <billing_amount> | <txn_currency>       | <billing_currency> | CREDIT_INITIAL   | COMPLETED          |
+
+    Examples:
+      | message_type         | txn_amount | txn_currency | billing_amount | billing_currency | status_code | status_description   | available_balance | total_balance    |
+      | AUTHORIZATION        | 5.75       | USD          | 999.50         | PKR              | 0000        | TRANSACTION_APPROVED | 1999.50           | 1999.50          |
+      | AUTHORIZATION        | 2500.30    | JPY          | 999.99         | PKR              | 0000        | TRANSACTION_APPROVED | 1999.99           | 1999.99          |
+      | AUTHORIZATION        | 20.25      | AED          | 500.75         | PKR              | 0000        | TRANSACTION_APPROVED | 1500.75           | 1500.75          |
+      | AUTHORIZATION        | 12.99      | USD          | 1000.00        | PKR              | 0000        | TRANSACTION_APPROVED | 2000.00           | 2000.00          |
+      | AUTHORIZATION_ADVICE | 100.40     | AED          | 270.50         | PKR              | 0000        | TRANSACTION_APPROVED | 1270.50           | 1270.50          |
+      | AUTHORIZATION_ADVICE | 10.15      | GBP          | 999.99         | PKR              | 0000        | TRANSACTION_APPROVED | 1999.99           | 1999.99          |
+      | AUTHORIZATION_ADVICE | 4000.99    | JPY          | 1001           | PKR              | 0000        | TRANSACTION_APPROVED | 2001.00           | 2001.00          |
+      | AUTHORIZATION_ADVICE | 7.55       | AUD          | 375.75         | PKR              | 0000        | TRANSACTION_APPROVED | 1375.75           | 1375.75          |
+
   Scenario Outline: Nymcard Transaction - Debit Authorization followed by one incremental authorization
     Given I set the following transaction information
       | transaction_identifier | parent_transaction_identifier | network | message_type        | transaction_type   | transaction_description | rrn_identifier |
@@ -662,8 +720,8 @@ Feature: Card transaction test scenarios for provider Nymcard
       | T1                     | DATA_ON_FILE | E_COMMERCE      | false       | false | D                        | 000000          | true               |
 
     When I initiate below Nymcard Transaction requests
-      | transaction_identifier | clearing_ts | status_code   | status_description   |
-      | T1                     | T+m30       | <status_code> | <status_description> |
+      | transaction_identifier | auto_clearing_ts | status_code   | status_description   |
+      | T1                     | T+m30            | <status_code> | <status_description> |
 
     Then I wait until max time to verify bank account BankAccId with an available balance of <available_balance> and total balance of <total_balance> for customerProfileId PKCPID1
 

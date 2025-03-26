@@ -44,9 +44,10 @@ class HugosaveTest:
             HugosaveTest.__make_hugo_url(self, path), params, headers
         )
 
-    def hugosave_put_request(self, path: str, data: dict = None, headers: dict = None):
+    def hugosave_put_request(self, path: str, data: dict = None,params: dict = None, headers: dict = None ):
         """To make put requests to Hugosave endpoints"""
-        return HugosaveTest.__do_put(HugosaveTest.__make_hugo_url(self, path), data, headers)
+        return HugosaveTest.__do_put(HugosaveTest.__make_hugo_url(self, path), data, params, headers)
+
 
     @staticmethod
     def __run_command(command):
@@ -133,17 +134,18 @@ class HugosaveTest:
         return json_response
 
     @staticmethod
-    def __do_put(url: str, body: dict = None, headers: dict = None):
+    def __do_put(url: str, body: dict = None,params:dict = None, headers: dict = None,):
         if headers is not None:
             headers = {**default_headers, **headers}
         else:
             headers = default_headers
         if compliance_urls["root"] not in url:
-            print(f"PUT URL:{url}, Headers: {headers}, Body: {body}")
+            print(f"PUT URL:{url}, Headers: {headers}, Params: {params}")
+
 
         response = None
         for i in range(MAX_RETRY_SERVER_ERROR):
-            response = requests.put(url, data=json.dumps(body), headers=headers)
+            response = requests.put(url, data=json.dumps(body) ,params=params, headers=headers)
             if response.status_code < 500:
                 break
             time.sleep(WAIT_TIME)

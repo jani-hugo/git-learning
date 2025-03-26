@@ -2,15 +2,19 @@ import base64
 import os
 import random
 import uuid
+from os import device_encoding
 from pathlib import Path
 
 ORG_ID_HUGOBANK_PK = "HUGOBANK_PK"
 ORG_ID_HUGOSAVE_SG = "HUGOSAVE_SG"
 
+
 app_base_url = "/app/v2"
 auth_base_url = "/auth/v2"
+progress_onboarding_base_url = "/onboard/progress"
+initial_onboarding_base_url = "/onboard/initial"
 
-auth_user_urls = {"root": auth_base_url + "/user", "create": auth_base_url + "/user/create"}
+auth_user_urls = {"root": auth_base_url + "/user", "create": auth_base_url + "/user/create-user"}
 
 account_urls = {
     "root": app_base_url + "/account",
@@ -20,6 +24,7 @@ dev_urls = {
     "root": app_base_url + "/dev",
     "deposit": app_base_url + "/dev/transaction/deposit",
     "compliance": app_base_url + "/dev/compliance/status/update",
+    "compliance_update":app_base_url+"/dev/user/account-level/update",
     "schedule_trigger": app_base_url + "/dev/tickle/schedule/schedule-id",
     "mock_card_transaction": app_base_url + "/dev/card/mock-transaction",
     "settle_investment_txn": app_base_url + "/dev/investment/intent-id",
@@ -93,6 +98,22 @@ compliance_urls = {
     "submit-compliance": app_base_url + "/compliance/submit",
 }
 
+progress_onboarding_urls = {
+    "initiate-progress-onboarding": app_base_url + progress_onboarding_base_url + "/initiate",
+    "initiate-onboarding-journey": app_base_url + progress_onboarding_base_url + f"/journey/{{journey-id}}/initiate",
+    "onboarding-journey-status": app_base_url + progress_onboarding_base_url + f"/journey/{{journey-id}}/status",
+    "submit-onboarding-journey": app_base_url + progress_onboarding_base_url + f"/journey/{{journey-id}}/submit",
+    "submit-progress-onboarding": app_base_url + progress_onboarding_base_url + f"/submit",
+    "progress-onboarding-status": app_base_url + progress_onboarding_base_url + f"/status"
+}
+
+initial_onboarding_urls = {
+    "initiate-initial-onboarding": app_base_url + initial_onboarding_base_url + "/initiate",
+    "initial-onboarding-status": app_base_url + initial_onboarding_base_url + "/status",
+    "submit-initial-onboarding":app_base_url+initial_onboarding_base_url+"/submit",
+}
+
+
 asset_ids = {
     "CASH": "dc3a889c-8199-4683-be3a-7061bb8624c8",
     "GOLD": "524d466e-28a7-44db-b1c4-175953277629",
@@ -147,13 +168,43 @@ questionnaire_urls = {
     "list-user-questionnaire": app_base_url + "/questionnaire/list-user-questionnaire",
 }
 
+verify_mobile_urls = {
+    "initiate-verification": auth_base_url + "/verify/verify-mobile"
+}
 
 def get_user_header(uid, context):
     return {
         'x-user-profile-id': uid,
-        "app-build-version": context.data["config_data"]["app-build-version"],
+        'x-enforce-auth':'false'
     }
 
+def get_mobile_verification_header(x_initiation_signature, device_info, context):
+    return{
+        'os':device_info['os'],
+        'os-build-number':device_info['os-build-number'],
+        'os-version':device_info['os-version'],
+        'device-brand-name':device_info['device-brand-name'],
+        'x-device-id': device_info['x-device-id'],
+        'device-type':device_info['device-type'],
+        'app-first-install-time':device_info['app-first-install-time'],
+        'app-version':device_info['app-version'],
+        'app-bundle-identifier':device_info['app-bundle-identifier'],
+        'app-build-version':device_info['app-build-version'],
+        'x-epoch':str(device_info['x-epoch']),
+        'x-initiation-signature': x_initiation_signature,
+    }
+
+def get_create_account_header(context,uid):
+    return{
+        'x-verification-token': context.data['users'][uid]['submit_mobile_verification_response']['verificationToken'],
+        'x-device-id':context.data['device_info']['x-device-id']
+    }
+
+def get_initial_onboarding_headers(user_profile_id, context, uid):
+    return{
+        'x-user-profile-id':user_profile_id,
+        'x-authentication-token':context.data['users'][uid]['create_new_user_response']['authenticationToken']
+    }
 
 def get_header(context):
     return {
@@ -256,3 +307,28 @@ def get_user_map_id(context, map_identifier, user_profile_identifier):
         return context.data['users'][user_profile_identifier]['etf-cautious-map']['userMapId']
     else:
         return context.data["users"][user_profile_identifier][map_identifier]["userMapId"]
+
+def get_user_profile_id(uid,context):
+    try:
+        return context.data['users'][uid]['create_new_user_response']['userProfileId']
+    except Exception:
+        return ""
+
+def get_initial_onboarding_id(uid,context):
+    try:
+        return context.data['users'][uid]['initiate_onboarding_initial_onboarding_response']['onboardingId']
+    except Exception:
+        return ""
+
+def get_journey_id(context,uid,journey_type):
+    response = context.data['users'][uid]['initiate_onboarding_response']['journeys']
+    journeys = [journey for journey in response if journey['journey']== journey_type]
+    if context.data['users'][uid]["current_journey_index"] < len(journeys):
+        journey_id = [journey["journeyId"] for journey in journeys]
+        return journey_id
+
+def get_progress_onboarding_id(context, uid):
+    try:
+        return context.data['users'][uid]['initiate_onboarding_response']['onboardingId']
+    except Exception:
+        return "Could not find progress onboarding Id"

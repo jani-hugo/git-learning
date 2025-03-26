@@ -4,6 +4,7 @@ from behave import Step, use_step_matcher
 
 use_step_matcher("re")
 
+import test.api.distribute.app.verify_mobile_number_steps
 import test.api.distribute.app.account_steps
 import test.api.distribute.app.admin_steps
 import test.api.distribute.app.cash_map_steps
@@ -20,7 +21,8 @@ import test.api.distribute.app.reward_gold_steps
 import test.api.distribute.app.roundups_steps
 import test.api.distribute.app.update_details_steps
 import test.api.distribute.app.credit_account_steps
-
+import test.api.distribute.app.create_account_steps
+import test.api.distribute.app.premium_account_steps
 
 @Step("I wait for ([^']*) seconds")
 def wait_for(context, seconds):

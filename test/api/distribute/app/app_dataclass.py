@@ -24,6 +24,7 @@ class OpenAccountDTO:
     status: str
     prefix_ph_num: Optional[str]
     org_id: Optional[str]
+    account_type: str
 
     def get_dict(self):
         return {
@@ -33,6 +34,7 @@ class OpenAccountDTO:
             "phone_number": self.phone_number,
             "referral_code": self.referral_code,
             "prefix_ph_num": self.prefix_ph_num,
+            "account_type": self.account_type,
         }
 
 
@@ -262,4 +264,37 @@ class CreditAccountMockTxnRequestDTO:
             "txn_code": self.txn_code,
             "category": self.category,
             "txn_time": self.txn_time + datetime.now().strftime("T%H:%M:%S.%fZ")
+        }
+
+@dataclasses.dataclass
+class VerifyMobileNumberDTO:
+    mobile_number: str
+    ph_prefix: str
+
+
+    def get_dict(self):
+        return{
+            "mobile_number": self.mobile_number,
+            "ph_prefix": self.ph_prefix,
+        }
+
+@dataclasses.dataclass
+class CreateNewAccountDTO:
+    email: str
+    legal_name: str
+    name: str
+    account_type: str
+    referral_code: Optional[str]
+    user_profile_identifier:str
+    # status: str
+    # org_id: Optional[str]
+
+    def get_dict(self):
+        return{
+            "email": self.email,
+            "legal_name": self.legal_name,
+            "name": self.name,
+            "account_type": self.account_type,
+            "referral_code": self.referral_code,
+            "user_profile_identifier": self.user_profile_identifier,
         }

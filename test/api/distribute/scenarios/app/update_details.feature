@@ -1,13 +1,22 @@
 Feature: Update User Details
 
   Background:
-    Given I open user account
-      | user_profile_identifier | phone_number | email          | legal_name | status              |
-      | UID1                    | random       | test@gmail.com | John Doe   | PROFILE_IN_PROGRESS |
+    Given The user UID1 provides a valid mobile number
+      | mobile_number | ph_prefix |
+      | random        | +65       |
+    Then The user UID1 submits OTP to proceed with verification
 
-    Then I check account status
-      | user_profile_identifier | status         |
-      | UID1                    | PROFILE_ACTIVE |
+    Given I open a new user account
+      | user_profile_identifier | email          | legal_name  | name   | account_type |
+      | UID1                    | test@gmail.com |  John Doe   | Johnny | PERSONAL     |
+
+    When I initiate the initial onboarding for the user UID1
+
+    Then I submit the initial onboarding for UID1
+
+    And I check the status of initial onboarding for UID1
+
+    And I get user details for user UID1
 
   Scenario: Update Details
 

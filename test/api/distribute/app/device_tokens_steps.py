@@ -6,9 +6,9 @@ use_step_matcher("re")
 
 
 @Step("I push device tokens for user ([^']*) and check if saved")
-def push_device_token(context, user):
+def push_device_token(context, user_profile_identifier):
     request = context.request
-    user_prof_id = ah.get_user_prof_id(context, user)
+    user_prof_id = ah.get_user_profile_id(user_profile_identifier, context)
 
     tokens = ["abcd", "efgh", "ijkl"]
 
@@ -29,7 +29,7 @@ def push_device_token(context, user):
         headers=ah.get_user_header(user_prof_id, context),
     )
     check_status_distribute(response, "200")
-    saved_tokens = response['data']['device']
+    saved_tokens = response['data']['pnToken']
 
     for t in saved_tokens:
         print(t, t['token'], tokens, t['token'] in tokens)
@@ -37,9 +37,9 @@ def push_device_token(context, user):
 
 
 @Step("I delete all device tokens for user ([^']*)")
-def remove_token(context, user):
+def remove_token(context, user_profile_identifier):
     request = context.request
-    user_prof_id = ah.get_user_prof_id(context, user)
+    user_prof_id = ah.get_user_profile_id(user_profile_identifier, context)
     tokens = ["abcd", "efgh", "ijkl"]
     for token in tokens:
         response = request.hugosave_delete_request(
@@ -53,6 +53,6 @@ def remove_token(context, user):
         headers=ah.get_user_header(user_prof_id, context),
     )
     check_status_distribute(response, "200")
-    saved_tokens = response['data']['device']
+    saved_tokens = response['data']['pnToken']
 
     assert len(saved_tokens) == 0, "Failed deleting tokens"

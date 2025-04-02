@@ -11,6 +11,7 @@ ORG_ID_HUGOSAVE_SG = "HUGOSAVE_SG"
 
 app_base_url = "/app/v2"
 auth_base_url = "/auth/v2"
+notification_base_url = "/notification/v1"
 progress_onboarding_base_url = "/onboard/progress"
 initial_onboarding_base_url = "/onboard/initial"
 
@@ -144,10 +145,11 @@ intent_urls = {
 }
 
 device_urls = {
-    "root": app_base_url + "/device",
-    "list": app_base_url + "/device/list",
-    "delete": app_base_url + "/device/token",
+    "root": notification_base_url + "/pn",
+    "list": notification_base_url + "/pn/list",
+    "delete": notification_base_url + "/pn/token",
 }
+
 note_urls = {
     "root": app_base_url + "/note",
     "get_note": app_base_url + "/note/intent-id/intent_id",

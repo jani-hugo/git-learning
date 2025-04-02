@@ -1,14 +1,14 @@
 from behave import *
 import test.api.distribute.app.app_helper as ah
-from test.util.common_util import check_status_distribute
+from test.util.common_util import check_status
 
 use_step_matcher("re")
 
 
-@Step("I update ([^']*) of user ([^']*) and check if updated correctly")
-def update_user_details(context, fields: str, user_identifier: str):
+@Step("I update ([^']) of user ([^']) and check if updated correctly")
+def update_user_details(context, fields: str, user_profile_identifier: str):
     request = context.request
-    user_profile_id = ah.get_user_prof_id(context, user_identifier)
+    user_profile_id = ah.get_user_profile_id(user_profile_identifier, context)
 
     field_list = fields.split(',')
     data = ah.get_dummy_user_data(field_list)
@@ -23,7 +23,7 @@ def update_user_details(context, fields: str, user_identifier: str):
         headers=ah.get_user_header(user_profile_id, context),
     )
 
-    passed = check_status_distribute(response, "200")
+    passed = check_status(response, "200")
     if not passed:
         print(f"Expected: 200 received: {response['data']['status']}")
     else:
@@ -35,4 +35,4 @@ def update_user_details(context, fields: str, user_identifier: str):
         for field in field_list:
             updated_data[field] = data[field]
 
-        context.data['users'][user_identifier] = updated_data
+        context.data['users'][user_profile_identifier]['user_details_response'] = updated_data

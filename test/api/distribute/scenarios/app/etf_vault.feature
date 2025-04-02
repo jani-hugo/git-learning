@@ -1,29 +1,48 @@
 Feature: ETF Vault Feature
 
-  Background: Open Hugosave Premium account
-    Given I open user account
-      | user_profile_identifier | phone_number | email          | legal_name | name   | status              | prefix_ph_num |
-      | UID1                    | random       | test@gmail.com | John Doe   | Johnny | PROFILE_IN_PROGRESS | +3731         |
+  Background:
+    Given The user UID1 provides a valid mobile number
+      | mobile_number | ph_prefix |
+      | random        | +65       |
+    Then The user UID1 submits OTP to proceed with verification
 
-    Then I check account status
-      | user_profile_identifier | status         |
-      | UID1                    | PROFILE_ACTIVE |
+    Given I open a new user account
+      | user_profile_identifier | email          | legal_name  | name   | account_type |
+      | UID1                    | test@gmail.com |  John Doe   | Johnny | PERSONAL     |
 
-    Then I update first_name,last_name,dob,nationality,address,document_number,document_expiry_date,tax_id_number of user UID1 and check if updated correctly
+    When I initiate the initial onboarding for the user UID1
 
-    Then I initiate STANDARD_COMPLIANCE for user UID1 with content type as image/png and expect status 200
+    Then I submit the initial onboarding for UID1
 
-    Then I upload document SELFIE using presigned URL for user UID1 and expect status 200
-    Then I upload document FRONT using presigned URL for user UID1 and expect status 200
-    Then I upload document BACK using presigned URL for user UID1 and expect status 200
+    And I check the status of initial onboarding for UID1
 
-    Then I submit NRIC document for STANDARD_COMPLIANCE for user UID1
+    When I initiate progress onboarding for the user UID1 to upgrade account to PREMIUM
 
-    Then I initiate TRUST_COMPLIANCE for user UID1 with content type as  and expect status 200
-    Then I submit  document for TRUST_COMPLIANCE for user UID1
+    When I initiate HUGOSAVE_TRUST for the user UID1 and expect a status code of 200
 
-    Then I update STANDARD_COMPLIANCE status of UID1 as pass
-    Then I check if user UID1 account type is PREMIUM
+    And I submit HUGOSAVE_TRUST for the user UID1 and expect a status code of 200
+
+    Then I check status of HUGOSAVE_TRUST for the user UID1
+
+    When I initiate HUGOSAVE_SELFIE_AND_SCAN_ID for the user UID1 and expect a status code of 200
+
+    And I upload document FRONT for the user UID1
+
+    And I upload document BACK for the user UID1
+
+    And I upload document SELFIE for the user UID1
+
+    Then I submit HUGOSAVE_SELFIE_AND_SCAN_ID for the user UID1 so we can convert the account to PREMIUM
+
+    And I check the status of HUGOSAVE_SELFIE_AND_SCAN_ID for the user UID1
+
+    Then I submit the progress onboarding for user UID1
+
+    And I check progress onboarding status for the user UID1
+
+    Then I upgrade the user UID1 account level to L3
+
+    And I check the user details to confirm if user UID1 is premium
 
     Given I fetch list of questionnaire
     Given I check if questionnaire exists with name SUITABILITY_ASSESSMENT else create new questionnaire
@@ -111,23 +130,3 @@ Feature: ETF Vault Feature
       | ETF_CAUTIOUS_VAULT     | CAUTIOUS_VAULT     |
       | ETF_MONEY_MARKET_VAULT | MONEY_MARKET_VAULT |
 
-
-  Scenario Outline: Roundup to ETF vaults
-    And I check if <map_name> is created for user UID1
-
-    Given I deposit 1.82 SGD into account subtype HUGO_ROUNDUP of user UID1
-
-    And I check the balance of account subtype HUGO_ROUNDUP of user UID1 is 1.82 SGD exact
-
-    Given I update Roundup Sweep vault to <map_type> for user UID1
-
-    Then I trigger schedule SCHEDULE_ROUNDUP for user UID1
-
-    And I check the balance of account subtype HUGO_ROUNDUP of user UID1 is 0 SGD exact
-
-    Examples:
-      | map_type               | map_name           |
-      | ETF_BALANCED_VAULT     | BALANCED_VAULT     |
-      | ETF_GROWTH_VAULT       | GROWTH_VAULT       |
-      | ETF_CAUTIOUS_VAULT     | CAUTIOUS_VAULT     |
-      | ETF_MONEY_MARKET_VAULT | MONEY_MARKET_VAULT |

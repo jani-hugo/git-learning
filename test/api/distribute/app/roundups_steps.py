@@ -33,5 +33,3 @@ def update_sweep_vault(context, sweep_vault: str, user_identifier):
     )
 
     check_status_distribute(response, "200")
-
-

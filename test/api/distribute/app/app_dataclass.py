@@ -56,7 +56,8 @@ class CreateMapDTO:
     def get_dict(self):
         asset_allocation_details = json.loads(self.asset_allocation_details)
         asset_allocation_details = [
-            {**a, "asset_id": ah.asset_ids[a["asset_id"]]} for a in asset_allocation_details
+            {**a, "asset_id": ah.asset_ids[a["asset_id"]]}
+            for a in asset_allocation_details
         ]
 
         return {
@@ -114,7 +115,11 @@ class UpdateMapDTO:
     status_code: str
 
     def get_dict(self):
-        return {"name": self.name, "goal_date": self.goal_date, "goal_amount": self.goal_amount}
+        return {
+            "name": self.name,
+            "goal_date": self.goal_date,
+            "goal_amount": self.goal_amount,
+        }
 
 
 @dataclasses.dataclass
@@ -232,7 +237,10 @@ class ComplianceInitiateRequestDTO:
     content_type: Optional[str]
 
     def get_dict(self):
-        return {"compliance_type": self.compliance_type, "content_type": self.content_type}
+        return {
+            "compliance_type": self.compliance_type,
+            "content_type": self.content_type,
+        }
 
 
 @dataclasses.dataclass
@@ -263,20 +271,21 @@ class CreditAccountMockTxnRequestDTO:
             "txn_type": self.txn_type,
             "txn_code": self.txn_code,
             "category": self.category,
-            "txn_time": self.txn_time + datetime.now().strftime("T%H:%M:%S.%fZ")
+            "txn_time": self.txn_time + datetime.now().strftime("T%H:%M:%S.%fZ"),
         }
+
 
 @dataclasses.dataclass
 class VerifyMobileNumberDTO:
     mobile_number: str
     ph_prefix: str
 
-
     def get_dict(self):
-        return{
+        return {
             "mobile_number": self.mobile_number,
             "ph_prefix": self.ph_prefix,
         }
+
 
 @dataclasses.dataclass
 class CreateNewAccountDTO:
@@ -285,12 +294,12 @@ class CreateNewAccountDTO:
     name: str
     account_type: str
     referral_code: Optional[str]
-    user_profile_identifier:str
+    user_profile_identifier: str
     # status: str
     # org_id: Optional[str]
 
     def get_dict(self):
-        return{
+        return {
             "email": self.email,
             "legal_name": self.legal_name,
             "name": self.name,

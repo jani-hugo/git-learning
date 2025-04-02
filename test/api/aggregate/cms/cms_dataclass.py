@@ -51,10 +51,7 @@ class ProductIdDTO:
     expected_status_code: Optional[str]
 
     def get_dict(self):
-        return {
-            "product_id": self.product_id,
-            "status_code": self.expected_status_code
-        }
+        return {"product_id": self.product_id, "status_code": self.expected_status_code}
 
 
 @dataclasses.dataclass
@@ -279,5 +276,5 @@ class TransactionRequestDTO:
             "amount": self.amount,
             "txn_code": self.txn_code,
             "currency": self.currency,
-            "receiver": receiver
+            "receiver": receiver,
         }

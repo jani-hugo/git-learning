@@ -38,7 +38,9 @@ def build_transactions(context):
 
 @Then("I set card objects in transaction context")
 def set_card_in_context(context):
-    card_dto_request = DataClassParser.parse_rows(context.table.rows, data_class=CardDTO)
+    card_dto_request = DataClassParser.parse_rows(
+        context.table.rows, data_class=CardDTO
+    )
 
     for each_card_dto in card_dto_request:
         transaction_identifier = each_card_dto.transaction_identifier
@@ -58,7 +60,9 @@ def set_customer_in_context(context):
         transaction_identifier = each_customer_dto.transaction_identifier
         card_account_identifier = each_customer_dto.customer_identifier
 
-        each_customer_dto.customer_id = context.data[card_account_identifier]["card_account_id"]
+        each_customer_dto.customer_id = context.data[card_account_identifier][
+            "card_account_id"
+        ]
 
         transaction_dto = context.data["dynamic_data_streams"][transaction_identifier]
         transaction_dto.customer = each_customer_dto
@@ -66,13 +70,15 @@ def set_customer_in_context(context):
 
 @Then("I set transaction objects in transaction context")
 def set_transaction_in_context(context):
-    txn_dto_request = DataClassParser.parse_rows(context.table.rows, data_class=TransactionDTO)
+    txn_dto_request = DataClassParser.parse_rows(
+        context.table.rows, data_class=TransactionDTO
+    )
 
     transaction_details = {}
     txn_amounts = {}
     for each_txn_dto in txn_dto_request:
         # TODO: need to set this in feature file
-        each_txn_dto.credential_on_file = 'y'
+        each_txn_dto.credential_on_file = "y"
         transaction_identifier = each_txn_dto.transaction_identifier
         transaction_id = each_txn_dto.transaction_id
         transaction_amount = each_txn_dto.transaction_amount
@@ -80,7 +86,7 @@ def set_transaction_in_context(context):
         billing_amount = each_txn_dto.cardholder_billing_amount
         billing_currency_code = each_txn_dto.cardholder_billing_currency_code
         if len(transaction_amount) == 0 and each_txn_dto.reversal_type == "FULL":
-            transaction_amount = '0'
+            transaction_amount = "0"
 
         if len(transaction_amount) == 0 and len(billing_amount) == 0:
             transaction_amount = 0
@@ -157,9 +163,15 @@ def set_transaction_in_context(context):
 
 @Then("I set update in transaction context")
 def set_update_in_context(context):
-    update_dto_request = DataClassParser.parse_rows(context.table.rows, data_class=UpdateDTO)
+    update_dto_request = DataClassParser.parse_rows(
+        context.table.rows, data_class=UpdateDTO
+    )
 
-    transaction_details = context.data["transaction_info"] if "transaction_info" in context.data.keys() else {}
+    transaction_details = (
+        context.data["transaction_info"]
+        if "transaction_info" in context.data.keys()
+        else {}
+    )
     for each_update_dto in update_dto_request:
         transaction_identifier = each_update_dto.transaction_identifier
         transaction_dto = context.data["dynamic_data_streams"][transaction_identifier]
@@ -169,19 +181,23 @@ def set_update_in_context(context):
             transaction_details[each_update_dto.original_transaction_id] = (
                 original_transaction_id
             )
-        each_update_dto.original_transaction_id = transaction_details[each_update_dto.original_transaction_id]
-
-        original_system_trace_audit_number = each_update_dto.original_system_trace_audit_number
-        each_update_dto.original_system_trace_audit_number = context.data["transaction_info"][
-            original_system_trace_audit_number
+        each_update_dto.original_transaction_id = transaction_details[
+            each_update_dto.original_transaction_id
         ]
+
+        original_system_trace_audit_number = (
+            each_update_dto.original_system_trace_audit_number
+        )
+        each_update_dto.original_system_trace_audit_number = context.data[
+            "transaction_info"
+        ][original_system_trace_audit_number]
 
         original_retrieval_reference_number = (
             each_update_dto.original_retrieval_reference_number
         )
-        each_update_dto.original_retrieval_reference_number = context.data["transaction_info"][
-            original_retrieval_reference_number
-        ]
+        each_update_dto.original_retrieval_reference_number = context.data[
+            "transaction_info"
+        ][original_retrieval_reference_number]
 
         original_transaction_amount = each_update_dto.original_transaction_amount
         actual_transaction_amount = each_update_dto.actual_transaction_amount
@@ -190,8 +206,10 @@ def set_update_in_context(context):
         ].transaction.transaction_currency_code
 
         if len(transaction_currency_code) > 0 and len(original_transaction_amount) > 0:
-            each_update_dto.original_transaction_amount = card_helper.calculate_precision(
-                transaction_currency_code, original_transaction_amount
+            each_update_dto.original_transaction_amount = (
+                card_helper.calculate_precision(
+                    transaction_currency_code, original_transaction_amount
+                )
             )
 
         # Conditionally set actual transaction amount as it is not mandatory in case of full reversal
@@ -208,7 +226,9 @@ def set_update_in_context(context):
 
 @Then("I set status in transaction context")
 def set_status_in_context(context):
-    status_dto_request = DataClassParser.parse_rows(context.table.rows, data_class=StatusDTO)
+    status_dto_request = DataClassParser.parse_rows(
+        context.table.rows, data_class=StatusDTO
+    )
 
     for each_status_dto in status_dto_request:
         transaction_identifier = each_status_dto.transaction_identifier
@@ -237,17 +257,23 @@ def set_clearing_in_context(context):
     clearing_dto_request = DataClassParser.parse_rows(
         context.table.rows, data_class=ClearingDTO
     )
-    txn_amounts = context.data["txn_amounts"] if "txn_amounts" in context.data.keys() else {}
+    txn_amounts = (
+        context.data["txn_amounts"] if "txn_amounts" in context.data.keys() else {}
+    )
     authorization_dict = {}
     transaction_details = (
-        context.data["transaction_info"] if "transaction_info" in context.data.keys() else {}
+        context.data["transaction_info"]
+        if "transaction_info" in context.data.keys()
+        else {}
     )
     for each_clearing_dto in clearing_dto_request:
         transaction_identifier = each_clearing_dto.transaction_identifier
         record_id_clearing = each_clearing_dto.record_id_clearing
         if record_id_clearing not in transaction_details:
             record_id_clearing = str(uuid.uuid4())
-            transaction_details[each_clearing_dto.record_id_clearing] = record_id_clearing
+            transaction_details[each_clearing_dto.record_id_clearing] = (
+                record_id_clearing
+            )
         each_clearing_dto.record_id_clearing = record_id_clearing
         if each_clearing_dto.card_id != None:
             card_identifier = each_clearing_dto.card_id
@@ -304,11 +330,13 @@ def set_clearing_authorization(context):
             ]
 
         if system_trace_audit_number not in context.data["transaction_info"].keys():
-            each_authorization.system_trace_audit_number = card_helper.generate_random_number(6)
+            each_authorization.system_trace_audit_number = (
+                card_helper.generate_random_number(6)
+            )
         else:
-            each_authorization.system_trace_audit_number = context.data["transaction_info"][
-                system_trace_audit_number
-            ]
+            each_authorization.system_trace_audit_number = context.data[
+                "transaction_info"
+            ][system_trace_audit_number]
 
         if retrieval_reference_number not in context.data["transaction_info"].keys():
             each_authorization.retrieval_reference_number = (
@@ -316,9 +344,9 @@ def set_clearing_authorization(context):
                 + each_authorization.system_trace_audit_number
             )
         else:
-            each_authorization.retrieval_reference_number = context.data["transaction_info"][
-                retrieval_reference_number
-            ]
+            each_authorization.retrieval_reference_number = context.data[
+                "transaction_info"
+            ][retrieval_reference_number]
 
         authorizations = context.data["clearing_authorizations"][transaction_identifier]
         authorizations.append(each_authorization)
@@ -340,16 +368,16 @@ def initiate_transaction(context):
     )
     for expected_dds_response_dto in dds_response_dtos:
         if expected_dds_response_dto.auto_clearing_ts is not None:
-            context.data["dynamic_data_streams"][expected_dds_response_dto.transaction_identifier].auto_clearing_ts = (
-                expected_dds_response_dto.auto_clearing_ts
-            )
+            context.data["dynamic_data_streams"][
+                expected_dds_response_dto.transaction_identifier
+            ].auto_clearing_ts = expected_dds_response_dto.auto_clearing_ts
 
         expected_dds_dto = context.data["dynamic_data_streams"][
             expected_dds_response_dto.transaction_identifier
         ]
-        if expected_dds_dto.message_type == 'administrative':
+        if expected_dds_dto.message_type == "administrative":
             pass
-        elif expected_dds_dto.message_type == 'clearing':
+        elif expected_dds_dto.message_type == "clearing":
             expected_dds_dto.clearing.transaction_currency = (
                 expected_dds_response_dto.transaction_currency
             )
@@ -384,14 +412,16 @@ def initiate_transaction(context):
             )
             continue
         elif expected_dds_response_dto.case_type == "positive":
-            __assert_dds_response_dto(expected_dds_dto, expected_dds_response_dto, response)
+            __assert_dds_response_dto(
+                expected_dds_dto, expected_dds_response_dto, response
+            )
         else:
             raise NotImplementedError(
                 f"Case type {expected_dds_response_dto.case_type} is not yet implemented!"
             )
 
         # TODO: need to do correct validation for messages of type 'administrative'
-        if expected_dds_dto.message_type == 'administrative':
+        if expected_dds_dto.message_type == "administrative":
             continue
         if expected_dds_dto.message_type == "clearing":
             clowd9_transaction_id = expected_dds_dto.clearing.record_id_clearing
@@ -410,10 +440,14 @@ def initiate_transaction(context):
         if expected_dds_response_dto.is_empty_service_tx_id:
             # Set valid UUID to actual_dds_dto prevent assertion failure
             # This case is specially for unsolicited reversals
-            response['data']['service_transaction_id'] = uuid.uuid4()
-        actual_dds_dto = DataClassParser.parse_row(response['data'], DynamicDataStreamDTO)
+            response["data"]["service_transaction_id"] = uuid.uuid4()
+        actual_dds_dto = DataClassParser.parse_row(
+            response["data"], DynamicDataStreamDTO
+        )
 
-        expected_dds_dto = DynamicDataStreamDTO.sanitize_dynamic_data_stream(expected_dds_dto)
+        expected_dds_dto = DynamicDataStreamDTO.sanitize_dynamic_data_stream(
+            expected_dds_dto
+        )
         assert expected_dds_dto == actual_dds_dto, (
             f"[TraceId: {response['headers']['trace_id']}]\n"
             f"Expect DynamicDataStreamDTO: {expected_dds_dto}\n"
@@ -431,7 +465,6 @@ def initiate_transaction(context):
     context.data["card_transactions"] = card_transactions
 
 
-
 @Then("I validate below Transaction entries")
 def validate_transaction_log(context):
     request = context.request
@@ -444,18 +477,18 @@ def validate_transaction_log(context):
         # TODO: Validate with retry for status like SETTLED
         transaction_identifier = expected_tx_log.transaction_identifier
         dds = dds_dict[transaction_identifier]
-        service_transaction_id = context.data["card_transactions"][transaction_identifier][
-            "service_transaction_id"
-        ]
+        service_transaction_id = context.data["card_transactions"][
+            transaction_identifier
+        ]["service_transaction_id"]
 
         expected_tx_log.transaction_id = service_transaction_id
         expected_tx_log.card_id = (
-            dds.clearing.card_id if dds.message_type == 'clearing' else dds.card.card_id
+            dds.clearing.card_id if dds.message_type == "clearing" else dds.card.card_id
         )
 
         if (
             expected_tx_log.linked_transaction_ids is not None
-            and expected_tx_log.linked_transaction_ids != ''
+            and expected_tx_log.linked_transaction_ids != ""
             and expected_tx_log.linked_transaction_ids != "UNKNOWN_AUTH_TRANSACTION_ID"
         ):
             linked_transaction_ids = expected_tx_log.linked_transaction_ids.split(", ")
@@ -470,7 +503,7 @@ def validate_transaction_log(context):
                 list_of_linked_transaction_ids.append(
                     response["data"]["service_transaction_id"]
                 )
-            expected_tx_log.linked_transaction_ids = ','.join(
+            expected_tx_log.linked_transaction_ids = ",".join(
                 sorted(list_of_linked_transaction_ids)
             )
         txn_check_max_wait_time = card_helper.card_providers_config["Clowd9"][
@@ -493,17 +526,21 @@ def validate_transaction_log(context):
                 response["data"], data_class=TransactionLogDTO
             )
             # TODO: need to standardise this parsing logic
-            if actual_tx_log_dto.linked_transaction_ids != '[]':
-                linked_transaction_ids = actual_tx_log_dto.linked_transaction_ids[1:-1].split(
-                    ", "
-                )
+            if actual_tx_log_dto.linked_transaction_ids != "[]":
+                linked_transaction_ids = actual_tx_log_dto.linked_transaction_ids[
+                    1:-1
+                ].split(", ")
                 list_of_linked_transaction_ids = []
                 for each_linked_transaction_id in linked_transaction_ids:
-                    if each_linked_transaction_id[0] == ' ':
-                        list_of_linked_transaction_ids.append(each_linked_transaction_id[2:-1])
+                    if each_linked_transaction_id[0] == " ":
+                        list_of_linked_transaction_ids.append(
+                            each_linked_transaction_id[2:-1]
+                        )
                     else:
-                        list_of_linked_transaction_ids.append(each_linked_transaction_id[1:-1])
-                actual_tx_log_dto.linked_transaction_ids = ','.join(
+                        list_of_linked_transaction_ids.append(
+                            each_linked_transaction_id[1:-1]
+                        )
+                actual_tx_log_dto.linked_transaction_ids = ",".join(
                     sorted(list_of_linked_transaction_ids)
                 )
 
@@ -528,9 +565,9 @@ def validate_transaction_log_details(context):
 
     for expected_tx_log_detail in transaction_log_details_dto:
         transaction_identifier = expected_tx_log_detail.transaction_identifier
-        service_transaction_id = context.data["card_transactions"][transaction_identifier][
-            "service_transaction_id"
-        ]
+        service_transaction_id = context.data["card_transactions"][
+            transaction_identifier
+        ]["service_transaction_id"]
 
         expected_tx_log_detail.transaction_id = service_transaction_id
 
@@ -551,9 +588,9 @@ def validate_transaction_log_details(context):
                 path=f"/card/v1/dev/transaction/{service_transaction_id}/log"
             )
             actual_tx_log_detail_dto = None
-            for each_tx_log_detail in response['data']['transactionLogDetail']:
+            for each_tx_log_detail in response["data"]["transactionLogDetail"]:
                 if (
-                    each_tx_log_detail['idempotency_key']
+                    each_tx_log_detail["idempotency_key"]
                     == expected_tx_log_detail_dto.idempotency_key
                 ):
                     actual_tx_log_detail_dto = DataClassParser.parse_row(
@@ -577,7 +614,10 @@ def validate_transaction_log_details(context):
         retry_transaction_log_detail_assert_fail(expected_tx_log_detail)
         # TODO @Abhishek
 
-@Then("I update DDS Transaction auto clearing ts to current ts manually and trigger the auto clearing process for DDS Transactions")
+
+@Then(
+    "I update DDS Transaction auto clearing ts to current ts manually and trigger the auto clearing process for DDS Transactions"
+)
 def update_auto_clearing_ts(context):
     request = context.request
     dds_response_dtos = DataClassParser.parse_rows(
@@ -590,22 +630,25 @@ def update_auto_clearing_ts(context):
     for expected_dds_response_dto in dds_response_dtos:
         transaction_identifier = expected_dds_response_dto.transaction_identifier
 
-        clowd9_transaction_id = card_transactions[transaction_identifier]['clowd9_transaction_id']
+        clowd9_transaction_id = card_transactions[transaction_identifier][
+            "clowd9_transaction_id"
+        ]
 
         # Get the current UTC time
         now = datetime.now(timezone.utc)
 
-        timestamp_json = now.strftime('%Y-%m-%dT%H:%M:%S.%fZ')[:-4] + 'Z'
+        timestamp_json = now.strftime("%Y-%m-%dT%H:%M:%S.%fZ")[:-4] + "Z"
 
-        timestamp_request_dto = {
-            "timestamp": timestamp_json
-        }
+        timestamp_request_dto = {"timestamp": timestamp_json}
         actual_clowd9_auto_clear_update_response = request.hugoserve_put_request(
             path=f"/card/v1/dev/clowd9/dds/{clowd9_transaction_id}/update-auto-clearing-ts",
             data=timestamp_request_dto,
         )
 
-        assert actual_clowd9_auto_clear_update_response['headers']['status_code'] == expected_dds_response_dto.status_code, (
+        assert (
+            actual_clowd9_auto_clear_update_response["headers"]["status_code"]
+            == expected_dds_response_dto.status_code
+        ), (
             f"[TraceId: {actual_clowd9_auto_clear_update_response['headers']['trace_id']}]\n"
             f"Expect status_code: {expected_dds_response_dto.status_code}\n"
             f"Actual status_code: {actual_clowd9_auto_clear_update_response['headers']['status_code']}"
@@ -615,11 +658,12 @@ def update_auto_clearing_ts(context):
         path=f"/card/v1/admin/clowd9/initiate-auto-clearing"
     )
 
-    assert  initiate_auto_clearing_response['headers']['status_code'] == "200", (
+    assert initiate_auto_clearing_response["headers"]["status_code"] == "200", (
         f"[TraceId: {initiate_auto_clearing_response['headers']['trace_id']}]\n"
         f"Expect status_code: 200\n"
         f"Actual status_code: {initiate_auto_clearing_response['headers']['status_code']}"
     )
+
 
 @Then("I validate DynamicDataStream entry after auto clearing process")
 def validate_clowd9_transaction_post_auto_clearing(context):
@@ -634,24 +678,31 @@ def validate_clowd9_transaction_post_auto_clearing(context):
     for expected_dds_response_dto in dds_response_dtos:
         transaction_identifier = expected_dds_response_dto.transaction_identifier
 
-        clowd9_transaction_id = card_transactions[transaction_identifier]["clowd9_transaction_id"]
+        clowd9_transaction_id = card_transactions[transaction_identifier][
+            "clowd9_transaction_id"
+        ]
 
         response = request.hugoserve_get_request(
             path=f"/card/v1/dev/clowd9/dds/{clowd9_transaction_id}"
         )
 
-        assert response['data']['auto_cleared_ts'] is not None, (
+        assert response["data"]["auto_cleared_ts"] is not None, (
             "Expected: Auto cleared ts to be not None\n"
             "Actual: Auto cleared ts is None"
         )
 
-        assert response['data']['status_reason'] == expected_dds_response_dto.status_reason, (
+        assert (
+            response["data"]["status_reason"] == expected_dds_response_dto.status_reason
+        ), (
             f"[TraceId: {response['headers']['trace_id']}]\n"
             f"Expected status_reason: {expected_dds_response_dto.status_reason}\n"
             f"Actual status_reason: {response['data']['status_reason']}"
         )
 
-@Then("I validate authorization TransactionLog entry for the performed DDS Transaction auto clearing")
+
+@Then(
+    "I validate authorization TransactionLog entry for the performed DDS Transaction auto clearing"
+)
 def validate_auth_transaction_log_auto_clear(context):
     request = context.request
     transaction_logs_dto = DataClassParser.parse_rows(
@@ -659,7 +710,9 @@ def validate_auth_transaction_log_auto_clear(context):
     )
 
     dds_transactions = context.data["dynamic_data_streams"]
-    card_transactions = (context.data["card_transactions"] if "card_transactions" in context.data else {})
+    card_transactions = (
+        context.data["card_transactions"] if "card_transactions" in context.data else {}
+    )
 
     for expected_tx_log in transaction_logs_dto:
         transaction_identifier = expected_tx_log.transaction_identifier
@@ -671,7 +724,9 @@ def validate_auth_transaction_log_auto_clear(context):
 
         expected_tx_log.transaction_id = service_transaction_id
         expected_tx_log.card_id = (
-            dds_transaction.clearing.card_id if dds_transaction.message_type == 'clearing' else dds_transaction.card.card_id
+            dds_transaction.clearing.card_id
+            if dds_transaction.message_type == "clearing"
+            else dds_transaction.card.card_id
         )
 
         txn_check_max_wait_time = card_helper.card_providers_config["Clowd9"][
@@ -698,10 +753,12 @@ def validate_auth_transaction_log_auto_clear(context):
                 expected_tx_log_dto
             )
 
-            expected_tx_log_dto.linked_transaction_ids = actual_tx_log_dto.linked_transaction_ids
-            context.data['card_transactions'][transaction_identifier]['linked_transaction_id'] = (
-                actual_tx_log_dto.linked_transaction_ids[2:-2]
+            expected_tx_log_dto.linked_transaction_ids = (
+                actual_tx_log_dto.linked_transaction_ids
             )
+            context.data["card_transactions"][transaction_identifier][
+                "linked_transaction_id"
+            ] = actual_tx_log_dto.linked_transaction_ids[2:-2]
 
             assert expected_tx_log_dto == actual_tx_log_dto, (
                 f"[TraceId: {response['headers']['trace_id']}]\n"
@@ -711,7 +768,10 @@ def validate_auth_transaction_log_auto_clear(context):
 
         retry_transaction_log_assert_fail(expected_tx_log)
 
-@Then("I validate clearing TransactionLog entry for the performed DDS Transaction auto clearing")
+
+@Then(
+    "I validate clearing TransactionLog entry for the performed DDS Transaction auto clearing"
+)
 def validate_clear_transaction_log_auto_clear(context):
     request = context.request
     clear_transaction_logs_dto = DataClassParser.parse_rows(
@@ -719,7 +779,9 @@ def validate_clear_transaction_log_auto_clear(context):
     )
 
     dds_transactions = context.data["dynamic_data_streams"]
-    card_transactions = (context.data["card_transactions"] if "card_transactions" in context.data else {})
+    card_transactions = (
+        context.data["card_transactions"] if "card_transactions" in context.data else {}
+    )
 
     for expected_clear_transaction_log in clear_transaction_logs_dto:
         transaction_identifier = expected_clear_transaction_log.transaction_identifier
@@ -731,7 +793,9 @@ def validate_clear_transaction_log_auto_clear(context):
 
         expected_clear_transaction_log.transaction_id = linked_service_transaction_id
         expected_clear_transaction_log.card_id = (
-            dds_transaction.clearing.card_id if dds_transaction.message_type == 'clearing' else dds_transaction.card.card_id
+            dds_transaction.clearing.card_id
+            if dds_transaction.message_type == "clearing"
+            else dds_transaction.card.card_id
         )
         expected_clear_transaction_log.linked_transaction_ids = f"""['{(
             card_transactions[transaction_identifier]['service_transaction_id']
@@ -769,6 +833,7 @@ def validate_clear_transaction_log_auto_clear(context):
 
         retry_transaction_log_assert_fail(expected_clear_transaction_log)
 
+
 def __assert_dds_response_dto(
     expected_dds_dto, expected_dds_response_dto, actual_dds_response_dto
 ):
@@ -787,7 +852,10 @@ def __assert_dds_response_dto(
         f"Expect response_code in transaction outcome\n"
         f"Actual response_code not found in transaction outcome"
     )
-    assert expected_dds_response_dto.message_type == actual_dds_response_dto["message_type"], (
+    assert (
+        expected_dds_response_dto.message_type
+        == actual_dds_response_dto["message_type"]
+    ), (
         f"[Response: {actual_dds_response_dto}]\n"
         f"Expect message_type: {expected_dds_response_dto.message_type}\n"
         f"Actual message_type: {actual_dds_response_dto['message_type']}"
@@ -804,8 +872,8 @@ def __assert_dds_response_dto(
     )
 
     if (
-        expected_dds_response_dto.message_type == 'authorization'
-        and expected_dds_response_dto.message_type == 'reversal'
+        expected_dds_response_dto.message_type == "authorization"
+        and expected_dds_response_dto.message_type == "reversal"
     ):
         assert card_helper.is_valid_uuid(actual_dds_response_dto["card"]["card_id"]), (
             f"[Response: {actual_dds_response_dto}]\n"
@@ -857,7 +925,8 @@ def __assert_dds_response_dto(
         f"Actual response_reason: {actual_dds_response_dto['transaction']['outcome']['response_reason']}"
     )
     assert (
-        "HugoServe" == actual_dds_response_dto["transaction"]["outcome"]["response_source"]
+        "HugoServe"
+        == actual_dds_response_dto["transaction"]["outcome"]["response_source"]
     ), (
         f"[Response: {actual_dds_response_dto}]\n"
         f"Expect response_reason: HugoServe\n"

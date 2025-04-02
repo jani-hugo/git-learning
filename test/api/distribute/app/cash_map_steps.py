@@ -16,7 +16,8 @@ use_step_matcher("re")
 
 def get_maps(request, user_prof_id, context):
     response = request.hugosave_get_request(
-        ah.user_profile_urls["map-list"], headers=ah.get_user_header(user_prof_id, context)
+        ah.user_profile_urls["map-list"],
+        headers=ah.get_user_header(user_prof_id, context),
     )
 
     if not check_status_distribute(response, "200"):
@@ -47,7 +48,9 @@ def create_map(context, map_identifier: str):
         if not passed:
             print(f"Creating map failed with the given details.\nReceived : {response}")
 
-        context.data["users"][user_profile_identifier][map_identifier] = create_map_dto_data
+        context.data["users"][user_profile_identifier][
+            map_identifier
+        ] = create_map_dto_data
 
 
 @Step("I check if the map ([^']*) status is ([^']*) for user ([^']*)")
@@ -57,14 +60,16 @@ def check_map_status(context, map_identifier: str, status, user):
     user_profile_identifier = user
     user = context.data["users"].get(user)
     user_prof_id = user["userProfileId"]
-    user_map_name = context.data["users"][user_profile_identifier][map_identifier]['name']
+    user_map_name = context.data["users"][user_profile_identifier][map_identifier][
+        "name"
+    ]
 
     @retry(AssertionError, tries=10, delay=10, logger=None)
     def retry_for_map_status():
         user_maps = get_maps(request, user_prof_id, context)
         for map in user_maps:
-            if map['mapName'] == user_map_name:
-                assert map['status'] == status, "Map status not created"
+            if map["mapName"] == user_map_name:
+                assert map["status"] == status, "Map status not created"
                 context.data["users"][user_profile_identifier][map_identifier] = map
 
     retry_for_map_status()
@@ -73,13 +78,15 @@ def check_map_status(context, map_identifier: str, status, user):
 @Step("I invest in map ([^']*)")
 def invest_map(context, map_identifier: str):
     request = context.request
-    invest_map_dto = DataClassParser.parse_row(context.table.rows[0], data_class=InvestMapDTO)
+    invest_map_dto = DataClassParser.parse_row(
+        context.table.rows[0], data_class=InvestMapDTO
+    )
 
     user_profile_identifier = invest_map_dto.user_profile_identifier
     user = context.data["users"].get(user_profile_identifier)
     user_prof_id = user["userProfileId"]
 
-    map_id = context.data["users"][user_profile_identifier][map_identifier]['userMapId']
+    map_id = context.data["users"][user_profile_identifier][map_identifier]["userMapId"]
     if invest_map_dto.invalid_map == "Y":
         map_id = ah.get_uuid()
 
@@ -137,7 +144,7 @@ def withdraw_map(context, map_identifier: str):
     user = context.data["users"].get(user_profile_identifier)
     user_prof_id = user["userProfileId"]
 
-    map_id = context.data["users"][user_profile_identifier][map_identifier]['userMapId']
+    map_id = context.data["users"][user_profile_identifier][map_identifier]["userMapId"]
     if withdraw_map_dto.invalid_map == "Y":
         map_id = ah.get_uuid()
     response = request.hugosave_post_request(
@@ -157,13 +164,17 @@ def withdraw_map(context, map_identifier: str):
 @Step("I update the map ([^']*) and check if update was successful")
 def update_map(context, map_identifier):
     request = context.request
-    update_map_dto = DataClassParser.parse_row(context.table.rows[0], data_class=UpdateMapDTO)
+    update_map_dto = DataClassParser.parse_row(
+        context.table.rows[0], data_class=UpdateMapDTO
+    )
 
     user_profile_identifier = update_map_dto.user_profile_identifier
     user = context.data["users"].get(user_profile_identifier)
     user_prof_id = user["userProfileId"]
 
-    update_map_id = context.data["users"][user_profile_identifier][map_identifier]['userMapId']
+    update_map_id = context.data["users"][user_profile_identifier][map_identifier][
+        "userMapId"
+    ]
     if update_map_dto.invalid_map == "Y":
         update_map_id = ah.get_uuid()
 
@@ -223,7 +234,7 @@ def step_impl(context, map_identifier: str, user_identifier: str):
 
     user = context.data["users"].get(user_identifier)
     user_prof_id = user["userProfileId"]
-    map_id = context.data["users"][user_identifier][map_identifier]['userMapId']
+    map_id = context.data["users"][user_identifier][map_identifier]["userMapId"]
 
     response = request.hugosave_get_request(
         ah.map_urls["update"].replace("map-id", map_id),
@@ -231,5 +242,5 @@ def step_impl(context, map_identifier: str, user_identifier: str):
     )
 
     assert (
-        response['headers']['statusCode'] == 'HSA_9107'
+        response["headers"]["statusCode"] == "HSA_9107"
     ), f"Expected map to be deleted. Response : {response}"

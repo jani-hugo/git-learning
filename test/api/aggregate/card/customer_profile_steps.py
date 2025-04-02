@@ -25,14 +25,18 @@ def setup_customer_profile(
     customer_profile_info = {}
     if region == "PK":
         customer_profile_info = {
-            "customer_profile_id": context.data["config_data"]["pk_customer_profile_id"],
+            "customer_profile_id": context.data["config_data"][
+                "pk_customer_profile_id"
+            ],
             "region": "PAK",
             "name": "HUGOBANK_PK",
             "email": "admin@hugobank.com",
         }
     elif region == "SG":
         customer_profile_info = {
-            "customer_profile_id": context.data["config_data"]["sg_customer_profile_id"],
+            "customer_profile_id": context.data["config_data"][
+                "sg_customer_profile_id"
+            ],
             "region": "SGP",
             "name": "HUGOSAVE_SG",
             "email": "admin@hugosave.com",
@@ -49,7 +53,7 @@ def setup_customer_profile(
     response = request.hugoserve_get_request(
         path="/card/v1/customer-profile",
         headers=card_helper.get_default_card_headers(
-            customer_profile_dict['customer_profile_id']
+            customer_profile_dict["customer_profile_id"]
         ),
     )
 
@@ -125,7 +129,9 @@ def wait_to_onboard_customer_profile(
     max_wait_time = 0
     for provider in context.data[customer_profile_id]:
         max_wait_time = max(
-            card_helper.card_providers_config[provider["provider_name"]]["max_wait_time"],
+            card_helper.card_providers_config[provider["provider_name"]][
+                "max_wait_time"
+            ],
             max_wait_time,
         )
 

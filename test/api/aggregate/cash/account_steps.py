@@ -9,7 +9,7 @@ from test.api.aggregate.cash.cash_dataclass import (
     CreateEndCustomerProfileAccountDTO,
     CreatePlatformAccountDTO,
     UpdateAccountDTO,
-    CashAccountRequestDTO
+    CashAccountRequestDTO,
 )
 from behave import *
 from retry import retry
@@ -40,8 +40,10 @@ def create_customer_profile_bank_account(
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
     cust_profile_bank_acc_dto.customer_profile_id = customer_profile_id
 
-    if cust_profile_bank_acc_dto.cash_account_id != '':
-        cust_profile_bank_acc_dto.cash_account_id = context.data[cust_profile_bank_acc_dto.cash_account_id]
+    if cust_profile_bank_acc_dto.cash_account_id != "":
+        cust_profile_bank_acc_dto.cash_account_id = context.data[
+            cust_profile_bank_acc_dto.cash_account_id
+        ]
 
     cust_profile_bank_acc_dto.provider_id = cash_helper.__get_provider_id(
         context=context,
@@ -49,16 +51,20 @@ def create_customer_profile_bank_account(
         customer_profile_id=customer_profile_id,
     )
 
-    cust_profile_bank_acc_dto.account_type_id = cash_helper.__get_corporate_account_type_id(
-        context=context,
-        provider_id=cust_profile_bank_acc_dto.provider_id,
-        account_type=account_type,
-        customer_profile_id=customer_profile_id,
+    cust_profile_bank_acc_dto.account_type_id = (
+        cash_helper.__get_corporate_account_type_id(
+            context=context,
+            provider_id=cust_profile_bank_acc_dto.provider_id,
+            account_type=account_type,
+            customer_profile_id=customer_profile_id,
+        )
     )
 
     cust_profile_bank_acc_dto.product_id = context.data[product_id_identifier]
 
-    assert context.data[cust_profile_bank_acc_dto.product_id].profile_type == "CUSTOMER", (
+    assert (
+        context.data[cust_profile_bank_acc_dto.product_id].profile_type == "CUSTOMER"
+    ), (
         f"Expect profile_type: CUSTOMER\n"
         f"Actual profile_type: {context.data[cust_profile_bank_acc_dto.product_id].profile_type}"
     )
@@ -76,7 +82,8 @@ def create_customer_profile_bank_account(
 
     if status_code == "200":
         assert "account_id" in response["data"], (
-            f"\nExpected data object contains account_id" f"\nActual data: {response['data']}"
+            f"\nExpected data object contains account_id"
+            f"\nActual data: {response['data']}"
         )
 
         # Change the status to "ACCOUNT_PENDING" after changing the apis implementation to async
@@ -96,12 +103,12 @@ def create_customer_profile_bank_account(
     "I create a end customer cash account with id ([^']*) customerProfileID ([^']*) with product id ([^']*) and endCustomerProfileId ([^']*) and expect status as ([^']*)"
 )
 def create_cash_account(
-        context,
-        cash_account_identifier: str,
-        customer_profile_identifier: str,
-        product_id_identifier: str,
-        end_customer_profile_identifier: str,
-        status_code: str,
+    context,
+    cash_account_identifier: str,
+    customer_profile_identifier: str,
+    product_id_identifier: str,
+    end_customer_profile_identifier: str,
+    status_code: str,
 ):
     request = context.request
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
@@ -109,8 +116,11 @@ def create_cash_account(
     cash_account_request_dto = DataClassParser.dict_to_object(
         {
             "cash_account_product_id": context.data[product_id_identifier],
-            "end_customer_profile_id": context.data[end_customer_profile_identifier].end_customer_profile_id,
-        },CashAccountRequestDTO
+            "end_customer_profile_id": context.data[
+                end_customer_profile_identifier
+            ].end_customer_profile_id,
+        },
+        CashAccountRequestDTO,
     )
 
     response = request.hugoserve_post_request(
@@ -124,7 +134,8 @@ def create_cash_account(
     )
 
     assert "cash_account_id" in response["data"], (
-        f"\nExpected data object contains account_id" f"\nActual data: {response['data']}"
+        f"\nExpected data object contains account_id"
+        f"\nActual data: {response['data']}"
     )
 
     actual_onboard_status = response["data"]["cash_account_status"]
@@ -141,11 +152,11 @@ def create_cash_account(
     "I create a cash account with id ([^']*) customerProfileId ([^']*) with product id ([^']*) and expect status as ([^']*)"
 )
 def create_cash_account(
-        context,
-        cash_account_identifier: str,
-        customer_profile_identifier: str,
-        product_id_identifier: str,
-        cash_account_status: str,
+    context,
+    cash_account_identifier: str,
+    customer_profile_identifier: str,
+    product_id_identifier: str,
+    cash_account_status: str,
 ):
     request = context.request
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
@@ -153,7 +164,8 @@ def create_cash_account(
     cash_account_request_dto = DataClassParser.dict_to_object(
         {
             "cash_account_product_id": context.data[product_id_identifier],
-        },CashAccountRequestDTO
+        },
+        CashAccountRequestDTO,
     )
 
     response = request.hugoserve_post_request(
@@ -167,7 +179,8 @@ def create_cash_account(
     )
 
     assert "cash_account_id" in response["data"], (
-        f"\nExpected data object contains account_id" f"\nActual data: {response['data']}"
+        f"\nExpected data object contains account_id"
+        f"\nActual data: {response['data']}"
     )
 
     actual_onboard_status = response["data"]["cash_account_status"]
@@ -306,8 +319,10 @@ def create_end_customer_profile_bank_account(
         context.table.rows[0], data_class=CreateEndCustomerProfileAccountDTO
     )
 
-    if end_cust_profile_bank_acc_dto.cash_account_id != '':
-        end_cust_profile_bank_acc_dto.cash_account_id = context.data[end_cust_profile_bank_acc_dto.cash_account_id]
+    if end_cust_profile_bank_acc_dto.cash_account_id != "":
+        end_cust_profile_bank_acc_dto.cash_account_id = context.data[
+            end_cust_profile_bank_acc_dto.cash_account_id
+        ]
 
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
     end_cust_profile_bank_acc_dto.end_customer_profile_id = context.data[
@@ -330,7 +345,8 @@ def create_end_customer_profile_bank_account(
     end_cust_profile_bank_acc_dto.product_id = context.data[product_id_identifier]
 
     assert (
-        context.data[end_cust_profile_bank_acc_dto.product_id].profile_type == "END_CUSTOMER"
+        context.data[end_cust_profile_bank_acc_dto.product_id].profile_type
+        == "END_CUSTOMER"
     ), (
         f"Expect profile_type: END_CUSTOMER\n"
         f"Actual profile_type: {context.data[end_cust_profile_bank_acc_dto.product_id].profile_type}"
@@ -356,7 +372,8 @@ def create_end_customer_profile_bank_account(
             "data" in response
         ), f"\nExpected non empty data object, found empty. Response:{response}"
         assert "account_id" in response["data"], (
-            f"\nExpected data object contains account_id" f"\nActual data: {response['data']}"
+            f"\nExpected data object contains account_id"
+            f"\nActual data: {response['data']}"
         )
 
         # Change the status to "ACCOUNT_PENDING" after changing the apis implementation to async
@@ -369,7 +386,9 @@ def create_end_customer_profile_bank_account(
         )
 
         end_cust_profile_bank_acc_dto.account_id = response["data"]["account_id"]
-        context.data[end_cust_profile_bank_acc_dto.identifier] = end_cust_profile_bank_acc_dto
+        context.data[end_cust_profile_bank_acc_dto.identifier] = (
+            end_cust_profile_bank_acc_dto
+        )
 
 
 @Then(
@@ -422,7 +441,9 @@ def verify_end_customer_profile_bank_account_exist(
     sanitized_expected = AccountDTO.sanitize_bank_account_dto(expected_bank_acc_dto)
     sanitized_actual = AccountDTO.sanitize_bank_account_dto(actual_bank_acc_dto)
 
-    if (sanitized_expected.on_behalf_of) is None or len(sanitized_expected.on_behalf_of) == 0:
+    if (sanitized_expected.on_behalf_of) is None or len(
+        sanitized_expected.on_behalf_of
+    ) == 0:
         sanitized_expected.on_behalf_of = "CUSTOMER"
     assert sanitized_expected == sanitized_actual, (
         f"\nExpect bank_account_dto: {sanitized_expected}"
@@ -502,7 +523,9 @@ def attach_card(
     attach_card_dto.account_id = context.data[attach_card_dto.account_id].account_id
     attach_card_dto.is_overdraft_allowed = is_overdraft_allowed
     attach_card_dto.to_be_in_trust = to_be_in_trust
-    customer_profile_id = context.data[attach_card_dto.customer_profile_id].customer_profile_id
+    customer_profile_id = context.data[
+        attach_card_dto.customer_profile_id
+    ].customer_profile_id
     response = request.hugoserve_post_request(
         path="/cash/v1/platform/account/" + attach_card_dto.account_id + "/attach-card",
         data=attach_card_dto.get_dict(),
@@ -520,13 +543,19 @@ def attach_card(
     "I update an account with Id ([^']*) and negative balance allowed set to ([^']*) and expect a "
     "status code ([^']*)"
 )
-def update_bank_account(context, account_id: str, is_overdraft_allowed: bool, status_code: str):
+def update_bank_account(
+    context, account_id: str, is_overdraft_allowed: bool, status_code: str
+):
     request = context.request
 
-    bank_acc_dto = DataClassParser.parse_row(context.table.rows[0], data_class=UpdateAccountDTO)
+    bank_acc_dto = DataClassParser.parse_row(
+        context.table.rows[0], data_class=UpdateAccountDTO
+    )
     bank_acc_dto.account_id = context.data[bank_acc_dto.account_id].account_id
 
-    customer_profile_id = context.data[bank_acc_dto.customer_profile_id].customer_profile_id
+    customer_profile_id = context.data[
+        bank_acc_dto.customer_profile_id
+    ].customer_profile_id
 
     response = request.hugoserve_put_request(
         path=f"/cash/v1/account/" + bank_acc_dto.account_id,
@@ -561,11 +590,11 @@ def create_platform_bank_account(
         customer_profile_identifier
     ].customer_profile_id
 
-    origin = 'CUSTOMER'
-    if created_by == 'CARD_SERVICE':
-        origin = 'CARD'
-    elif created_by == 'INVESTMENT_SERVICE':
-        origin = 'INVESTMENT'
+    origin = "CUSTOMER"
+    if created_by == "CARD_SERVICE":
+        origin = "CARD"
+    elif created_by == "INVESTMENT_SERVICE":
+        origin = "INVESTMENT"
 
     request.hugoserve_post_request(
         path="/cash/v1/internal/customer-profile",
@@ -590,7 +619,8 @@ def create_platform_bank_account(
             "data" in response
         ), f"\nExpected non empty data object, found empty. Response:{response}"
         assert "account_id" in response["data"], (
-            f"\nExpected data object contains account_id" f"\nActual data: {response['data']}"
+            f"\nExpected data object contains account_id"
+            f"\nActual data: {response['data']}"
         )
         assert response["data"]["account_status"] == "ACCOUNT_FAILED", (
             f"\nExpect data.account_status: ACCOUNT_PENDING"

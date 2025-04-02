@@ -9,7 +9,7 @@ from behave import *
 from test.util.common_util import check_status
 
 use_step_matcher("re")
-profile_end_customer_profile_url = '/profile/v1/end-customer'
+profile_end_customer_profile_url = "/profile/v1/end-customer"
 
 
 @Then("I create below End-Customer-Profile")
@@ -30,9 +30,9 @@ def create_end_customer(context):
         response = request.hugoserve_post_request(
             profile_end_customer_profile_url,
             data,
-            headers={'x-customer-profile-id': customer_profile_id},
+            headers={"x-customer-profile-id": customer_profile_id},
         )
-        check_status(response, '200')
+        check_status(response, "200")
         end_customer_profile_dto.end_customer_profile_id = response["data"][
             "end_customer_profile_ids"
         ][
@@ -64,12 +64,12 @@ def verify_end_customer_profile_exist(context):
             expected_end_customer_profile_dto.customer_profile_identifier
         ].customer_profile_id
         response = request.hugoserve_get_request(
-            profile_end_customer_profile_url + '-profile/' + end_customer_profile_id,
-            headers={'x-customer-profile-id': customer_profile_id},
+            profile_end_customer_profile_url + "-profile/" + end_customer_profile_id,
+            headers={"x-customer-profile-id": customer_profile_id},
         )
 
         data = response["data"]
-        check_status(response, '200')
+        check_status(response, "200")
 
         flattened_data = EndCustomerProfileDTO.flatten_end_customer_data(data)
 
@@ -89,7 +89,6 @@ def verify_end_customer_profile_exist(context):
         )
 
 
-
 @Step("I delete the above created End-Customer-Profile")
 def delete_end_customer_profile(context):
     request = context.request
@@ -98,16 +97,18 @@ def delete_end_customer_profile(context):
 
     for end_customer_profile_to_delete in customers_to_delete:
         customer_profile_id = context.data[
-            end_customer_profile_to_delete['customer_profile_identifier']
+            end_customer_profile_to_delete["customer_profile_identifier"]
         ].customer_profile_id
         end_customer_profile_id = context.data[
             end_customer_profile_to_delete["end_customer_profile_identifier"]
         ].end_customer_profile_id
-        endpoint = profile_end_customer_profile_url + '-profile/' + end_customer_profile_id
-        response = request.hugoserve_delete_request(
-            endpoint, headers={'x-customer-profile-id': customer_profile_id}
+        endpoint = (
+            profile_end_customer_profile_url + "-profile/" + end_customer_profile_id
         )
-        check_status(response, '200')
+        response = request.hugoserve_delete_request(
+            endpoint, headers={"x-customer-profile-id": customer_profile_id}
+        )
+        check_status(response, "200")
 
 
 @Step("I verify End-Customer-Profile doesn't exist")
@@ -118,21 +119,21 @@ def verify_end_customer_profile_not_exist(context):
 
     for deleted_customer in deleted_customers:
         customer_profile_id = context.data[
-            deleted_customer['customer_profile_identifier']
+            deleted_customer["customer_profile_identifier"]
         ].customer_profile_id
         end_customer_profile_id = context.data[
             deleted_customer["end_customer_profile_identifier"]
         ].end_customer_profile_id
         response = request.hugoserve_get_request(
-            profile_end_customer_profile_url + '-profile/' + end_customer_profile_id,
-            headers={'x-customer-profile-id': customer_profile_id},
+            profile_end_customer_profile_url + "-profile/" + end_customer_profile_id,
+            headers={"x-customer-profile-id": customer_profile_id},
         )
-        check_status(response, 'PSM_E9506')
+        check_status(response, "PSM_E9506")
 
         assert (
             "data" not in response
         ), f"\nExpect response.data: <empty> \nActual response.data: {response['data']}"
-        assert 'Invalid End customer profile id' == response["headers"]["message"], (
+        assert "Invalid End customer profile id" == response["headers"]["message"], (
             f"\nExpect response.headers.message: Invalid End customer profile id"
             f"\nActual response.headers.message: {response['headers']['message']}"
         )

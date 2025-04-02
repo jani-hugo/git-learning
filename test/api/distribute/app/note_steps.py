@@ -4,7 +4,9 @@ import test.api.distribute.app.app_helper as ah
 use_step_matcher("re")
 
 
-@Step("I add a random note to the latest intent of user ([^']*) and check if note is saved")
+@Step(
+    "I add a random note to the latest intent of user ([^']*) and check if note is saved"
+)
 def create_note(context, user):
     request = context.request
     user_prof_id = ah.get_user_prof_id(context, user)
@@ -14,7 +16,7 @@ def create_note(context, user):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    intent_id = response['data']['intentViews'][0]['intentId']
+    intent_id = response["data"]["intentViews"][0]["intentId"]
     note_text = ah.get_rand_number(10)
 
     # create and check
@@ -29,7 +31,7 @@ def create_note(context, user):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    assert response['data']['note'] == note_text
+    assert response["data"]["note"] == note_text
 
     # update and check
     note_text = ah.get_rand_number(10)
@@ -44,4 +46,4 @@ def create_note(context, user):
         headers=ah.get_user_header(user_prof_id, context),
     )
 
-    assert response['data']['note'] == note_text
+    assert response["data"]["note"] == note_text

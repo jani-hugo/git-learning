@@ -24,6 +24,7 @@ import test.api.distribute.app.credit_account_steps
 import test.api.distribute.app.create_account_steps
 import test.api.distribute.app.premium_account_steps
 
+
 @Step("I wait for ([^']*) seconds")
 def wait_for(context, seconds):
     time.sleep(int(seconds))
@@ -33,7 +34,3 @@ def wait_for(context, seconds):
 # If we put our files in subdirectories or directory outside feature/steps then behave will not recognize them
 # As a work-around we can import all steps from all feature/<modules> in this file
 # So the unused imports are not meant for removal from this common step module
-
-
-
-

@@ -66,9 +66,13 @@ class EndCustomerOnboardResponseDTO:
     error_message: Optional[str]
 
     @classmethod
-    def sanitize_end_customer_onboard_response_dto(cls, end_customer_onboard_response_dto):
+    def sanitize_end_customer_onboard_response_dto(
+        cls, end_customer_onboard_response_dto
+    ):
         end_customer_onboard_response_dto.identifier = None
-        end_customer_onboard_response_dto.status = end_customer_onboard_response_dto.status
+        end_customer_onboard_response_dto.status = (
+            end_customer_onboard_response_dto.status
+        )
         end_customer_onboard_response_dto.error_message = (
             end_customer_onboard_response_dto.error_message
         )
@@ -131,6 +135,7 @@ class AllocationDTO:
     def get_dict(self):
         return {"assets": [i.get_dict() for i in self.assets]}
 
+
 @dataclasses.dataclass
 class String:
     value: str
@@ -138,12 +143,14 @@ class String:
     def to_dict(self):
         return {"value": self.value}
 
+
 @dataclasses.dataclass
 class MultiString:
     values: List[str]
 
     def to_dict(self):
         return {"values": self.values}
+
 
 @dataclasses.dataclass
 class ProductRequestDTO:
@@ -158,7 +165,6 @@ class ProductRequestDTO:
     allocation_strategy: str
     re_balance_strategy: str
 
-
     # Only add values that would be sent to create an object using REST call
     def get_dict(self):
         return {
@@ -170,10 +176,12 @@ class ProductRequestDTO:
             "provider_id": self.provider_id,
         }
 
+
 @dataclasses.dataclass
 class Value:
     string_value: Optional[String] = None
     multi_string_value: Optional[MultiString] = None
+
 
 @dataclasses.dataclass
 class ParamRequestDTO:
@@ -187,9 +195,9 @@ class ParamRequestDTO:
                 return {k: clean_dict(v) for k, v in d.items() if v is not None}
             elif isinstance(d, list):
                 return [clean_dict(i) for i in d if i is not None]
-            elif hasattr(d, 'to_dict'):
+            elif hasattr(d, "to_dict"):
                 return d.to_dict()
-            elif hasattr(d, 'value'):
+            elif hasattr(d, "value"):
                 return d.value
             return d
 
@@ -197,7 +205,9 @@ class ParamRequestDTO:
         return clean_dict(
             {
                 "param_name": self.param_name,
-                "value": clean_dict(self.value.__dict__),  # Clean nested Value dataclass
+                "value": clean_dict(
+                    self.value.__dict__
+                ),  # Clean nested Value dataclass
                 "metadata": self.metadata,
             }
         )
@@ -324,7 +334,9 @@ class PortfolioBalanceDTO:
     def sanitize_portfolio_asset_balance_dto(cls, portfolio_asset_balance_dto):
         portfolio_asset_balance_dto.identifier = None
         portfolio_asset_balance_dto.networth = portfolio_asset_balance_dto.networth
-        portfolio_asset_balance_dto.asset_networth = portfolio_asset_balance_dto.asset_networth
+        portfolio_asset_balance_dto.asset_networth = (
+            portfolio_asset_balance_dto.asset_networth
+        )
 
         return portfolio_asset_balance_dto
 
@@ -386,7 +398,9 @@ class TransactionResponseDTO:
     @classmethod
     def sanitize_transaction_response_dto(cls, transaction_response_dto):
         transaction_response_dto.identifier = None
-        transaction_response_dto.transaction_id = transaction_response_dto.transaction_id
+        transaction_response_dto.transaction_id = (
+            transaction_response_dto.transaction_id
+        )
         transaction_response_dto.status = transaction_response_dto.status
         transaction_response_dto.error_message = transaction_response_dto.error_message
 
@@ -447,10 +461,10 @@ class TransactionDetailsDTO:
 
 def sanitize_date(date):
     if len(date) > 10:
-        split = date.split(' ')
+        split = date.split(" ")
         yyyy_mm_dd_date = split[0]
-        date_split = yyyy_mm_dd_date.split('-')
-        return date_split[2] + '-' + date_split[1] + '-' + date_split[0]
+        date_split = yyyy_mm_dd_date.split("-")
+        return date_split[2] + "-" + date_split[1] + "-" + date_split[0]
     return date
 
 

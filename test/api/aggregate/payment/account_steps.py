@@ -53,7 +53,8 @@ def create_customer_profile_payment_account(
 
     if status_code == "200":
         assert "account_id" in response["data"], (
-            f"\nExpected data object contains account_id" f"\nActual data: {response['data']}"
+            f"\nExpected data object contains account_id"
+            f"\nActual data: {response['data']}"
         )
 
         actual_onboard_status = response["data"]["account_status"]
@@ -63,7 +64,9 @@ def create_customer_profile_payment_account(
         )
 
         cust_profile_payment_acc_dto.account_id = response["data"]["account_id"]
-        context.data[cust_profile_payment_acc_dto.identifier] = cust_profile_payment_acc_dto
+        context.data[cust_profile_payment_acc_dto.identifier] = (
+            cust_profile_payment_acc_dto
+        )
 
 
 @Then(
@@ -146,7 +149,8 @@ def verify_payment_account_exist(
     actual = AccountDTO.payment_account_dto(actual_payment_acc_dto)
 
     assert expected == actual, (
-        f"\nExpect payment_account_dto: {expected}" f"\nActual payment_account_dto: {actual}"
+        f"\nExpect payment_account_dto: {expected}"
+        f"\nActual payment_account_dto: {actual}"
     )
 
     context.data[identifier] = actual_payment_acc_dto.account_id
@@ -176,11 +180,13 @@ def create_end_customer_profile_payment_account(
         end_customer_profile_identifier
     ].end_customer_profile_id
     end_cust_profile_payment_acc_dto.customer_profile_id = customer_profile_id
-    end_cust_profile_payment_acc_dto.provider_id = payment_helper.__get_payment_provider_id(
-        context=context,
-        provider_name=provider_name,
-        customer_profile_id=customer_profile_id,
-        request_origin=request_origin,
+    end_cust_profile_payment_acc_dto.provider_id = (
+        payment_helper.__get_payment_provider_id(
+            context=context,
+            provider_name=provider_name,
+            customer_profile_id=customer_profile_id,
+            request_origin=request_origin,
+        )
     )
 
     response = request.hugoserve_post_request(
@@ -197,7 +203,8 @@ def create_end_customer_profile_payment_account(
             "data" in response
         ), f"\nExpected non empty data object, found empty. Response:{response}"
         assert "account_id" in response["data"], (
-            f"\nExpected data object contains account_id" f"\nActual data: {response['data']}"
+            f"\nExpected data object contains account_id"
+            f"\nActual data: {response['data']}"
         )
 
         actual_onboard_status = response["data"]["account_status"]
@@ -257,7 +264,8 @@ def verify_end_customer_profile_payment_account_exist(
     actual = AccountDTO.payment_account_dto(actual_payment_acc_dto)
 
     assert expected == actual, (
-        f"\nExpect payment_account_dto: {expected}" f"\nActual payment_account_dto: {actual}"
+        f"\nExpect payment_account_dto: {expected}"
+        f"\nActual payment_account_dto: {actual}"
     )
 
     context.data[identifier] = actual_payment_acc_dto.account_id
@@ -291,7 +299,7 @@ def retrieve_payment_account(
         f"\nExpect data.account_status: {account_status}"
         f"\nActual data.account_status: {response['data']['account_status']}, data: {response['data']}"
     )
-    context.data[identifier] = response['data']
+    context.data[identifier] = response["data"]
 
 
 @Then(
@@ -318,7 +326,7 @@ def verify_account_balance(
         response = request.hugoserve_get_request(
             path=f"/payment/v1/account/master-account/{master_account_id}/balance",
             headers=payment_helper.__get_default_payment_headers(
-                customer_profile_id, request_origin='CASH_SERVICE'
+                customer_profile_id, request_origin="CASH_SERVICE"
             ),
         )
         assert (

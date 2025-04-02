@@ -19,7 +19,9 @@ def create_transaction_success(
     request = context.request
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
 
-    transaction_dto_list = DataClassParser.parse_rows(context.table.rows, TransactionRequestDTO)
+    transaction_dto_list = DataClassParser.parse_rows(
+        context.table.rows, TransactionRequestDTO
+    )
     for transaction_dto in transaction_dto_list:
         if transaction_dto.is_rate_included:
             transaction_dto.rate = get_rate_success(
@@ -30,15 +32,21 @@ def create_transaction_success(
             if status_code == "ISM_9410":
                 time.sleep(100)
 
-        transaction_dto.portfolio_id = context.data[transaction_dto.portfolio_id].portfolio_id
+        transaction_dto.portfolio_id = context.data[
+            transaction_dto.portfolio_id
+        ].portfolio_id
         response = request.hugoserve_post_request(
             path="/investment/v1/transaction",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             data=transaction_dto.get_dict(),
         )
         assert response["headers"]["status_code"] == status_code
         if response["headers"]["status_code"] == "200":
-            assert "transaction_id" in response["data"], f"Expected transaction_id. {response}"
+            assert (
+                "transaction_id" in response["data"]
+            ), f"Expected transaction_id. {response}"
             transaction_response_dto = DataClassParser.dict_to_object(
                 response["data"], TransactionResponseDTO
             )
@@ -63,13 +71,17 @@ def verify_transaction_settled_invest_success(
 ):
     request = context.request
     transaction_id = context.data[transaction_identifier].transaction_id
-    customer_profile_id = context.data[customer_profile_identifier.strip()].customer_profile_id
+    customer_profile_id = context.data[
+        customer_profile_identifier.strip()
+    ].customer_profile_id
 
     @retry(exceptions=AssertionError, tries=40, delay=10, logger=None)
     def retry_for_transaction_status():
         response = request.hugoserve_get_request(
             path="/investment/v1/transaction/" + transaction_id,
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
         assert (
             response["headers"]["status_code"] == "200"
@@ -94,13 +106,17 @@ def verify_transaction_settled_withdraw_success(
 ):
     request = context.request
     transaction_id = context.data[transaction_identifier].transaction_id
-    customer_profile_id = context.data[customer_profile_identifier.strip()].customer_profile_id
+    customer_profile_id = context.data[
+        customer_profile_identifier.strip()
+    ].customer_profile_id
 
     @retry(exceptions=AssertionError, tries=40, delay=10, logger=None)
     def retry_for_transaction_status():
         response = request.hugoserve_get_request(
             path="/investment/v1/transaction/" + transaction_id,
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
         assert (
             response["headers"]["status_code"] == "200"
@@ -117,7 +133,7 @@ def verify_transaction_settled_withdraw_success(
         path="/investment/v1/dev/settle-transaction/" + transaction_id,
         headers=investment_helper.__get_default_investment_headers(customer_profile_id),
     )
-    assert settle_response["headers"]["status_code"] == '200'
+    assert settle_response["headers"]["status_code"] == "200"
 
     settle_count = 0
     status = transaction_status
@@ -130,7 +146,9 @@ def verify_transaction_settled_withdraw_success(
         settle_count += 1
         response = request.hugoserve_get_request(
             path="/investment/v1/transaction/" + transaction_id,
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
         assert (
             response["headers"]["status_code"] == "200"
@@ -150,7 +168,10 @@ def verify_transaction_settled_withdraw_success(
     "I request to get transaction details of ([^']*) of Customer-Profile ([^']*) and expect header status of ([^']*) and below details"
 )
 def get_transaction_details_success(
-    context, transaction_identifier: str, customer_profile_identifier: str, status_code: str
+    context,
+    transaction_identifier: str,
+    customer_profile_identifier: str,
+    status_code: str,
 ):
     request = context.request
     transaction_id = context.data[transaction_identifier].transaction_id
@@ -196,22 +217,34 @@ def create_transaction_insufficient_balance_failure(
     context, customer_profile_identifier: str, transaction_status: str
 ):
     request = context.request
-    transaction_dto_list = DataClassParser.parse_rows(context.table, TransactionRequestDTO)
+    transaction_dto_list = DataClassParser.parse_rows(
+        context.table, TransactionRequestDTO
+    )
     for transaction_dto in transaction_dto_list:
-        customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
-        transaction_dto.portfolio_id = context.data[transaction_dto.portfolio_id].portfolio_id
+        customer_profile_id = context.data[
+            customer_profile_identifier
+        ].customer_profile_id
+        transaction_dto.portfolio_id = context.data[
+            transaction_dto.portfolio_id
+        ].portfolio_id
         response = request.hugoserve_post_request(
             path="/investment/v1/transaction",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             data=transaction_dto.get_dict(),
         )
 
-        assert "data" in response, f"Expected status :TRANSACTION_STATUS_RECEIVED. {response}"
+        assert (
+            "data" in response
+        ), f"Expected status :TRANSACTION_STATUS_RECEIVED. {response}"
         transaction_response_dto = DataClassParser.dict_to_object(
             response["data"], TransactionResponseDTO
         )
         sanitized_transaction_response_dto = (
-            TransactionResponseDTO.sanitize_transaction_response_dto(transaction_response_dto)
+            TransactionResponseDTO.sanitize_transaction_response_dto(
+                transaction_response_dto
+            )
         )
         transaction_id = sanitized_transaction_response_dto.transaction_id
 
@@ -219,7 +252,9 @@ def create_transaction_insufficient_balance_failure(
         def retry_for_transaction_status():
             get_response = request.hugoserve_get_request(
                 path="/investment/v1/transaction/" + transaction_id,
-                headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+                headers=investment_helper.__get_default_investment_headers(
+                    customer_profile_id
+                ),
             )
 
             assert (
@@ -240,14 +275,20 @@ def create_transaction_incorrect_customer_failure(
     context, customer_profile_identifier: str, transaction_status: str
 ):
     request = context.request
-    transaction_dto_list = DataClassParser.parse_rows(context.table, TransactionRequestDTO)
+    transaction_dto_list = DataClassParser.parse_rows(
+        context.table, TransactionRequestDTO
+    )
     for transaction_dto in transaction_dto_list:
         customer_profile_id = "1352b654-ac6c-42fe-897e-4d7247275f38"
-        transaction_dto.portfolio_id = context.data[transaction_dto.portfolio_id].portfolio_id
+        transaction_dto.portfolio_id = context.data[
+            transaction_dto.portfolio_id
+        ].portfolio_id
 
         response = request.hugoserve_post_request(
             path="/investment/v1/transaction",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             data=transaction_dto.get_dict(),
         )
 
@@ -263,13 +304,19 @@ def create_transaction_invalid_customer_failure(
     context, transaction_type: str, customer_profile_id: str, transaction_status: str
 ):
     request = context.request
-    transaction_dto_list = DataClassParser.parse_rows(context.table, TransactionRequestDTO)
+    transaction_dto_list = DataClassParser.parse_rows(
+        context.table, TransactionRequestDTO
+    )
     for transaction_dto in transaction_dto_list:
-        transaction_dto.portfolio_id = context.data[transaction_dto.portfolio_id].portfolio_id
+        transaction_dto.portfolio_id = context.data[
+            transaction_dto.portfolio_id
+        ].portfolio_id
 
         response = request.hugoserve_post_request(
             path="/investment/v1/transaction",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             data=transaction_dto.get_dict(),
         )
         assert (
@@ -284,12 +331,18 @@ def create_transaction_incorrect_portfolio_failure(
     context, customer_profile_identifier: str, transaction_status: str
 ):
     request = context.request
-    transaction_dto_list = DataClassParser.parse_rows(context.table, TransactionRequestDTO)
+    transaction_dto_list = DataClassParser.parse_rows(
+        context.table, TransactionRequestDTO
+    )
     for transaction_dto in transaction_dto_list:
-        customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
+        customer_profile_id = context.data[
+            customer_profile_identifier
+        ].customer_profile_id
         response = request.hugoserve_post_request(
             path="/investment/v1/transaction",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             data=transaction_dto.get_dict(),
         )
 
@@ -310,20 +363,28 @@ def create_transaction_invalid_transaction_type_failure(
 ):
     request = context.request
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
-    transaction_dto_list = DataClassParser.parse_rows(context.table, TransactionRequestDTO)
+    transaction_dto_list = DataClassParser.parse_rows(
+        context.table, TransactionRequestDTO
+    )
     for transaction_dto in transaction_dto_list:
-        transaction_dto.portfolio_id = context.data[transaction_dto.portfolio_id].portfolio_id
+        transaction_dto.portfolio_id = context.data[
+            transaction_dto.portfolio_id
+        ].portfolio_id
         transaction_dto.transaction_type = invalid_transaction_type
         response = request.hugoserve_post_request(
             path="/investment/v1/transaction",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             data=transaction_dto.get_dict(),
         )
         transaction_response_dto = DataClassParser.dict_to_object(
             response["data"], TransactionResponseDTO
         )
         sanitized_transaction_response_dto = (
-            TransactionResponseDTO.sanitize_transaction_response_dto(transaction_response_dto)
+            TransactionResponseDTO.sanitize_transaction_response_dto(
+                transaction_response_dto
+            )
         )
         transaction_id = sanitized_transaction_response_dto.transaction_id
 
@@ -331,13 +392,18 @@ def create_transaction_invalid_transaction_type_failure(
         def retry_for_transaction_status():
             get_response = request.hugoserve_get_request(
                 path="/investment/v1/transaction/" + transaction_id,
-                headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+                headers=investment_helper.__get_default_investment_headers(
+                    customer_profile_id
+                ),
             )
 
-            assert get_response["headers"]["status_code"] == "200" and "data" in response
+            assert (
+                get_response["headers"]["status_code"] == "200" and "data" in response
+            )
             assert (
                 get_response["data"]["transaction_status"] == transaction_status
-                and get_response["data"]["transaction_type"] == "TRANSACTION_TYPE_UNKNOWN"
+                and get_response["data"]["transaction_type"]
+                == "TRANSACTION_TYPE_UNKNOWN"
             ), (
                 f"\nExpect data.transaction_status: {transaction_status}"
                 f"\nActual data.transaction_status: {get_response['data']['transaction_status']}, data: {get_response['data']}"
@@ -354,27 +420,37 @@ def create_transaction_invalid_amount_failure(
 ):
     request = context.request
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
-    transaction_dto_list = DataClassParser.parse_rows(context.table, TransactionRequestDTO)
+    transaction_dto_list = DataClassParser.parse_rows(
+        context.table, TransactionRequestDTO
+    )
     for transaction_dto in transaction_dto_list:
         response = request.hugoserve_post_request(
             path="/investment/v1/transaction",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             data=transaction_dto.get_dict(),
         )
         assert response["headers"]["status_code"] == status
 
 
-@given("I request to get Transactions for below Portfolios and expect header as ([^']*)")
+@given(
+    "I request to get Transactions for below Portfolios and expect header as ([^']*)"
+)
 def get_transaction_details_portfolio_success(context, status: str):
     request = context.request
     for row in context.table:
         portfolio_identifier = row[0]
         customer_profile_identifier = row[1]
-        customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
+        customer_profile_id = context.data[
+            customer_profile_identifier
+        ].customer_profile_id
         portfolio_id = context.data[portfolio_identifier].portfolio_id
         response = request.hugoserve_get_request(
             path="/investment/v1/portfolio/" + portfolio_id + "/transactions",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
         assert response["headers"]["status_code"] == status
 
@@ -389,7 +465,9 @@ def get_transaction_details_end_customer_success(
     for row in context.table:
         portfolio_identifier = row[0]
         customer_profile_identifier = row[1]
-        customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
+        customer_profile_id = context.data[
+            customer_profile_identifier
+        ].customer_profile_id
         end_customer_profile_id = context.data[
             end_customer_profile_identifier
         ].end_customer_profile_id
@@ -398,13 +476,19 @@ def get_transaction_details_end_customer_success(
             path="/investment/v1/end-customer-profile/"
             + end_customer_profile_id
             + "/transactions",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
         assert response["headers"]["status_code"] == status
 
 
-@given("I request to get portfolio rate of metals for ([^']*) of Customer Profile ([^']*)")
-def get_rate_success(context, portfolio_identifier: str, customer_profile_identifier: str):
+@given(
+    "I request to get portfolio rate of metals for ([^']*) of Customer Profile ([^']*)"
+)
+def get_rate_success(
+    context, portfolio_identifier: str, customer_profile_identifier: str
+):
     request = context.request
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
     portfolio_id = context.data[portfolio_identifier].portfolio_id
@@ -417,7 +501,9 @@ def get_rate_success(context, portfolio_identifier: str, customer_profile_identi
     return response["data"]
 
 
-@then("I modify the portfolio rate of metals of below provider to test for malformed token")
+@then(
+    "I modify the portfolio rate of metals of below provider to test for malformed token"
+)
 def modify_rate_token_success(context):
     for rate in context.data["rate"]["asset_rates"]:
         rate["offer_price"] -= 20

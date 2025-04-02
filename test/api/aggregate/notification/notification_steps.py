@@ -38,9 +38,9 @@ def set_callback_for_customer(context):
         response = request.hugoserve_post_request(
             notification_customer_callback_url,
             data,
-            headers={'x-customer-profile-id': customer_profile_id},
+            headers={"x-customer-profile-id": customer_profile_id},
         )
-        check_status(response, '200')
+        check_status(response, "200")
 
         context.data[callback_dto_list.callback_identifier] = (
             callback_dto_list  # Save callback against identifier
@@ -64,16 +64,18 @@ def verify_callback_endpoint(context):
         response = request.hugoserve_get_request(
             notification_customer_callback_url,
             params=None,
-            headers={'x-customer-profile-id': customer_profile_id},
+            headers={"x-customer-profile-id": customer_profile_id},
         )
-        check_status(response, '200')
+        check_status(response, "200")
         data = response["data"]
         actual_end_customer_profile_dto = DataClassParser.dict_to_object(
             data, data_class=CallbackDTO
         )
 
         sanitized_expected = CallbackDTO.sanitize_callback_dto(callback)
-        sanitized_actual = CallbackDTO.sanitize_callback_dto(actual_end_customer_profile_dto)
+        sanitized_actual = CallbackDTO.sanitize_callback_dto(
+            actual_end_customer_profile_dto
+        )
         assert sanitized_expected == sanitized_actual, (
             f"\nExpect end_customer_profile_dto: {sanitized_expected}"
             f"\nActual end_customer_profile_dto: {sanitized_actual}"
@@ -92,13 +94,14 @@ def push_dummy_notification(context):
     for notification_dto in notification_dto_list:
         data = notification_dto.get_dict()
         customer_profile_id = context.data[
-            data['customer_profile_identifier']
+            data["customer_profile_identifier"]
         ].customer_profile_id
         endpoint = (
-            '/notification/v1/dev/notification/customer-profile-id/' + customer_profile_id
+            "/notification/v1/dev/notification/customer-profile-id/"
+            + customer_profile_id
         )
         response = request.hugoserve_get_request(endpoint)
-        check_status(response, '200')
+        check_status(response, "200")
 
 
 @Then("I fetch notifications for customer profile id and check status")
@@ -114,19 +117,22 @@ def check_notification_status(context):
     for notification_dto in notification_dto_list:
         data = notification_dto.get_dict()
         customer_profile_id = context.data[
-            data['customer_profile_identifier']
+            data["customer_profile_identifier"]
         ].customer_profile_id
-        endpoint = '/notification/v1/customer-profile/notifications'
+        endpoint = "/notification/v1/customer-profile/notifications"
         time.sleep(int(notification_dto.wait_time))
         response = request.hugoserve_get_request(
             endpoint,
-            {"to-date": str(datetime.utcnow()), "from-date": "2022-01-04 13:08:36.505605"},
-            headers={'x-customer-profile-id': customer_profile_id},
+            {
+                "to-date": str(datetime.utcnow()),
+                "from-date": "2022-01-04 13:08:36.505605",
+            },
+            headers={"x-customer-profile-id": customer_profile_id},
         )
-        check_status(response, '200')
+        check_status(response, "200")
 
         actual_dto = DataClassParser.dict_to_object(
-            response['data']['notifications'][0], data_class=NotificationDTO
+            response["data"]["notifications"][0], data_class=NotificationDTO
         )
 
         assert actual_dto.status == notification_dto.status, (

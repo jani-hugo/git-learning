@@ -1,7 +1,10 @@
 from hugoutils.utilities.dataclass_util import DataClassParser
 
 from test.api.aggregate.payment import helper as payment_helper
-from test.api.aggregate.payment.payment_dataclass import InquiryRequestDTO, BillInquiryRequestDTO
+from test.api.aggregate.payment.payment_dataclass import (
+    InquiryRequestDTO,
+    BillInquiryRequestDTO,
+)
 from behave import *
 
 use_step_matcher("re")
@@ -14,9 +17,11 @@ def internal_account_inquiry(
     context, receiver_account_identifier: str, request_origin: str, status_code: str
 ):
     request = context.request
-    inquiry_request_dto = DataClassParser.parse_row(context.table.rows[0], InquiryRequestDTO)
+    inquiry_request_dto = DataClassParser.parse_row(
+        context.table.rows[0], InquiryRequestDTO
+    )
 
-    receiver_account = context.data[receiver_account_identifier]['account_id']
+    receiver_account = context.data[receiver_account_identifier]["account_id"]
     customer_profile_id = context.data[
         inquiry_request_dto.customer_profile_id
     ].customer_profile_id
@@ -54,7 +59,9 @@ def internal_account_inquiry(
 )
 def external_account_inquiry(context, request_origin: str, status_code: str):
     request = context.request
-    inquiry_request_dto = DataClassParser.parse_row(context.table.rows[0], InquiryRequestDTO)
+    inquiry_request_dto = DataClassParser.parse_row(
+        context.table.rows[0], InquiryRequestDTO
+    )
 
     customer_profile_id = context.data[
         inquiry_request_dto.customer_profile_id
@@ -67,7 +74,7 @@ def external_account_inquiry(context, request_origin: str, status_code: str):
         inquiry_request_dto.account_id = context.data[inquiry_request_dto.account_id]
     else:
         inquiry_request_dto.account_id = context.data[inquiry_request_dto.account_id][
-            'account_id'
+            "account_id"
         ]
 
     process_inquiry_request(
@@ -96,9 +103,9 @@ def bill_inquiry_success(
         bill_inquiry_request_dto.customer_profile_id
     ].customer_profile_id
 
-    bill_inquiry_request_dto.account_id = context.data[bill_inquiry_request_dto.account_id][
-        'account_id'
-    ]
+    bill_inquiry_request_dto.account_id = context.data[
+        bill_inquiry_request_dto.account_id
+    ]["account_id"]
 
     response = request.hugoserve_post_request(
         path=f"/payment/v1/inquiry/bill",
@@ -140,9 +147,9 @@ def bill_inquiry_failure(
         bill_inquiry_request_dto.customer_profile_id
     ].customer_profile_id
 
-    bill_inquiry_request_dto.account_id = context.data[bill_inquiry_request_dto.account_id][
-        'account_id'
-    ]
+    bill_inquiry_request_dto.account_id = context.data[
+        bill_inquiry_request_dto.account_id
+    ]["account_id"]
 
     response = request.hugoserve_post_request(
         path=f"/payment/v1/inquiry/bill",
@@ -177,9 +184,9 @@ def bill_inquiry_failure(
         bill_inquiry_request_dto.customer_profile_id
     ].customer_profile_id
 
-    bill_inquiry_request_dto.account_id = context.data[bill_inquiry_request_dto.account_id][
-        'account_id'
-    ]
+    bill_inquiry_request_dto.account_id = context.data[
+        bill_inquiry_request_dto.account_id
+    ]["account_id"]
 
     response = request.hugoserve_post_request(
         path=f"/payment/v1/inquiry/bill",

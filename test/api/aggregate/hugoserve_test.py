@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.NOTSET)
 
 default_headers = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    "Content-Type": "application/json",
+    "Accept": "application/json",
 }
 
 MAX_RETRY_SERVER_ERROR = 3
@@ -26,13 +26,19 @@ class HugoserveTest:
         self.params = self.__read_yaml(config_file)
         self.tokens = {}
 
-        self.hugoserve_base_url = self.params['AGGREGATE_ENDPOINT']
+        self.hugoserve_base_url = self.params["AGGREGATE_ENDPOINT"]
 
-    def hugoserve_post_request(self, path: str, data: dict = None, headers: dict = None):
+    def hugoserve_post_request(
+        self, path: str, data: dict = None, headers: dict = None
+    ):
         """To make post requests to Hugoserve endpoints"""
-        return HugoserveTest.__do_post(HugoserveTest.__make_hugo_url(self, path), data, headers)
+        return HugoserveTest.__do_post(
+            HugoserveTest.__make_hugo_url(self, path), data, headers
+        )
 
-    def hugoserve_get_request(self, path: str, params: dict = None, headers: dict = None):
+    def hugoserve_get_request(
+        self, path: str, params: dict = None, headers: dict = None
+    ):
         """To make get requests to Hugoserve endpoints"""
         return HugoserveTest.__do_get(
             HugoserveTest.__make_hugo_url(self, path), params, headers
@@ -48,7 +54,9 @@ class HugoserveTest:
 
     def hugoserve_put_request(self, path: str, data: dict = None, headers: dict = None):
         """To make put requests to Hugoserve endpoints"""
-        return HugoserveTest.__do_put(HugoserveTest.__make_hugo_url(self, path), data, headers)
+        return HugoserveTest.__do_put(
+            HugoserveTest.__make_hugo_url(self, path), data, headers
+        )
 
     @staticmethod
     def __run_command(command):
@@ -58,7 +66,7 @@ class HugoserveTest:
 
     @staticmethod
     def __read_yaml(yaml_file: str):
-        with open(yaml_file, 'r') as file:
+        with open(yaml_file, "r") as file:
             yaml_file = yaml.safe_load(file)
         return dict(yaml_file.items())
 
@@ -111,7 +119,9 @@ class HugoserveTest:
         return json_response
 
     @staticmethod
-    def __do_delete(url: str, body: dict = None, params: dict = None, headers: dict = None):
+    def __do_delete(
+        url: str, body: dict = None, params: dict = None, headers: dict = None
+    ):
         if headers is not None:
             headers = {**default_headers, **headers}
         else:

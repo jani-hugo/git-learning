@@ -22,23 +22,23 @@ behavioural_urls = {
 
 def get_user_header(uid, context):
     return {
-        'x-user-profile-id': uid,
+        "x-user-profile-id": uid,
         "app-build-version": context.data["config_data"]["app-build-version"],
     }
 
 
 onboarding_fields = [
-    'email',
-    'first_name',
-    'account_type',
-    'time_zone',
-    'roundups_enabled',
-    'profile_status',
+    "email",
+    "first_name",
+    "account_type",
+    "time_zone",
+    "roundups_enabled",
+    "profile_status",
 ]
 
 quest_user_profile_entity_fields = [
-    'account_type',
-    'time_zone',
-    'roundups_enabled',
-    'profile_status',
+    "account_type",
+    "time_zone",
+    "roundups_enabled",
+    "profile_status",
 ]

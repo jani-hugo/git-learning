@@ -15,7 +15,10 @@ notification_base_url = "/notification/v1"
 progress_onboarding_base_url = "/onboard/progress"
 initial_onboarding_base_url = "/onboard/initial"
 
-auth_user_urls = {"root": auth_base_url + "/user", "create": auth_base_url + "/user/create-user"}
+auth_user_urls = {
+    "root": auth_base_url + "/user",
+    "create": auth_base_url + "/user/create-user",
+}
 
 account_urls = {
     "root": app_base_url + "/account",
@@ -25,7 +28,7 @@ dev_urls = {
     "root": app_base_url + "/dev",
     "deposit": app_base_url + "/dev/transaction/deposit",
     "compliance": app_base_url + "/dev/compliance/status/update",
-    "compliance_update":app_base_url+"/dev/user/account-level/update",
+    "compliance_update": app_base_url + "/dev/user/account-level/update",
     "schedule_trigger": app_base_url + "/dev/tickle/schedule/schedule-id",
     "mock_card_transaction": app_base_url + "/dev/card/mock-transaction",
     "settle_investment_txn": app_base_url + "/dev/investment/intent-id",
@@ -100,18 +103,32 @@ compliance_urls = {
 }
 
 progress_onboarding_urls = {
-    "initiate-progress-onboarding": app_base_url + progress_onboarding_base_url + "/initiate",
-    "initiate-onboarding-journey": app_base_url + progress_onboarding_base_url + f"/journey/{{journey-id}}/initiate",
-    "onboarding-journey-status": app_base_url + progress_onboarding_base_url + f"/journey/{{journey-id}}/status",
-    "submit-onboarding-journey": app_base_url + progress_onboarding_base_url + f"/journey/{{journey-id}}/submit",
-    "submit-progress-onboarding": app_base_url + progress_onboarding_base_url + f"/submit",
-    "progress-onboarding-status": app_base_url + progress_onboarding_base_url + f"/status"
+    "initiate-progress-onboarding": app_base_url
+    + progress_onboarding_base_url
+    + "/initiate",
+    "initiate-onboarding-journey": app_base_url
+    + progress_onboarding_base_url
+    + f"/journey/{{journey-id}}/initiate",
+    "onboarding-journey-status": app_base_url
+    + progress_onboarding_base_url
+    + f"/journey/{{journey-id}}/status",
+    "submit-onboarding-journey": app_base_url
+    + progress_onboarding_base_url
+    + f"/journey/{{journey-id}}/submit",
+    "submit-progress-onboarding": app_base_url
+    + progress_onboarding_base_url
+    + f"/submit",
+    "progress-onboarding-status": app_base_url
+    + progress_onboarding_base_url
+    + f"/status",
 }
 
 initial_onboarding_urls = {
-    "initiate-initial-onboarding": app_base_url + initial_onboarding_base_url + "/initiate",
+    "initiate-initial-onboarding": app_base_url
+    + initial_onboarding_base_url
+    + "/initiate",
     "initial-onboarding-status": app_base_url + initial_onboarding_base_url + "/status",
-    "submit-initial-onboarding":app_base_url+initial_onboarding_base_url+"/submit",
+    "submit-initial-onboarding": app_base_url + initial_onboarding_base_url + "/submit",
 }
 
 
@@ -166,47 +183,52 @@ questionnaire_urls = {
     "details": app_base_url + "/questionnaire/questionnaire-name",
     "user-questionnaire": app_base_url + "/questionnaire/user-questionnaire",
     "update": app_base_url + "/questionnaire/user-questionnaire/user-questionnaire-id",
-    "submit": app_base_url + "/questionnaire/user-questionnaire/user-questionnaire-id/submit",
+    "submit": app_base_url
+    + "/questionnaire/user-questionnaire/user-questionnaire-id/submit",
     "list-user-questionnaire": app_base_url + "/questionnaire/list-user-questionnaire",
 }
 
-verify_mobile_urls = {
-    "initiate-verification": auth_base_url + "/verify/verify-mobile"
-}
+verify_mobile_urls = {"initiate-verification": auth_base_url + "/verify/verify-mobile"}
+
 
 def get_user_header(uid, context):
-    return {
-        'x-user-profile-id': uid,
-        'x-enforce-auth':'false'
-    }
+    return {"x-user-profile-id": uid, "x-enforce-auth": "false"}
+
 
 def get_mobile_verification_header(x_initiation_signature, device_info, context):
-    return{
-        'os':device_info['os'],
-        'os-build-number':device_info['os-build-number'],
-        'os-version':device_info['os-version'],
-        'device-brand-name':device_info['device-brand-name'],
-        'x-device-id': device_info['x-device-id'],
-        'device-type':device_info['device-type'],
-        'app-first-install-time':device_info['app-first-install-time'],
-        'app-version':device_info['app-version'],
-        'app-bundle-identifier':device_info['app-bundle-identifier'],
-        'app-build-version':device_info['app-build-version'],
-        'x-epoch':str(device_info['x-epoch']),
-        'x-initiation-signature': x_initiation_signature,
+    return {
+        "os": device_info["os"],
+        "os-build-number": device_info["os-build-number"],
+        "os-version": device_info["os-version"],
+        "device-brand-name": device_info["device-brand-name"],
+        "x-device-id": device_info["x-device-id"],
+        "device-type": device_info["device-type"],
+        "app-first-install-time": device_info["app-first-install-time"],
+        "app-version": device_info["app-version"],
+        "app-bundle-identifier": device_info["app-bundle-identifier"],
+        "app-build-version": device_info["app-build-version"],
+        "x-epoch": str(device_info["x-epoch"]),
+        "x-initiation-signature": x_initiation_signature,
     }
 
-def get_create_account_header(context,uid):
-    return{
-        'x-verification-token': context.data['users'][uid]['submit_mobile_verification_response']['verificationToken'],
-        'x-device-id':context.data['device_info']['x-device-id']
+
+def get_create_account_header(context, uid):
+    return {
+        "x-verification-token": context.data["users"][uid][
+            "submit_mobile_verification_response"
+        ]["verificationToken"],
+        "x-device-id": context.data["device_info"]["x-device-id"],
     }
+
 
 def get_initial_onboarding_headers(user_profile_id, context, uid):
-    return{
-        'x-user-profile-id':user_profile_id,
-        'x-authentication-token':context.data['users'][uid]['create_new_user_response']['authenticationToken']
+    return {
+        "x-user-profile-id": user_profile_id,
+        "x-authentication-token": context.data["users"][uid][
+            "create_new_user_response"
+        ]["authenticationToken"],
     }
+
 
 def get_header(context):
     return {
@@ -216,7 +238,7 @@ def get_header(context):
 
 def get_user_prof_id(context, user_profile_identifier):
     try:
-        return context.data['users'].get(user_profile_identifier)["userProfileId"]
+        return context.data["users"].get(user_profile_identifier)["userProfileId"]
     except Exception:
         return ""
 
@@ -241,7 +263,7 @@ def get_account_field(field, user_details, acc_subtype):
 def get_dummy_user_data(req):
     random_number = get_rand_number(5)
     update_account_data = {
-        "client_flags": {'LITE': 'True'} if "client_flags" in req else None,
+        "client_flags": {"LITE": "True"} if "client_flags" in req else None,
         "address": (
             {
                 "address_line_1": "line1" + random_number,
@@ -260,7 +282,9 @@ def get_dummy_user_data(req):
         "first_name": "First" + random_number if "first_name" in req else None,
         "last_name": "Last" + random_number if "last_name" in req else None,
         "nationality": "SGP" if "nationality" in req else None,
-        "document_number": "T" + get_rand_number(7) + "S" if "document_number" in req else None,
+        "document_number": (
+            "T" + get_rand_number(7) + "S" if "document_number" in req else None
+        ),
         "document_expiry_date": (
             "14-09-203" + get_rand_number(1) + " 00:00:00"
             if "document_expiry_date" in req
@@ -269,7 +293,9 @@ def get_dummy_user_data(req):
         "tax_id_number": get_rand_number(6) if "tax_id_number" in req else None,
     }
 
-    update_account_data = {k: v for k, v in update_account_data.items() if v is not None}
+    update_account_data = {
+        k: v for k, v in update_account_data.items() if v is not None
+    }
     return update_account_data
 
 
@@ -295,42 +321,60 @@ def filter_gold_vault(maps):
 
 
 def get_user_map_id(context, map_identifier, user_profile_identifier):
-    if 'GOLD' in map_identifier:
-        return context.data['users'][user_profile_identifier]['gold-map']['userMapId']
-    elif 'SILVER' in map_identifier:
-        return context.data['users'][user_profile_identifier]['silver-map']['userMapId']
-    elif 'PLATINUM' in map_identifier:
-        return context.data['users'][user_profile_identifier]['platinum-map']['userMapId']
-    elif 'GROWTH' in map_identifier:
-        return context.data['users'][user_profile_identifier]['etf-growth-map']['userMapId']
-    elif 'BALANCED' in map_identifier:
-        return context.data['users'][user_profile_identifier]['etf-balanced-map']['userMapId']
-    elif 'CAUTIOUS' in map_identifier:
-        return context.data['users'][user_profile_identifier]['etf-cautious-map']['userMapId']
+    if "GOLD" in map_identifier:
+        return context.data["users"][user_profile_identifier]["gold-map"]["userMapId"]
+    elif "SILVER" in map_identifier:
+        return context.data["users"][user_profile_identifier]["silver-map"]["userMapId"]
+    elif "PLATINUM" in map_identifier:
+        return context.data["users"][user_profile_identifier]["platinum-map"][
+            "userMapId"
+        ]
+    elif "GROWTH" in map_identifier:
+        return context.data["users"][user_profile_identifier]["etf-growth-map"][
+            "userMapId"
+        ]
+    elif "BALANCED" in map_identifier:
+        return context.data["users"][user_profile_identifier]["etf-balanced-map"][
+            "userMapId"
+        ]
+    elif "CAUTIOUS" in map_identifier:
+        return context.data["users"][user_profile_identifier]["etf-cautious-map"][
+            "userMapId"
+        ]
     else:
-        return context.data["users"][user_profile_identifier][map_identifier]["userMapId"]
+        return context.data["users"][user_profile_identifier][map_identifier][
+            "userMapId"
+        ]
 
-def get_user_profile_id(uid,context):
+
+def get_user_profile_id(uid, context):
     try:
-        return context.data['users'][uid]['create_new_user_response']['userProfileId']
+        return context.data["users"][uid]["create_new_user_response"]["userProfileId"]
     except Exception:
         return ""
 
-def get_initial_onboarding_id(uid,context):
+
+def get_initial_onboarding_id(uid, context):
     try:
-        return context.data['users'][uid]['initiate_onboarding_initial_onboarding_response']['onboardingId']
+        return context.data["users"][uid][
+            "initiate_onboarding_initial_onboarding_response"
+        ]["onboardingId"]
     except Exception:
         return ""
 
-def get_journey_id(context,uid,journey_type):
-    response = context.data['users'][uid]['initiate_onboarding_response']['journeys']
-    journeys = [journey for journey in response if journey['journey']== journey_type]
-    if context.data['users'][uid]["current_journey_index"] < len(journeys):
+
+def get_journey_id(context, uid, journey_type):
+    response = context.data["users"][uid]["initiate_onboarding_response"]["journeys"]
+    journeys = [journey for journey in response if journey["journey"] == journey_type]
+    if context.data["users"][uid]["current_journey_index"] < len(journeys):
         journey_id = [journey["journeyId"] for journey in journeys]
         return journey_id
 
+
 def get_progress_onboarding_id(context, uid):
     try:
-        return context.data['users'][uid]['initiate_onboarding_response']['onboardingId']
+        return context.data["users"][uid]["initiate_onboarding_response"][
+            "onboardingId"
+        ]
     except Exception:
         return "Could not find progress onboarding Id"

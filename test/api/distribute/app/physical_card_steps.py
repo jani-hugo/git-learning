@@ -47,7 +47,9 @@ def order_card(context, user_identifier: str, card_name: str, status_code: str):
 @Step(
     "I wait for card status as ([^']*) for user ([^']*), activate with ([^']*) token, with status ([^']*)"
 )
-def get_card_id(context, card_status: str, user_identifier: str, token_case: str, status_code):
+def get_card_id(
+    context, card_status: str, user_identifier: str, token_case: str, status_code
+):
     request = context.request
     user_prof_id = ah.get_user_prof_id(context, user_identifier)
 
@@ -209,7 +211,8 @@ def replace_card(context, user_identifier):
     user_prof_id = ah.get_user_prof_id(context, user_identifier)
 
     response = request.hugosave_get_request(
-        path=ah.card_urls["card_name"], headers=ah.get_user_header(user_prof_id, context)
+        path=ah.card_urls["card_name"],
+        headers=ah.get_user_header(user_prof_id, context),
     )
 
     response = request.hugosave_post_request(
@@ -262,9 +265,13 @@ def get_replaced_card_dets(context, old_card_status):
 @given("I create below transaction for user profile id and verify ([^']*)")
 def create_transaction_auth_success(context, status: str):
     request = context.request
-    card_request_dto_list = DataClassParser.parse_rows(context.table, MockTransactionRequestDTO)
+    card_request_dto_list = DataClassParser.parse_rows(
+        context.table, MockTransactionRequestDTO
+    )
     for card_request_dto in card_request_dto_list:
-        user_profile_id = ah.get_user_prof_id(context, card_request_dto.user_profile_identifier)
+        user_profile_id = ah.get_user_prof_id(
+            context, card_request_dto.user_profile_identifier
+        )
 
         @retry(AssertionError, tries=10, delay=15, logger=None)
         def retry_for_transaction_creation_success():
@@ -280,7 +287,9 @@ def create_transaction_auth_success(context, status: str):
         retry_for_transaction_creation_success()
 
 
-@Step("I enable auto-top-up of ([^']*) SGD for user ([^']*) with trigger amount ([^']*) SGD")
+@Step(
+    "I enable auto-top-up of ([^']*) SGD for user ([^']*) with trigger amount ([^']*) SGD"
+)
 def enable_auto_top_up(context, top_up_amount, user_identifier, top_up_trigger_amount):
     request = context.request
     card_account_id = context.data["users"][user_identifier]["userCardAccounts"][0][

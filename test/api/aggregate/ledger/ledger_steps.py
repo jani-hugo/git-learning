@@ -21,7 +21,9 @@ use_step_matcher("re")
 def create_ledgers(context):
     request = context.request
 
-    ledger_dto_list = DataClassParser.parse_rows(context.table.rows, data_class=CreateLedgerDTO)
+    ledger_dto_list = DataClassParser.parse_rows(
+        context.table.rows, data_class=CreateLedgerDTO
+    )
 
     for ledger_dto in ledger_dto_list:
         data = ledger_dto.get_dict()
@@ -39,14 +41,18 @@ def create_ledgers(context):
         assert (
             ledger_dto.ledger_id not in context.data
         ), f"An existing ledger_id: {ledger_dto.ledger_id} found while creating ledgers"
-        context.data[ledger_dto.identifier] = ledger_dto  # Save ledger_dto against identifier
+        context.data[ledger_dto.identifier] = (
+            ledger_dto  # Save ledger_dto against identifier
+        )
 
 
 @Then("I verify ledgers exist with values")
 def verify_ledger_exist(context):
     request = context.request
 
-    ledger_dto_list = DataClassParser.parse_rows(context.table.rows, data_class=LedgerDTO)
+    ledger_dto_list = DataClassParser.parse_rows(
+        context.table.rows, data_class=LedgerDTO
+    )
 
     for expected_ledger_dto in ledger_dto_list:
         ledger_id = context.data[expected_ledger_dto.identifier].ledger_id
@@ -57,7 +63,9 @@ def verify_ledger_exist(context):
             ),
         )["data"]
 
-        actual_ledger_dto = DataClassParser.dict_to_object(response, data_class=LedgerDTO)
+        actual_ledger_dto = DataClassParser.dict_to_object(
+            response, data_class=LedgerDTO
+        )
 
         sanitized_expected = LedgerDTO.sanitize_ledger_dto(expected_ledger_dto)
         sanitized_actual = LedgerDTO.sanitize_ledger_dto(actual_ledger_dto)
@@ -83,7 +91,7 @@ def delete_ledger(context):
             ),
         )["headers"]["status_code"]
 
-        assert '200' == header_status_code, (
+        assert "200" == header_status_code, (
             f"\nExpect headers.status_code: 200"
             f"\nActual headers.status_code: {header_status_code}"
         )
@@ -110,7 +118,7 @@ def verify_ledger_not_exist(context):
             "data" not in response
         ), f"\nExpect response.data: <empty> \nActual response.data: {response['data']}"
         status_code = response["headers"]["status_code"]
-    assert status_code == 'LSM_9101', (
+    assert status_code == "LSM_9101", (
         f"\nExpect status_code: LSM_9101" f"\nActual status_code: {status_code}"
     )
 
@@ -142,7 +150,9 @@ def create_ledger_with_invalid_datatype_verify_fail(context):
 def create_ledger_with_incorrect_data_verify_fail(context):
     request = context.request
 
-    ledger_dto = DataClassParser.parse_rows(context.table.rows, data_class=CreateLedgerDTO)[0]
+    ledger_dto = DataClassParser.parse_rows(
+        context.table.rows, data_class=CreateLedgerDTO
+    )[0]
 
     response = request.hugoserve_post_request(
         path="/ledger/v1/account/create",
@@ -230,7 +240,9 @@ def validate_ledger_entries(context, transaction_identifier: str):
         data=response["data"], data_class=LedgerTransactionDTO
     )
 
-    sanitized_expected = LedgerTransactionDTO.sanitize_ledger_dto(expected_transaction_dto)
+    sanitized_expected = LedgerTransactionDTO.sanitize_ledger_dto(
+        expected_transaction_dto
+    )
     sanitized_actual = LedgerTransactionDTO.sanitize_ledger_dto(actual_transaction_dto)
 
     assert sanitized_expected == sanitized_actual, (
@@ -314,7 +326,7 @@ def update_transaction_status(context, transaction_status, transaction_identifie
 
 @Step(
     'I verify ledger ([^"]*) total balance is (.+) and available balance is (.+) and '
-    'avg source rate per unit is (.+) and avg destination rate per unit is (.+)'
+    "avg source rate per unit is (.+) and avg destination rate per unit is (.+)"
 )
 def verify_ledger_balance(
     context,
@@ -351,7 +363,9 @@ def verify_ledger_balance(
         f"\nExpect avg_source_rate_per_unit: {avg_source_rate_per_unit}"
         f"\nActual avg_source_rate_per_unit: {actual_ledger_dto.avg_source_rate_per_unit}"
     )
-    assert avg_destination_rate_per_unit == actual_ledger_dto.avg_destination_rate_per_unit, (
+    assert (
+        avg_destination_rate_per_unit == actual_ledger_dto.avg_destination_rate_per_unit
+    ), (
         f"\nExpect avg_destination_rate_per_unit: {avg_destination_rate_per_unit}"
         f"\nActual avg_destination_rate_per_unit: {actual_ledger_dto.avg_destination_rate_per_unit}"
     )
@@ -376,7 +390,7 @@ def split_transaction(context, transaction_identifier: str):
         ),
     )
 
-    assert response["headers"]["status_code"] == '200'
+    assert response["headers"]["status_code"] == "200"
 
 
 @Step("I update transaction for ([^']*) and verify it is updated successfully")
@@ -397,7 +411,7 @@ def update_transaction(context, transaction_identifier: str):
         ),
     )
 
-    assert response["headers"]["status_code"] == '200'
+    assert response["headers"]["status_code"] == "200"
 
 
 @Step("I update transaction for ([^']*) and verify failure")
@@ -418,7 +432,7 @@ def update_transaction_failure(context, transaction_identifier: str):
         ),
     )
 
-    assert response["headers"]["status_code"] == 'LSM_9200'
+    assert response["headers"]["status_code"] == "LSM_9200"
 
 
 @Step(
@@ -464,7 +478,9 @@ def merge_transaction_success(context, tx_id1: str, tx_id2: str, merge_status: s
 
 
 @Step("I merge transactions ([^']*) and ([^']*) and verify status as ([^']*)")
-def merge_transaction_incorrect_status_failure(context, tx_id1: str, tx_id2: str, status: str):
+def merge_transaction_incorrect_status_failure(
+    context, tx_id1: str, tx_id2: str, status: str
+):
     request = context.request
     transaction_data_1 = context.data[tx_id1]
     transaction_data_2 = context.data[tx_id2]

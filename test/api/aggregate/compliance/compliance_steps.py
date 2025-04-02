@@ -7,15 +7,18 @@ import time
 
 from hugoutils.utilities.dataclass_util import DataClassParser
 
-from test.api.aggregate.compliance.compliance_dataclass import ComplianceImageDTO, ProcessComplianceDTO
+from test.api.aggregate.compliance.compliance_dataclass import (
+    ComplianceImageDTO,
+    ProcessComplianceDTO,
+)
 from behave import *
 from retry import retry
 
 from test.util.common_util import check_status
 
 use_step_matcher("re")
-compliance_url = '/compliance/v1'
-header_customer_profile_id = 'x-customer-profile-id'
+compliance_url = "/compliance/v1"
+header_customer_profile_id = "x-customer-profile-id"
 
 
 @Then("I try to verify data with invalid customer profile id")
@@ -28,17 +31,17 @@ def step_impl(context):
     for compliance_dto in compliance_dto_list:
         compliance_data = __get_compliance_data()
         data = compliance_dto.get_dict()
-        customer_profile_id = data['customer_profile_id']
-        provider_id = data['provider_id']
-        compliance_data['provider_id'] = provider_id
-        compliance_data['end_customer_profile_id'] = provider_id
-        compliance_data['compliance_type'] = 'IDV_JOURNEY'
+        customer_profile_id = data["customer_profile_id"]
+        provider_id = data["provider_id"]
+        compliance_data["provider_id"] = provider_id
+        compliance_data["end_customer_profile_id"] = provider_id
+        compliance_data["compliance_type"] = "IDV_JOURNEY"
         response = request.hugoserve_post_request(
-            f'{compliance_url}/check/initiate-compliance',
+            f"{compliance_url}/check/initiate-compliance",
             data=compliance_data,
             headers={header_customer_profile_id: customer_profile_id},
         )
-        check_status(response, 'E9400')
+        check_status(response, "E9400")
 
 
 @Then("I try to verify user with data")
@@ -51,42 +54,52 @@ def step_impl(context):
     for compliance_dto in compliance_dto_list:
         compliance_data = __get_compliance_data()
         data = compliance_dto.get_dict()
-        customer_profile_id = data['customer_profile_id']
+        customer_profile_id = data["customer_profile_id"]
         if compliance_dto.customer_profile_identifier is not None:
             if context.data[compliance_dto.customer_profile_identifier] is not None:
                 customer_profile_id = context.data[
                     compliance_dto.customer_profile_identifier
                 ].customer_profile_id
-        end_customer_profile_id = data['end_customer_profile_id']
+        end_customer_profile_id = data["end_customer_profile_id"]
         if compliance_dto.end_customer_profile_identifier is not None:
             if context.data[compliance_dto.end_customer_profile_identifier] is not None:
                 end_customer_profile_id = context.data[
                     compliance_dto.end_customer_profile_identifier
                 ].end_customer_profile_id
-        provider_id = data['provider_id']
-        compliance_type = data['compliance_type']
-        compliance_data['provider_id'] = provider_id if provider_id is not None else 'nonsense'
-        compliance_data['end_customer_profile_id'] = (
-            end_customer_profile_id if end_customer_profile_id is not None else 'nonsense'
+        provider_id = data["provider_id"]
+        compliance_type = data["compliance_type"]
+        compliance_data["provider_id"] = (
+            provider_id if provider_id is not None else "nonsense"
         )
-        compliance_data['compliance_type'] = (
-            compliance_type if compliance_type is not None else 'nonsense'
+        compliance_data["end_customer_profile_id"] = (
+            end_customer_profile_id
+            if end_customer_profile_id is not None
+            else "nonsense"
+        )
+        compliance_data["compliance_type"] = (
+            compliance_type if compliance_type is not None else "nonsense"
         )
 
         initiate_request = {
             "end_customer_profile_id": (
-                end_customer_profile_id if end_customer_profile_id is not None else 'nonsense'
+                end_customer_profile_id
+                if end_customer_profile_id is not None
+                else "nonsense"
             ),
-            "provider_id": data['provider_id'] if provider_id is not None else 'nonsense',
-            "compliance_type": (compliance_type if compliance_type is not None else 'nonsense'),
+            "provider_id": (
+                data["provider_id"] if provider_id is not None else "nonsense"
+            ),
+            "compliance_type": (
+                compliance_type if compliance_type is not None else "nonsense"
+            ),
             "compliance_mode": "COMPLIANCE_MODE_OFFLINE",
         }
         response = request.hugoserve_post_request(
-            f'{compliance_url}/check/initiate-compliance',
+            f"{compliance_url}/check/initiate-compliance",
             data=initiate_request,
             headers={header_customer_profile_id: customer_profile_id},
         )
-        check_status(response, data['status_code'])
+        check_status(response, data["status_code"])
 
 
 @Then("I process compliance for the end customer")
@@ -104,28 +117,28 @@ def step_impl(context):
             compliance_dto.end_customer_profile_identifier
         ].end_customer_profile_id
         data = compliance_dto.get_dict()
-        provider_id = data['provider_id']
-        compliance_type = data['compliance_type']
+        provider_id = data["provider_id"]
+        compliance_type = data["compliance_type"]
         compliance_data = __get_compliance_data()
-        compliance_data['end_customer_profile_id'] = end_customer_profile_id
-        compliance_data['provider_id'] = provider_id
-        compliance_data['compliance_type'] = compliance_type
+        compliance_data["end_customer_profile_id"] = end_customer_profile_id
+        compliance_data["provider_id"] = provider_id
+        compliance_data["compliance_type"] = compliance_type
         response = process_compliance_with_new_apis(
             context, compliance_data, customer_profile_id
         )
-        check_status(response, data['status_code'])
-        context.data[compliance_dto.compliance_identifier] = response['data']
+        check_status(response, data["status_code"])
+        context.data[compliance_dto.compliance_identifier] = response["data"]
 
         time.sleep(5)
 
         @retry(Exception, tries=300 // 5, delay=5, logger=None)
         def verify_referred(compliance_id):
             response = request.hugoserve_get_request(
-                f'{compliance_url}/check/{compliance_id}',
+                f"{compliance_url}/check/{compliance_id}",
                 headers={header_customer_profile_id: customer_profile_id},
             )
-            assert response['headers']['status_code'] == "200"
-            comp_status = response['data']['status']
+            assert response["headers"]["status_code"] == "200"
+            comp_status = response["data"]["status"]
             status = "REFERRED"
             assert status == comp_status, (
                 f"[TraceId: {response['headers']['trace_id']}]\n"
@@ -133,7 +146,7 @@ def step_impl(context):
                 f"Actual status: {comp_status}"
             )
 
-        verify_referred(response['data']['compliance_id'])
+        verify_referred(response["data"]["compliance_id"])
 
 
 @Then("I verify compliance details")
@@ -164,21 +177,21 @@ def verify(context):
         compliance_data = remove_parameter(missing_param, compliance_data)
 
         initiate_request = {
-            "end_customer_profile_id": compliance_data['end_customer_profile_id'],
-            "provider_id": compliance_data['provider_id'],
-            "compliance_type": compliance_data['compliance_type'],
+            "end_customer_profile_id": compliance_data["end_customer_profile_id"],
+            "provider_id": compliance_data["provider_id"],
+            "compliance_type": compliance_data["compliance_type"],
             "compliance_mode": "COMPLIANCE_MODE_OFFLINE",
         }
         initiate_response = context.request.hugoserve_post_request(
-            f'{compliance_url}/check/initiate-compliance',
+            f"{compliance_url}/check/initiate-compliance",
             data=initiate_request,
             headers={header_customer_profile_id: customer_profile_id},
         )
-        compliance_id = initiate_response['data']['complianceId']
+        compliance_id = initiate_response["data"]["complianceId"]
 
-        submit_request = {"data": compliance_data['data']}
+        submit_request = {"data": compliance_data["data"]}
         response = context.request.hugoserve_put_request(
-            f'{compliance_url}/check/{compliance_id}/submit-compliance',
+            f"{compliance_url}/check/{compliance_id}/submit-compliance",
             data=submit_request,
             headers={header_customer_profile_id: customer_profile_id},
         )
@@ -197,10 +210,12 @@ def step_impl(context):
             compliance_dto.customer_profile_identifier
         ].customer_profile_id
         data = compliance_dto.get_dict()
-        compliance_id = context.data[compliance_dto.compliance_identifier]['compliance_id']
-        status = data['status']
+        compliance_id = context.data[compliance_dto.compliance_identifier][
+            "compliance_id"
+        ]
+        status = data["status"]
         response = request.hugoserve_put_request(
-            f'{compliance_url}/dev/{compliance_id}/status/{status}',
+            f"{compliance_url}/dev/{compliance_id}/status/{status}",
             headers={header_customer_profile_id: customer_profile_id},
         )
         check_status(response, 200)
@@ -221,14 +236,16 @@ def step_impl(context):
                 compliance_dto.customer_profile_identifier
             ].customer_profile_id
             data = compliance_dto.get_dict()
-            compliance_id = context.data[compliance_dto.compliance_identifier]['compliance_id']
+            compliance_id = context.data[compliance_dto.compliance_identifier][
+                "compliance_id"
+            ]
             response = request.hugoserve_get_request(
-                f'{compliance_url}/check/{compliance_id}',
+                f"{compliance_url}/check/{compliance_id}",
                 headers={header_customer_profile_id: customer_profile_id},
             )
             check_status(response, 200)
-            comp_decision = response['data']['decision']
-            decision = data['decision']
+            comp_decision = response["data"]["decision"]
+            decision = data["decision"]
             assert decision == comp_decision, (
                 f"[TraceId: {response['headers']['trace_id']}]\n"
                 f"Expect decision: {decision}\n"
@@ -240,34 +257,34 @@ def step_impl(context):
 
 def remove_parameter(missing_param: str, data: dict):
     if (
-        missing_param == 'first_name'
-        or missing_param == 'last_name'
-        or missing_param == 'date_of_birth'
-        or missing_param == 'email'
-        or missing_param == 'phone_number'
+        missing_param == "first_name"
+        or missing_param == "last_name"
+        or missing_param == "date_of_birth"
+        or missing_param == "email"
+        or missing_param == "phone_number"
     ):
-        data['data']['input_fields'].pop(missing_param)
+        data["data"]["input_fields"].pop(missing_param)
     elif (
-        missing_param == 'address_line_1'
-        or missing_param == 'address_line_2'
-        or missing_param == 'city'
-        or missing_param == 'country_code'
+        missing_param == "address_line_1"
+        or missing_param == "address_line_2"
+        or missing_param == "city"
+        or missing_param == "country_code"
     ):
-        data['data']['input_fields']['address']['address_value'].pop(missing_param)
+        data["data"]["input_fields"]["address"]["address_value"].pop(missing_param)
     return data
 
 
 def __get_compliance_data():
     test_images_path = os.path.join(Path(os.path.abspath(__file__)).parent, "test-docs")
     with open(f"{test_images_path}/doc1.jpg", "rb") as img_file1:
-        doc1 = base64.b64encode(img_file1.read()).decode('utf-8')
+        doc1 = base64.b64encode(img_file1.read()).decode("utf-8")
         img_file1.close()
 
     with open(f"{test_images_path}/doc2.jpg", "rb") as img_file2:
-        doc2 = base64.b64encode(img_file2.read()).decode('utf-8')
+        doc2 = base64.b64encode(img_file2.read()).decode("utf-8")
         img_file2.close()
     with open(f"{test_images_path}/face.jpg", "rb") as img_file3:
-        face = base64.b64encode(img_file3.read()).decode('utf-8')
+        face = base64.b64encode(img_file3.read()).decode("utf-8")
         img_file3.close()
 
     random_str = str(random.randrange(111111, 999999, 6))
@@ -288,7 +305,10 @@ def __get_compliance_data():
                 "selfie": {
                     "page_value": {
                         "tag": "SELFIE",
-                        "base64_source": {"base64": "face", "content_type": "image/png"},
+                        "base64_source": {
+                            "base64": "face",
+                            "content_type": "image/png",
+                        },
                     }
                 },
                 # No need of sending images on integration test environment
@@ -332,32 +352,34 @@ def __get_compliance_data():
     return compliance_data
 
 
-def process_compliance_with_new_apis(context, compliance_data: dict, customer_profile_id: str):
+def process_compliance_with_new_apis(
+    context, compliance_data: dict, customer_profile_id: str
+):
     initiate_request = {
-        "end_customer_profile_id": compliance_data['end_customer_profile_id'],
-        "provider_id": compliance_data['provider_id'],
-        "compliance_type": compliance_data['compliance_type'],
+        "end_customer_profile_id": compliance_data["end_customer_profile_id"],
+        "provider_id": compliance_data["provider_id"],
+        "compliance_type": compliance_data["compliance_type"],
         "compliance_mode": "COMPLIANCE_MODE_OFFLINE",
     }
     initiate_response = context.request.hugoserve_post_request(
-        f'{compliance_url}/check/initiate-compliance',
+        f"{compliance_url}/check/initiate-compliance",
         data=initiate_request,
         headers={header_customer_profile_id: customer_profile_id},
     )
-    compliance_id = initiate_response['data']['complianceId']
+    compliance_id = initiate_response["data"]["complianceId"]
 
-    submit_request = {"data": compliance_data['data']}
+    submit_request = {"data": compliance_data["data"]}
     context.request.hugoserve_put_request(
-        f'{compliance_url}/check/{compliance_id}/submit-compliance',
+        f"{compliance_url}/check/{compliance_id}/submit-compliance",
         data=submit_request,
         headers={header_customer_profile_id: customer_profile_id},
     )
     context.request.hugoserve_put_request(
-        f'{compliance_url}/check/{compliance_id}/process-compliance',
+        f"{compliance_url}/check/{compliance_id}/process-compliance",
         headers={header_customer_profile_id: customer_profile_id},
     )
 
     return context.request.hugoserve_get_request(
-        f'{compliance_url}/check/{compliance_id}',
+        f"{compliance_url}/check/{compliance_id}",
         headers={header_customer_profile_id: customer_profile_id},
     )

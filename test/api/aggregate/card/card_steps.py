@@ -30,7 +30,9 @@ def issue_card(context, provider_name: str):
             "end_customer_profile_id"
         ]
 
-        customer_profile_id = context.data[card_account_identifier]["customer_profile_id"]
+        customer_profile_id = context.data[card_account_identifier][
+            "customer_profile_id"
+        ]
 
         provider_id = next(
             filter(
@@ -77,7 +79,9 @@ def issue_card(context, provider_name: str):
 @Then(
     "I wait until max time to verify Card ([^']*) status on card service provider ([^']*) as ([^']*)"
 )
-def wait_to_issue_card(context, card_identifier: str, provider_name: str, card_status: str):
+def wait_to_issue_card(
+    context, card_identifier: str, provider_name: str, card_status: str
+):
     request = context.request
     card_helper.validate_provider(provider_name)
 
@@ -89,7 +93,9 @@ def wait_to_issue_card(context, card_identifier: str, provider_name: str, card_s
     max_wait_time = 0
     for provider in context.data[end_customer_profile_id]:
         max_wait_time = max(
-            card_helper.card_providers_config[provider["provider_name"]]["max_wait_time"],
+            card_helper.card_providers_config[provider["provider_name"]][
+                "max_wait_time"
+            ],
             max_wait_time,
         )
 
@@ -187,7 +193,7 @@ def activate_card(context):
         customer_profile_id = context.data[card_identifier]["customer_profile_id"]
 
         card_token_response = request.hugoserve_get_request(
-            path=f'/card/v1/dev/debit/{card_id}/activation-token',
+            path=f"/card/v1/dev/debit/{card_id}/activation-token",
             headers=card_helper.get_default_card_headers(customer_profile_id),
         )
         card_token = card_token_response["data"]["value"]
@@ -205,7 +211,7 @@ def activate_card(context):
             f"Expect status code: 200\n"
             f"Actual status code: {response['headers']['status_code']}"
         )
-        assert response["headers"]["message"] == 'Success', (
+        assert response["headers"]["message"] == "Success", (
             f"[TraceId: {response['headers']['trace_id']}]\n"
             f"Expect message: Success\n"
             f"Actual message: {response['headers']['message']}"
@@ -257,7 +263,7 @@ def validate_status_change(context, card_identifier: str, card_status: str):
         f"Actual card status: {response['data']['card_status']}"
     )
 
-    if card_status == 'ACTIVE':
+    if card_status == "ACTIVE":
         assert len(response["data"]["activated_ts"]) != 0
 
 

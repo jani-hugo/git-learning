@@ -14,6 +14,7 @@ from retry import retry
 
 use_step_matcher("re")
 
+
 @Then(
     "I wait until max time to verify the transaction ([^']*) status as ([^']*) for customerProfileId ([^']*)"
 )
@@ -57,13 +58,16 @@ def wait_and_verify_transaction_status(
 
     retry_for_transaction_status()
 
+
 @Then(
     "I initiate refund for transaction with below details expect the header statuscode ([^']*)"
 )
 def refund_transaction(context, status_code):
     request = context.request
 
-    refund_tx_request_dto = DataClassParser.parse_row(context.table.rows[0], RefundRequestDTO)
+    refund_tx_request_dto = DataClassParser.parse_row(
+        context.table.rows[0], RefundRequestDTO
+    )
     refund_tx_request_dto.original_transaction_id = context.data[
         refund_tx_request_dto.original_transaction_id
     ]
@@ -110,19 +114,22 @@ def initiate_transaction_and_verify_status(context, status_code, txn_status):
         context.table.rows[0], InitiateTransactionRequestDTO
     )
 
-    if context.table.rows[0]["receiver_account_id"] == '':
+    if context.table.rows[0]["receiver_account_id"] == "":
         transfer_out_details = {
-            "account_holder_name":"Jane Smith",
-            "country":"SGP",
-            "currency":"SGD",
-            "code_details":{
-                "sg_bank_details":{
-                    "account_number":"9876543210",
-                    "swift_bic":"DBSSSGSGXXX"}
-            }
+            "account_holder_name": "Jane Smith",
+            "country": "SGP",
+            "currency": "SGD",
+            "code_details": {
+                "sg_bank_details": {
+                    "account_number": "9876543210",
+                    "swift_bic": "DBSSSGSGXXX",
+                }
+            },
         }
     else:
-        account_details = context.data[context.table.rows[0]["receiver_account_id"]].account_details
+        account_details = context.data[
+            context.table.rows[0]["receiver_account_id"]
+        ].account_details
         transfer_out_details = {
             "account_holder_name": account_details.account_holder_name,
             "country": account_details.country,
@@ -132,7 +139,7 @@ def initiate_transaction_and_verify_status(context, status_code, txn_status):
                     "account_number": account_details.code_details.sg_code_details.account_number,
                     "swift_bic": account_details.code_details.sg_code_details.swift_bic,
                 }
-            }
+            },
         }
 
     initiate_tx_request_dto.transfer_out_details = transfer_out_details
@@ -187,19 +194,22 @@ def initiate_transaction_and_verify_status(context, status_code):
         context.table.rows[0], InitiateTransactionRequestDTO
     )
 
-    if context.table.rows[0]["receiver_account_id"] == '':
+    if context.table.rows[0]["receiver_account_id"] == "":
         transfer_out_details = {
-            "account_holder_name":"Jane Smith",
-            "country":"SGP",
-            "currency":"SGD",
-            "code_details":{
-                "sg_bank_details":{
-                    "account_number":"9876543210",
-                    "swift_bic":"DBSSSGSGXXX"}
-            }
+            "account_holder_name": "Jane Smith",
+            "country": "SGP",
+            "currency": "SGD",
+            "code_details": {
+                "sg_bank_details": {
+                    "account_number": "9876543210",
+                    "swift_bic": "DBSSSGSGXXX",
+                }
+            },
         }
     else:
-        account_details = context.data[context.table.rows[0]["receiver_account_id"]].account_details
+        account_details = context.data[
+            context.table.rows[0]["receiver_account_id"]
+        ].account_details
         transfer_out_details = {
             "account_holder_name": account_details.account_holder_name,
             "country": account_details.country,
@@ -209,10 +219,9 @@ def initiate_transaction_and_verify_status(context, status_code):
                     "account_number": account_details.code_details.sg_code_details.account_number,
                     "swift_bic": account_details.code_details.sg_code_details.swift_bic,
                 }
-            }
+            },
         }
     initiate_tx_request_dto.transfer_out_details = transfer_out_details
-
 
     initiate_tx_request_dto.account_id = context.data[
         initiate_tx_request_dto.account_id
@@ -268,7 +277,9 @@ def update_transaction_and_verify_status(
         context.table.rows[0], UpdateTransactionRequestDTO
     )
 
-    update_tx_request_dto.transaction_id = context.data[update_tx_request_dto.transaction_id]
+    update_tx_request_dto.transaction_id = context.data[
+        update_tx_request_dto.transaction_id
+    ]
     update_tx_request_dto.customer_profile_id = context.data[
         update_tx_request_dto.customer_profile_id
     ].customer_profile_id
@@ -318,7 +329,9 @@ def cancel_transaction_and_verify_status(
         context.table.rows[0], CancelTransactionRequestDTO
     )
 
-    cancel_txn_request_dto.transaction_id = context.data[cancel_txn_request_dto.transaction_id]
+    cancel_txn_request_dto.transaction_id = context.data[
+        cancel_txn_request_dto.transaction_id
+    ]
     cancel_txn_request_dto.customer_profile_id = context.data[
         cancel_txn_request_dto.customer_profile_id
     ].customer_profile_id
@@ -366,7 +379,9 @@ def close_transaction_and_verify_status(
         context.table.rows[0], CloseTransactionRequestDTO
     )
 
-    close_tx_request_dto.transaction_id = context.data[close_tx_request_dto.transaction_id]
+    close_tx_request_dto.transaction_id = context.data[
+        close_tx_request_dto.transaction_id
+    ]
     customer_profile_id = context.data[
         close_tx_request_dto.customer_profile_id
     ].customer_profile_id
@@ -408,7 +423,9 @@ def update_transaction_and_verify_status(
         context.table.rows[0], UpdateTransactionRequestDTO
     )
 
-    update_tx_request_dto.transaction_id = context.data[update_tx_request_dto.transaction_id]
+    update_tx_request_dto.transaction_id = context.data[
+        update_tx_request_dto.transaction_id
+    ]
     update_tx_request_dto.customer_profile_id = context.data[
         update_tx_request_dto.customer_profile_id
     ].customer_profile_id
@@ -453,7 +470,9 @@ def settle_transaction_and_verify_status(
         context.table.rows[0], SettleTransactionRequestDTO
     )
 
-    settle_tx_request_dto.transaction_id = context.data[settle_tx_request_dto.transaction_id]
+    settle_tx_request_dto.transaction_id = context.data[
+        settle_tx_request_dto.transaction_id
+    ]
     settle_tx_request_dto.customer_profile_id = context.data[
         settle_tx_request_dto.customer_profile_id
     ].customer_profile_id
@@ -507,7 +526,9 @@ def settle_transaction_and_verify_status(
         context.table.rows[0], SettleTransactionRequestDTO
     )
 
-    settle_tx_request_dto.transaction_id = context.data[settle_tx_request_dto.transaction_id]
+    settle_tx_request_dto.transaction_id = context.data[
+        settle_tx_request_dto.transaction_id
+    ]
     settle_tx_request_dto.customer_profile_id = context.data[
         settle_tx_request_dto.customer_profile_id
     ].customer_profile_id
@@ -557,7 +578,9 @@ def settle_transaction_and_verify_status(
         context.table.rows[0], SettleTransactionRequestDTO
     )
 
-    settle_tx_request_dto.transaction_id = context.data[settle_tx_request_dto.transaction_id]
+    settle_tx_request_dto.transaction_id = context.data[
+        settle_tx_request_dto.transaction_id
+    ]
     settle_tx_request_dto.customer_profile_id = context.data[
         settle_tx_request_dto.customer_profile_id
     ].customer_profile_id
@@ -614,7 +637,9 @@ def settle_transaction_and_verify_status(
         context.table.rows[0], SettleTransactionRequestDTO
     )
 
-    settle_tx_request_dto.transaction_id = context.data[settle_tx_request_dto.transaction_id]
+    settle_tx_request_dto.transaction_id = context.data[
+        settle_tx_request_dto.transaction_id
+    ]
     settle_tx_request_dto.customer_profile_id = context.data[
         settle_tx_request_dto.customer_profile_id
     ].customer_profile_id

@@ -56,7 +56,7 @@ class ProductRequestDTO:
 
     # Only add values that would be sent to create an object using REST call
     def get_dict(self):
-        result =  {
+        result = {
             "product_code": self.product_code,
             "product_name": self.product_name,
             "profile_type": self.profile_type,
@@ -160,7 +160,7 @@ class CreateEndCustomerProfileAccountDTO:
             "is_overdraft_allowed": self.is_overdraft_allowed,
             "on_behalf_of": self.on_behalf_of,
             "metadata": self.metadata,
-            "cash_account_id": self.cash_account_id
+            "cash_account_id": self.cash_account_id,
         }
 
 
@@ -302,7 +302,7 @@ class TransferOutAccountDetails:
                     "account_number": self.code_details.sg_bank_details.account_number,
                     "swift_bic": self.code_details.sg_bank_details.swift_bic,
                 }
-            }
+            },
         }
 
 
@@ -389,7 +389,7 @@ class InitiateTransactionRequestDTO:
             "is_overdraft_allowed": self.is_overdraft_allowed,
             "metadata": self.metadata,
             "sub_txn_type": self.sub_txn_type,
-            "transfer_out_details": self.transfer_out_details
+            "transfer_out_details": self.transfer_out_details,
         }
 
 
@@ -847,9 +847,9 @@ class ParamRequestDTO:
                 return {k: clean_dict(v) for k, v in d.items() if v is not None}
             elif isinstance(d, list):
                 return [clean_dict(i) for i in d if i is not None]
-            elif hasattr(d, 'to_dict'):
+            elif hasattr(d, "to_dict"):
                 return d.to_dict()
-            elif hasattr(d, 'value'):
+            elif hasattr(d, "value"):
                 return d.value
             return d
 
@@ -857,7 +857,9 @@ class ParamRequestDTO:
         return clean_dict(
             {
                 "param_name": self.param_name,
-                "value": clean_dict(self.value.__dict__),  # Clean nested Value dataclass
+                "value": clean_dict(
+                    self.value.__dict__
+                ),  # Clean nested Value dataclass
                 "metadata": self.metadata,
             }
         )

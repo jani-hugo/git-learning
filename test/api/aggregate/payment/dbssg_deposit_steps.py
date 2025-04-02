@@ -25,7 +25,7 @@ def deposit_using_icn(
 ):
     payment_helper.__validate_provider("DBS Bank Ltd")
 
-    payment_account_id = context.data[account_identifier]['account_id']
+    payment_account_id = context.data[account_identifier]["account_id"]
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
 
     account_details = payment_helper.__fetch_payment_account(
@@ -35,14 +35,14 @@ def deposit_using_icn(
     response = request.hugoserve_get_request(
         path=f"/payment/v1/account/{payment_account_id}",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
-    master_account_id = response['data']['master_account_id']
+    master_account_id = response["data"]["master_account_id"]
     response = request.hugoserve_get_request(
         path=f"/payment/v1/account/master-account/{master_account_id}/balance",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
 
@@ -54,7 +54,9 @@ def deposit_using_icn(
     initial_available_balance = response["data"]["available_balance"]
 
     context.data["initial_total_balance_" + master_account_id] = initial_total_balance
-    context.data["initial_available_balance_" + master_account_id] = initial_available_balance
+    context.data["initial_available_balance_" + master_account_id] = (
+        initial_available_balance
+    )
 
     instant_credit_notification_dto = DataClassParser.parse_row(
         context.table.rows[0], InstantCreditNotification
@@ -84,7 +86,7 @@ def deposit_using_idn(
 ):
     payment_helper.__validate_provider("DBS Bank Ltd")
 
-    payment_account_id = context.data[account_identifier]['account_id']
+    payment_account_id = context.data[account_identifier]["account_id"]
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
 
     account_details = payment_helper.__fetch_payment_account(
@@ -95,14 +97,14 @@ def deposit_using_idn(
     response = request.hugoserve_get_request(
         path=f"/payment/v1/account/{payment_account_id}",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
-    master_account_id = response['data']['master_account_id']
+    master_account_id = response["data"]["master_account_id"]
     response = request.hugoserve_get_request(
         path=f"/payment/v1/account/master-account/{master_account_id}/balance",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
     assert (
@@ -113,7 +115,9 @@ def deposit_using_idn(
     initial_available_balance = response["data"]["available_balance"]
 
     context.data["initial_total_balance_" + master_account_id] = initial_total_balance
-    context.data["initial_available_balance_" + master_account_id] = initial_available_balance
+    context.data["initial_available_balance_" + master_account_id] = (
+        initial_available_balance
+    )
 
     credit_notification_dto = DataClassParser.parse_row(
         context.table.rows[0], IntraDayCreditNotification
@@ -143,7 +147,7 @@ def deposit_using_idn_master_account(
 ):
     payment_helper.__validate_provider("DBS Bank Ltd")
 
-    master_account_id = context.data[account_identifier]['master_account_id']
+    master_account_id = context.data[account_identifier]["master_account_id"]
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
 
     account_details = payment_helper.__fetch_master_account(
@@ -154,7 +158,7 @@ def deposit_using_idn_master_account(
     response = request.hugoserve_get_request(
         path=f"/payment/v1/account/master-account/{master_account_id}/balance",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
     assert (
@@ -165,7 +169,9 @@ def deposit_using_idn_master_account(
     initial_available_balance = response["data"]["available_balance"]
 
     context.data["initial_total_balance_" + master_account_id] = initial_total_balance
-    context.data["initial_available_balance_" + master_account_id] = initial_available_balance
+    context.data["initial_available_balance_" + master_account_id] = (
+        initial_available_balance
+    )
 
     credit_notification_dto = DataClassParser.parse_row(
         context.table.rows[0], IntraDayCreditNotification
@@ -195,7 +201,7 @@ def deposit_using_icn_master_account(
 ):
     payment_helper.__validate_provider("DBS Bank Ltd")
 
-    master_account_id = context.data[account_identifier]['master_account_id']
+    master_account_id = context.data[account_identifier]["master_account_id"]
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
 
     account_details = payment_helper.__fetch_master_account(
@@ -206,7 +212,7 @@ def deposit_using_icn_master_account(
     response = request.hugoserve_get_request(
         path=f"/payment/v1/account/master-account/{master_account_id}/balance",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
     assert (
@@ -217,7 +223,9 @@ def deposit_using_icn_master_account(
     initial_available_balance = response["data"]["available_balance"]
 
     context.data["initial_total_balance_" + master_account_id] = initial_total_balance
-    context.data["initial_available_balance_" + master_account_id] = initial_available_balance
+    context.data["initial_available_balance_" + master_account_id] = (
+        initial_available_balance
+    )
 
     credit_notification_dto = DataClassParser.parse_row(
         context.table.rows[0], IntraDayCreditNotification
@@ -242,22 +250,24 @@ def deposit_using_icn_master_account(
 @Then(
     "I wait until max time to verify master account ([^']*) with an increased updated balance of ([^']*) for customerProfileId ([^']*)"
 )
-def verify_master_account_balance(context, identifier, amount, customer_profile_identifier):
+def verify_master_account_balance(
+    context, identifier, amount, customer_profile_identifier
+):
     request = context.request
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
 
-    payment_account_id = context.data[identifier]['account_id']
+    payment_account_id = context.data[identifier]["account_id"]
     response = request.hugoserve_get_request(
         path=f"/payment/v1/account/{payment_account_id}",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
-    master_account_id = response['data']['master_account_id']
+    master_account_id = response["data"]["master_account_id"]
     request.hugoserve_get_request(
         path=f"/payment/v1/account/master-account/{master_account_id}/balance",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
     expected_total_balance = float(
@@ -269,7 +279,8 @@ def verify_master_account_balance(context, identifier, amount, customer_profile_
 
     @retry(
         AssertionError,
-        tries=payment_helper.payment_providers_config["DBS Bank Ltd"]["max_wait_time"] / 5,
+        tries=payment_helper.payment_providers_config["DBS Bank Ltd"]["max_wait_time"]
+        / 5,
         delay=20,
         logger=None,
     )
@@ -277,7 +288,7 @@ def verify_master_account_balance(context, identifier, amount, customer_profile_
         response = request.hugoserve_get_request(
             path=f"/payment/v1/account/master-account/{master_account_id}/balance",
             headers=payment_helper.__get_default_payment_headers(
-                customer_profile_id, request_origin='CASH_SERVICE'
+                customer_profile_id, request_origin="CASH_SERVICE"
             ),
         )
         assert (

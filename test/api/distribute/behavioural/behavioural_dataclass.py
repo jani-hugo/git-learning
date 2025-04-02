@@ -75,7 +75,10 @@ class EventDTO:
             "event_source": self.event_source,
             "generic_fields": {
                 "meta_data": [
-                    {"event_key": "invited_user", "string_value": referrer_user_profile_id},
+                    {
+                        "event_key": "invited_user",
+                        "string_value": referrer_user_profile_id,
+                    },
                     {"event_key": "acct_type", "string_value": acct_type},
                 ]
             },
@@ -115,7 +118,7 @@ class Quest:
         }
 
     def get_display_list(self):
-        display_list = json.loads(self.depends_on_quest_id)['id']
+        display_list = json.loads(self.depends_on_quest_id)["id"]
         return display_list
 
 
@@ -180,7 +183,7 @@ class QuestsDisplay:
     quest_list: str
 
     def get_display_list(self):
-        display_list = json.loads(self.quest_list)['quest_list']
+        display_list = json.loads(self.quest_list)["quest_list"]
         return display_list
 
 
@@ -190,7 +193,7 @@ class CohortMapping:
     cohort_list: str
 
     def get_display_list(self):
-        display_list = json.loads(self.cohort_list)['cohort_list']
+        display_list = json.loads(self.cohort_list)["cohort_list"]
         return display_list
 
 

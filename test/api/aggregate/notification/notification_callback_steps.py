@@ -9,7 +9,7 @@ from behave import *
 from test.util.common_util import check_status
 
 use_step_matcher("re")
-notification_customer_callback_url = '/notification/v1/customer-profile/callback'
+notification_customer_callback_url = "/notification/v1/customer-profile/callback"
 
 
 @Then("I set Callback for the Customer-Profile")
@@ -31,9 +31,9 @@ def set_callback_for_customer(context):
         response = request.hugoserve_post_request(
             notification_customer_callback_url,
             data,
-            headers={'x-customer-profile-id': customer_profile_id},
+            headers={"x-customer-profile-id": customer_profile_id},
         )
-        check_status(response, '200')
+        check_status(response, "200")
 
         context.data[callback_dto_list.callback_identifier] = (
             callback_dto_list  # Save callback against identifier
@@ -53,16 +53,18 @@ def verify_callback_endpoint(context):
         response = request.hugoserve_get_request(
             notification_customer_callback_url,
             params=None,
-            headers={'x-customer-profile-id': customer_profile_id},
+            headers={"x-customer-profile-id": customer_profile_id},
         )
-        check_status(response, '200')
+        check_status(response, "200")
         data = response["data"]
         actual_end_customer_profile_dto = DataClassParser.dict_to_object(
             data, data_class=CallbackDTO
         )
 
         sanitized_expected = CallbackDTO.sanitize_callback_dto(callback)
-        sanitized_actual = CallbackDTO.sanitize_callback_dto(actual_end_customer_profile_dto)
+        sanitized_actual = CallbackDTO.sanitize_callback_dto(
+            actual_end_customer_profile_dto
+        )
         assert sanitized_expected == sanitized_actual, (
             f"\nExpect end_customer_profile_dto: {sanitized_expected}"
             f"\nActual end_customer_profile_dto: {sanitized_actual}"
@@ -88,9 +90,9 @@ def fail_invalid_callback(context):
         response = request.hugoserve_post_request(
             notification_customer_callback_url,
             data,
-            headers={'x-customer-profile-id': customer_profile_id},
+            headers={"x-customer-profile-id": customer_profile_id},
         )
-        check_status(response, 'NSM_E9507')
+        check_status(response, "NSM_E9507")
 
 
 @Then("I update Callback with new endpoint")
@@ -112,9 +114,9 @@ def update_callback_endpoint(context):
         response = request.hugoserve_put_request(
             notification_customer_callback_url,
             data,
-            headers={'x-customer-profile-id': customer_profile_id},
+            headers={"x-customer-profile-id": customer_profile_id},
         )
-        check_status(response, '200')
+        check_status(response, "200")
         context.data[callback_dto_list.callback_identifier] = (
             callback_dto_list  # Save callback against identifier
         )

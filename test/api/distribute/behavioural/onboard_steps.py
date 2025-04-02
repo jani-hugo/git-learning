@@ -2,18 +2,23 @@ from behave import *
 from hugoutils.utilities.dataclass_util import DataClassParser
 
 import test.api.distribute.behavioural.behavioural_helper as bh
-from test.api.distribute.behavioural.behavioural_dataclass import OnboardDTO, QuestUserProfileEntity
+from test.api.distribute.behavioural.behavioural_dataclass import (
+    OnboardDTO,
+    QuestUserProfileEntity,
+)
 
 
 @Step("Onboard the User to Behavioural and User Engaging Platforms")
 def onboard_user(context):
     request = context.request
 
-    onboard_dto_list = DataClassParser.parse_rows(context.table.rows, data_class=OnboardDTO)
+    onboard_dto_list = DataClassParser.parse_rows(
+        context.table.rows, data_class=OnboardDTO
+    )
 
-    user_profile_id = context.data['users'][onboard_dto_list[0].user_profile_identifier][
-        'userProfileId'
-    ]
+    user_profile_id = context.data["users"][
+        onboard_dto_list[0].user_profile_identifier
+    ]["userProfileId"]
     response = request.hugosave_post_request(
         bh.behavioural_urls["onboarding"],
         data=onboard_dto_list[0].get_dict(user_profile_id),
@@ -27,10 +32,12 @@ def onboard_user(context):
 def verify_onboard_user(context):
     request = context.request
 
-    onboard_dto_list = DataClassParser.parse_rows(context.table.rows, data_class=OnboardDTO)
-    user_profile_id = context.data['users'][onboard_dto_list[0].user_profile_identifier][
-        'userProfileId'
-    ]
+    onboard_dto_list = DataClassParser.parse_rows(
+        context.table.rows, data_class=OnboardDTO
+    )
+    user_profile_id = context.data["users"][
+        onboard_dto_list[0].user_profile_identifier
+    ]["userProfileId"]
     onboard_dto = onboard_dto_list[0].get_dict(user_profile_id)
 
     response = request.hugosave_get_request(
@@ -38,8 +45,10 @@ def verify_onboard_user(context):
         headers=bh.get_user_header(user_profile_id, context),
     )
 
-    onboard_dto_db = response['data']
-    onboard_dto["email"] = "testaccounts" + onboard_dto_db["phoneNumber"] + "@hugosave.com"
+    onboard_dto_db = response["data"]
+    onboard_dto["email"] = (
+        "testaccounts" + onboard_dto_db["phoneNumber"] + "@hugosave.com"
+    )
 
     for onboarding_field in bh.onboarding_fields:
         if onboarding_field in onboard_dto_db:
@@ -58,17 +67,19 @@ def verify_user_quest_profile(context):
     quest_user_profile_entity_list = DataClassParser.parse_rows(
         context.table.rows, data_class=QuestUserProfileEntity
     )
-    user_profile_id = context.data['users'][
+    user_profile_id = context.data["users"][
         quest_user_profile_entity_list[0].user_profile_identifier
-    ]['userProfileId']
-    quest_user_profile_entity = quest_user_profile_entity_list[0].get_dict(user_profile_id)
+    ]["userProfileId"]
+    quest_user_profile_entity = quest_user_profile_entity_list[0].get_dict(
+        user_profile_id
+    )
 
     response = request.hugosave_get_request(
         bh.behavioural_urls["user_quest_profile"],
         headers=bh.get_user_header(user_profile_id, context),
     )
 
-    quest_user_profile_entity_db = response['data']
+    quest_user_profile_entity_db = response["data"]
 
     for quest_user_profile_entity_field in bh.quest_user_profile_entity_fields:
         if quest_user_profile_entity_field in quest_user_profile_entity_db:
@@ -82,16 +93,18 @@ def verify_user_quest_profile(context):
 def onboard_users_with_spaces(context):
     request = context.request
 
-    onboard_dto_list = DataClassParser.parse_rows(context.table.rows, data_class=OnboardDTO)
+    onboard_dto_list = DataClassParser.parse_rows(
+        context.table.rows, data_class=OnboardDTO
+    )
 
-    user_profile_id = context.data['users'][onboard_dto_list[0].user_profile_identifier][
-        'userProfileId'
-    ]
+    user_profile_id = context.data["users"][
+        onboard_dto_list[0].user_profile_identifier
+    ]["userProfileId"]
     onboard_dto = onboard_dto_list[0].get_dict(user_profile_id)
 
     for onboarding_field in bh.onboarding_fields:
         if onboarding_field in onboard_dto:
-            onboard_dto[onboarding_field] = '  ' + onboard_dto[onboarding_field] + '  '
+            onboard_dto[onboarding_field] = "  " + onboard_dto[onboarding_field] + "  "
 
     response = request.hugosave_post_request(
         bh.behavioural_urls["onboarding"],

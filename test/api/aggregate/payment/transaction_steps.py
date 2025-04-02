@@ -16,15 +16,17 @@ use_step_matcher("re")
 @Then(
     "I initiate transfer out to transfer funds with below details from ([^']*) and expect the header status ([^']*) and status as ([^']*)"
 )
-def transfer_out(context, request_origin: str, status_code: str, transaction_status: str):
+def transfer_out(
+    context, request_origin: str, status_code: str, transaction_status: str
+):
     request = context.request
 
     transfer_out_request_dto = DataClassParser.parse_row(
         context.table.rows[0], TransferOutRequestDTO
     )
-    transfer_out_request_dto.account_id = context.data[transfer_out_request_dto.account_id][
-        'account_id'
-    ]
+    transfer_out_request_dto.account_id = context.data[
+        transfer_out_request_dto.account_id
+    ]["account_id"]
     receiver_account_id = context.data[transfer_out_request_dto.receiver_account_id]
 
     customer_profile_id = context.data[
@@ -53,17 +55,19 @@ def transfer_out(context, request_origin: str, status_code: str, transaction_sta
 @Then(
     "I initiate transfer out to transfer funds to same account with below details from ([^']*) and expect the header status ([^']*) and status as ([^']*)"
 )
-def transfer_out(context, request_origin: str, status_code: str, transaction_status: str):
+def transfer_out(
+    context, request_origin: str, status_code: str, transaction_status: str
+):
     request = context.request
 
     transfer_out_request_dto = DataClassParser.parse_row(
         context.table.rows[0], TransferOutRequestDTO
     )
-    transfer_out_request_dto.account_id = context.data[transfer_out_request_dto.account_id][
-        'account_id'
-    ]
+    transfer_out_request_dto.account_id = context.data[
+        transfer_out_request_dto.account_id
+    ]["account_id"]
     receiver_account_id = context.data[transfer_out_request_dto.receiver_account_id][
-        'account_id'
+        "account_id"
     ]
 
     customer_profile_id = context.data[
@@ -91,7 +95,9 @@ def transfer_out(context, request_origin: str, status_code: str, transaction_sta
 @Then(
     "I initiate transfer out to transfer funds between 2 different master accounts of 2 different customer profiles with below details from ([^']*) and expect the header status ([^']*) and status as ([^']*)"
 )
-def transfer_out(context, request_origin: str, status_code: str, transaction_status: str):
+def transfer_out(
+    context, request_origin: str, status_code: str, transaction_status: str
+):
     request = context.request
 
     transfer_out_request_dto = DataClassParser.parse_row(
@@ -187,7 +193,9 @@ def transfer_out(
     transfer_out_request_dto = DataClassParser.parse_row(
         context.table.rows[0], TransferOutRequestDTO
     )
-    transfer_out_request_dto.account_id = context.data[transfer_out_request_dto.account_id]
+    transfer_out_request_dto.account_id = context.data[
+        transfer_out_request_dto.account_id
+    ]
     receiver_account_id = context.data[
         transfer_out_request_dto.receiver_account_id
     ].master_account_id
@@ -230,7 +238,9 @@ def transfer_out(
     transfer_out_request_dto = DataClassParser.parse_row(
         context.table.rows[0], TransferOutRequestDTO
     )
-    transfer_out_request_dto.account_id = context.data[transfer_out_request_dto.account_id]
+    transfer_out_request_dto.account_id = context.data[
+        transfer_out_request_dto.account_id
+    ]
     receiver_account_id = context.data[transfer_out_request_dto.receiver_account_id]
     receiver_customer_profile_id = context.data[receiver_identifier].customer_profile_id
 
@@ -259,7 +269,9 @@ def transfer_out(
 @Then(
     "I initiate transfer out to transfer funds from master account to account under same master account with below details from ([^']*) and expect the header status ([^']*) and status as ([^']*)"
 )
-def transfer_out(context, request_origin: str, status_code: str, transaction_status: str):
+def transfer_out(
+    context, request_origin: str, status_code: str, transaction_status: str
+):
     request = context.request
 
     transfer_out_request_dto = DataClassParser.parse_row(
@@ -295,13 +307,17 @@ def transfer_out(context, request_origin: str, status_code: str, transaction_sta
 @Then(
     "I initiate transfer out to transfer funds from account to master account with below details from ([^']*) and expect the header status ([^']*) and status as ([^']*)"
 )
-def transfer_out(context, request_origin: str, status_code: str, transaction_status: str):
+def transfer_out(
+    context, request_origin: str, status_code: str, transaction_status: str
+):
     request = context.request
 
     transfer_out_request_dto = DataClassParser.parse_row(
         context.table.rows[0], TransferOutRequestDTO
     )
-    transfer_out_request_dto.account_id = context.data[transfer_out_request_dto.account_id]
+    transfer_out_request_dto.account_id = context.data[
+        transfer_out_request_dto.account_id
+    ]
     receiver_account_id = context.data[
         transfer_out_request_dto.receiver_account_id
     ].master_account_id
@@ -331,15 +347,17 @@ def transfer_out(context, request_origin: str, status_code: str, transaction_sta
 @Then(
     "I initiate transfer out to transfer funds to an external account from ([^']*) and expect the header status ([^']*) and status as ([^']*)"
 )
-def transfer_out(context, request_origin: str, status_code: str, transaction_status: str):
+def transfer_out(
+    context, request_origin: str, status_code: str, transaction_status: str
+):
     request = context.request
 
     transfer_out_request_dto = DataClassParser.parse_row(
         context.table.rows[0], TransferOutRequestDTO
     )
-    transfer_out_request_dto.account_id = context.data[transfer_out_request_dto.account_id][
-        'account_id'
-    ]
+    transfer_out_request_dto.account_id = context.data[
+        transfer_out_request_dto.account_id
+    ]["account_id"]
 
     customer_profile_id = context.data[
         transfer_out_request_dto.customer_profile_id
@@ -382,7 +400,9 @@ def process_transfer_out_request(
             f"\nExpect data.account_status: {transaction_status}"
             f"\nActual data.account_status: {response['data']['txn_status']}, data: {response['data']}"
         )
-        context.data[transfer_out_request_dto.identifier] = response["data"]["transaction_id"]
+        context.data[transfer_out_request_dto.identifier] = response["data"][
+            "transaction_id"
+        ]
 
 
 @Then(
@@ -433,7 +453,9 @@ def wait_and_verify_transaction_status(
 def refund_transaction(context, request_origin: str, status_code: str):
     request = context.request
 
-    refund_tx_request_dto = DataClassParser.parse_row(context.table.rows[0], RefundRequestDTO)
+    refund_tx_request_dto = DataClassParser.parse_row(
+        context.table.rows[0], RefundRequestDTO
+    )
     refund_tx_request_dto.original_transaction_id = context.data[
         refund_tx_request_dto.original_transaction_id
     ]
@@ -471,16 +493,20 @@ def refund_transaction(context, request_origin: str, status_code: str):
 def deposit_using_dev(context, amount: float, account_id: str, status_code: str):
     request = context.request
 
-    dev_deposit_dto = DataClassParser.parse_row(context.table.rows[0], DevDepositRequestDTO)
+    dev_deposit_dto = DataClassParser.parse_row(
+        context.table.rows[0], DevDepositRequestDTO
+    )
 
     dev_deposit_dto.account_id = context.data[account_id].master_account_id
-    customer_profile_id = context.data[dev_deposit_dto.customer_profile_id].customer_profile_id
+    customer_profile_id = context.data[
+        dev_deposit_dto.customer_profile_id
+    ].customer_profile_id
 
     response = request.hugoserve_post_request(
         path=f"/payment/v1/dev/transaction/deposit",
         data=dev_deposit_dto.get_dict(),
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
     assert response["headers"]["status_code"] == status_code
@@ -504,16 +530,20 @@ def deposit_using_dev(context, amount: float, account_id: str, status_code: str)
 def deposit_using_dev(context, amount: float, account_id: str, status_code: str):
     request = context.request
 
-    dev_deposit_dto = DataClassParser.parse_row(context.table.rows[0], DevDepositRequestDTO)
+    dev_deposit_dto = DataClassParser.parse_row(
+        context.table.rows[0], DevDepositRequestDTO
+    )
 
     dev_deposit_dto.account_id = context.data[account_id]
-    customer_profile_id = context.data[dev_deposit_dto.customer_profile_id].customer_profile_id
+    customer_profile_id = context.data[
+        dev_deposit_dto.customer_profile_id
+    ].customer_profile_id
 
     response = request.hugoserve_post_request(
         path=f"/payment/v1/dev/transaction/deposit",
         data=dev_deposit_dto.get_dict(),
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
     assert response["headers"]["status_code"] == status_code
@@ -534,15 +564,17 @@ def deposit_using_dev(context, amount: float, account_id: str, status_code: str)
 @Then(
     "I initiate transfer out to transfer funds to an external account from ([^']*) and expect the header status ([^']*) with error status as ([^']*)"
 )
-def transfer_out_error(context, request_origin: str, status_code: str, error_status: str):
+def transfer_out_error(
+    context, request_origin: str, status_code: str, error_status: str
+):
     request = context.request
 
     transfer_out_request_dto = DataClassParser.parse_row(
         context.table.rows[0], TransferOutRequestDTO
     )
-    transfer_out_request_dto.account_id = context.data[transfer_out_request_dto.account_id][
-        'account_id'
-    ]
+    transfer_out_request_dto.account_id = context.data[
+        transfer_out_request_dto.account_id
+    ]["account_id"]
 
     customer_profile_id = context.data[
         transfer_out_request_dto.customer_profile_id
@@ -561,15 +593,17 @@ def transfer_out_error(context, request_origin: str, status_code: str, error_sta
 @Then(
     "I initiate transfer out to transfer funds internally with below details from ([^']*) and expect the header status ([^']*) and status as ([^']*) in Paysys"
 )
-def transfer_out(context, request_origin: str, status_code: str, transaction_status: str):
+def transfer_out(
+    context, request_origin: str, status_code: str, transaction_status: str
+):
     request = context.request
 
     transfer_out_request_dto = DataClassParser.parse_row(
         context.table.rows[0], TransferOutRequestDTO
     )
-    transfer_out_request_dto.account_id = context.data[transfer_out_request_dto.account_id][
-        'account_id'
-    ]
+    transfer_out_request_dto.account_id = context.data[
+        transfer_out_request_dto.account_id
+    ]["account_id"]
     receiver_account_id = context.data[transfer_out_request_dto.receiver_account_id]
 
     customer_profile_id = context.data[
@@ -607,15 +641,17 @@ def transfer_out(context, request_origin: str, status_code: str, transaction_sta
 @Then(
     "I initiate transfer out to transfer funds to an external account from ([^']*) and expect the header status ([^']*) and status as ([^']*) in Paysys"
 )
-def transfer_out(context, request_origin: str, status_code: str, transaction_status: str):
+def transfer_out(
+    context, request_origin: str, status_code: str, transaction_status: str
+):
     request = context.request
 
     transfer_out_request_dto = DataClassParser.parse_row(
         context.table.rows[0], TransferOutRequestDTO
     )
-    transfer_out_request_dto.account_id = context.data[transfer_out_request_dto.account_id][
-        'account_id'
-    ]
+    transfer_out_request_dto.account_id = context.data[
+        transfer_out_request_dto.account_id
+    ]["account_id"]
 
     customer_profile_id = context.data[
         transfer_out_request_dto.customer_profile_id
@@ -634,14 +670,16 @@ def transfer_out(context, request_origin: str, status_code: str, transaction_sta
 @Then(
     "I initiate bill payment to transfer funds to an external biller from ([^']*) and expect the header status ([^']*) and status as ([^']*) in Paysys"
 )
-def bill_payment(context, request_origin: str, status_code: str, transaction_status: str):
+def bill_payment(
+    context, request_origin: str, status_code: str, transaction_status: str
+):
     bill_payment_request_dto = DataClassParser.parse_row(
         context.table.rows[0], BillPaymentRequestDTO
     )
 
-    bill_payment_request_dto.account_id = context.data[bill_payment_request_dto.account_id][
-        'account_id'
-    ]
+    bill_payment_request_dto.account_id = context.data[
+        bill_payment_request_dto.account_id
+    ]["account_id"]
     customer_profile_id = context.data[
         bill_payment_request_dto.customer_profile_id
     ].customer_profile_id
@@ -683,4 +721,6 @@ def process_bill_payment_request(
             f"\nExpect data.account_status: {transaction_status}"
             f"\nActual data.account_status: {response['data']['transaction_status']}, data: {response['data']}"
         )
-        context.data[bill_payment_request_dto.identifier] = response["data"]["transaction_id"]
+        context.data[bill_payment_request_dto.identifier] = response["data"][
+            "transaction_id"
+        ]

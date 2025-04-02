@@ -26,7 +26,7 @@ def onboard_customer_profile_success(context):
             customer_profile_identifier
         ].customer_profile_id
         customer_dto.provider_id = [
-            provider.strip() for provider in customer_dto.provider_id[1:-1].split(',')
+            provider.strip() for provider in customer_dto.provider_id[1:-1].split(",")
         ]
 
         provider_id_list = []
@@ -40,7 +40,9 @@ def onboard_customer_profile_success(context):
             data=customer_dto.get_dict(), path="/investment/v1/admin/customer-profile"
         )
 
-        assert response["headers"]["status_code"] == "200", f"Response : {response['data']}"
+        assert (
+            response["headers"]["status_code"] == "200"
+        ), f"Response : {response['data']}"
 
     context.data["customer-provider-list"] = provider_list
 
@@ -58,10 +60,14 @@ def verify_customer_onboard_success(
     def retry_for_onboard_status():
         response = request.hugoserve_get_request(
             path="/investment/v1/customer-profile",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
 
-        assert len(response["data"]["providers"]) >= len(context.data["customer-provider-list"])
+        assert len(response["data"]["providers"]) >= len(
+            context.data["customer-provider-list"]
+        )
         # assert response["headers"]["status_code"] == "200"
         for each_provider_onboard_status in response["data"]["providers"]:
             assert each_provider_onboard_status["onboard_status"] == onboard_status, (
@@ -84,7 +90,7 @@ def onboard_customer_profile_invalid_customer_profile_failure(context, status: s
 
     for customer_dto in customer_dto_list:
         customer_dto.provider_id = [
-            provider.strip() for provider in customer_dto.provider_id[1:-1].split(',')
+            provider.strip() for provider in customer_dto.provider_id[1:-1].split(",")
         ]
 
         provider_id_list = []
@@ -110,7 +116,9 @@ def deposit_success(context, amount: decimal, customer_profile_identifier: str):
     def retry_for_account_details():
         customer_profile_response = request.hugoserve_get_request(
             path="/investment/v1/customer-profile/float-account/details",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
 
         assert customer_profile_response["headers"]["status_code"] == "200"
@@ -127,13 +135,17 @@ def deposit_success(context, amount: decimal, customer_profile_identifier: str):
     deposit_request_dto = DepositRequestDTO(amount=amount)
 
     context.data["initial_total_balance_" + customer_profile_id] = initial_total_balance
-    context.data["initial_available_balance_" + customer_profile_id] = initial_available_balance
+    context.data["initial_available_balance_" + customer_profile_id] = (
+        initial_available_balance
+    )
 
     if initial_available_balance < 500:
         response = request.hugoserve_post_request(
             path=f"/investment/v1/dev/deposit",
             data=deposit_request_dto.get_dict(),
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
 
         assert response["headers"]["status_code"] == "200"
@@ -144,7 +156,9 @@ def get_all_providers_success(context):
     request = context.request
     for region in context.table.rows:
         params = {"region": region}
-        response = request.hugoserve_get_request(path="/investment/v1/providers", params=params)
+        response = request.hugoserve_get_request(
+            path="/investment/v1/providers", params=params
+        )
         assert response["headers"]["status_code"] == "200" and "data" in response
         provider_dto = DataClassParser.dict_to_object(response["data"], ProviderDTO)
 
@@ -155,10 +169,13 @@ def get_provider_assets_success(context):
     investment_helper.__get_investment_provider_map(context)
     for provider in context.data["provider_id_map"]:
         response = request.hugoserve_get_request(
-            path="/investment/v1/providers/assets/" + context.data["provider_id_map"][provider]
+            path="/investment/v1/providers/assets/"
+            + context.data["provider_id_map"][provider]
         )
         assert response["headers"]["status_code"] == "200" and "data" in response
-        provider_dto = DataClassParser.dict_to_object(response["data"], ProviderAssetsDTO)
+        provider_dto = DataClassParser.dict_to_object(
+            response["data"], ProviderAssetsDTO
+        )
 
 
 @then("I request to get all Assets for below Region")
@@ -170,7 +187,9 @@ def get_all_assets_success(context):
             path="/investment/v1/providers/assets/all", params=params
         )
         assert response["headers"]["status_code"] == "200" and "data" in response
-        provider_dto = DataClassParser.dict_to_object(response["data"], ProviderAssetsDTO)
+        provider_dto = DataClassParser.dict_to_object(
+            response["data"], ProviderAssetsDTO
+        )
 
 
 @then("I request to get Asset for invalid provider and expect ([^']*)")
@@ -183,7 +202,9 @@ def get_provider_assets_failure(context, status: str):
         assert response["headers"]["status_code"] == status
 
 
-@given("I try to onboard Customer Profile on Inactive Provider and expect status ([^']*)")
+@given(
+    "I try to onboard Customer Profile on Inactive Provider and expect status ([^']*)"
+)
 def onboard_customer_profile_failure(context, status: str):
     request = context.request
     customer_dto_list = DataClassParser.parse_rows(
@@ -197,7 +218,7 @@ def onboard_customer_profile_failure(context, status: str):
             customer_profile_identifier
         ].customer_profile_id
         customer_dto.provider_id = [
-            provider.strip() for provider in customer_dto.provider_id[1:-1].split(',')
+            provider.strip() for provider in customer_dto.provider_id[1:-1].split(",")
         ]
 
         provider_id_list = []

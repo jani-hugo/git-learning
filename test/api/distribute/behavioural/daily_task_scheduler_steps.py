@@ -6,7 +6,7 @@ import test.api.distribute.behavioural.behavioural_helper as bh
 from test.api.distribute.behavioural.behavioural_dataclass import DailyTaskScheduler
 
 
-@Step('Verify valid until timestamp')
+@Step("Verify valid until timestamp")
 def verify_valid_until_ts(context):
     request = context.request
 
@@ -14,9 +14,9 @@ def verify_valid_until_ts(context):
         context.table.rows, data_class=DailyTaskScheduler
     )[0]
 
-    user_profile_id = context.data['users'][expected_user_quest.user_profile_identifier][
-        "userProfileId"
-    ]
+    user_profile_id = context.data["users"][
+        expected_user_quest.user_profile_identifier
+    ]["userProfileId"]
 
     @retry(AssertionError, tries=10, delay=60, logger=None)
     def retry_fetching_user_quests():

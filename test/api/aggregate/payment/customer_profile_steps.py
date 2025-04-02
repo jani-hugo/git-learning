@@ -73,7 +73,9 @@ def setup_customer_profile(
             "provider_id": provider_id_list,
             "on_behalf_of": on_behalf_of,
         },
-        headers=payment_helper.__get_default_payment_headers(customer_profile_id, request_origin),
+        headers=payment_helper.__get_default_payment_headers(
+            customer_profile_id, request_origin
+        ),
     )
 
     assert response["headers"]["status_code"] == status_code
@@ -84,7 +86,8 @@ def setup_customer_profile(
             provider_id = each_provider_response["provider_id"]
             assert provider_id in provider_id_list
             assert "provider_id" in each_provider_response, (
-                f"\nExpected data object contains provider_id" f"\nActual data: {provider_id}"
+                f"\nExpected data object contains provider_id"
+                f"\nActual data: {provider_id}"
             )
             actual_onboard_status = each_provider_response["onboard_status"]
             assert (
@@ -101,7 +104,10 @@ def setup_customer_profile(
             == "CustomerProfile not found or Invalid CustomerProfile is passed"
         )
     elif response["headers"]["status_code"] == "PSM_1111":
-        assert response["headers"]["message"] == "CustomerProfile not onboarded onto provider"
+        assert (
+            response["headers"]["message"]
+            == "CustomerProfile not onboarded onto provider"
+        )
 
 
 @Then(
@@ -132,7 +138,9 @@ def wait_to_onboard_customer_profile(
             )
 
             for each_provider_onboard_status in response["data"]["status_details"]:
-                assert each_provider_onboard_status["onboard_status"] == onboard_status, print(
+                assert (
+                    each_provider_onboard_status["onboard_status"] == onboard_status
+                ), print(
                     f"\nExpect data.account_status: {onboard_status}"
                     f"\nActual data.account_status: {each_provider_onboard_status['onboard_status']}"
                 )
@@ -170,7 +178,7 @@ def wait_to_create_payment_account(
             ),
         )
         assert response["headers"]["status_code"] == "200"
-        if 'master_account_details' in response["data"]["status_details"][0].keys():
+        if "master_account_details" in response["data"]["status_details"][0].keys():
             assert (
                 response["data"]["status_details"][0]["master_account_details"][
                     "master_account_status"
@@ -186,8 +194,12 @@ def wait_to_create_payment_account(
                 f"\nExpect data.status_details.master_account_details.master_account_status: {master_account_status}"
                 f"\nActual data.status_details.master_account_details.master_account_status: {response['data']['status_details'][0]['master_account_details']['master_account_status']}, data: {response['data']}"
             )
-        assert response["data"]["status_details"][0]["onboard_status"] == "ONBOARD_SUCCESS"
-        assert response["data"]["status_details"][0]["onboard_status"] == onboard_status, print(
+        assert (
+            response["data"]["status_details"][0]["onboard_status"] == "ONBOARD_SUCCESS"
+        )
+        assert (
+            response["data"]["status_details"][0]["onboard_status"] == onboard_status
+        ), print(
             f"\nExpect data.onboard_status: {onboard_status}"
             f"\nActual data.onboard_status: {response['data']['status_details'][0]['onboard_status']}, data: {response['data']}"
         )
@@ -272,7 +284,8 @@ def onboard_customer_profile_on_payment(
             provider_id = each_provider_response["provider_id"]
             assert provider_id in provider_id_list
             assert "provider_id" in each_provider_response, (
-                f"\nExpected data object contains provider_id" f"\nActual data: {provider_id}"
+                f"\nExpected data object contains provider_id"
+                f"\nActual data: {provider_id}"
             )
             actual_onboard_status = each_provider_response["onboard_status"]
             assert (
@@ -289,7 +302,10 @@ def onboard_customer_profile_on_payment(
             == "CustomerProfile not found or Invalid CustomerProfile is passed"
         )
     elif response["headers"]["status_code"] == "PSM_1111":
-        assert response["headers"]["message"] == "CustomerProfile not onboarded onto provider"
+        assert (
+            response["headers"]["message"]
+            == "CustomerProfile not onboarded onto provider"
+        )
 
 
 @Given(
@@ -344,7 +360,8 @@ def onboard_customer_profile_on_payment(
             provider_id = each_provider_response["provider_id"]
             assert provider_id in provider_id_list
             assert "provider_id" in each_provider_response, (
-                f"\nExpected data object contains provider_id" f"\nActual data: {provider_id}"
+                f"\nExpected data object contains provider_id"
+                f"\nActual data: {provider_id}"
             )
             actual_onboard_status = each_provider_response["onboard_status"]
             assert (
@@ -361,7 +378,10 @@ def onboard_customer_profile_on_payment(
             == "CustomerProfile not found or Invalid CustomerProfile is passed"
         )
     elif response["headers"]["status_code"] == "PSM_1111":
-        assert response["headers"]["message"] == "CustomerProfile not onboarded onto provider"
+        assert (
+            response["headers"]["message"]
+            == "CustomerProfile not onboarded onto provider"
+        )
 
 
 @Given(
@@ -397,9 +417,9 @@ def wait_to_onboard_customer_profile(
         ),
     )
 
-    context.data[customer_profile_identifier].master_account_id = response['data'][
+    context.data[customer_profile_identifier].master_account_id = response["data"][
         "status_details"
-    ][0]["master_account_details"]['account_id']
+    ][0]["master_account_details"]["account_id"]
 
 
 @Then(

@@ -6,7 +6,9 @@ from test.api.aggregate.card.card_helper import (
     get_currency_precision,
     is_valid_fp_tx_id,
     is_valid_uuid,
-    round_down, convert_time_expression_to_offset, is_second_ts_smaller,
+    round_down,
+    convert_time_expression_to_offset,
+    is_second_ts_smaller,
 )
 
 
@@ -54,7 +56,7 @@ class CardIssueRequestDTO:
             "emboss_name": self.emboss_name,
             "validity_in_months": self.validity_in_months,
             "delivery_address": self.delivery_address,
-            "three_d_secure_config": self.three_d_secure_config
+            "three_d_secure_config": self.three_d_secure_config,
         }
 
 
@@ -124,7 +126,9 @@ class CardDTO:
         }
 
         # Filtering out fields which are not set
-        card_dict = {k: v for k, v in card_dict.items() if v is not None and len(str(v)) != 0}
+        card_dict = {
+            k: v for k, v in card_dict.items() if v is not None and len(str(v)) != 0
+        }
         return card_dict
 
     @classmethod
@@ -162,7 +166,10 @@ class CustomerDTO:
     customer_id: Optional[str]
 
     def get_dict(self):
-        return {"customer_id": self.customer_id, "customer_external_ref": self.customer_id}
+        return {
+            "customer_id": self.customer_id,
+            "customer_external_ref": self.customer_id,
+        }
 
     @classmethod
     def sanitize_customer(cls, customer_dto):
@@ -206,7 +213,8 @@ class ThreeDSAdditionalDataDTO:
 
         return (
             self.three_ds_provider == actual_dto.three_ds_provider
-            and self.three_ds_authentication_method == actual_dto.three_ds_authentication_method
+            and self.three_ds_authentication_method
+            == actual_dto.three_ds_authentication_method
             and self.__get_expected_three_ds_otp_delivery_method()
             == actual_dto.three_ds_otp_delivery_method
             and self.three_ds_reference_number == actual_dto.three_ds_reference_number
@@ -256,7 +264,8 @@ class UpdateDTO:
 
         # TODO: Validate original amounts and actual amounts
         return (
-            self.original_message_type.lower() == actual_dto.original_message_type.lower()
+            self.original_message_type.lower()
+            == actual_dto.original_message_type.lower()
             and self.original_transaction_id == actual_dto.original_transaction_id
             and self.original_system_trace_audit_number
             == actual_dto.original_system_trace_audit_number
@@ -370,13 +379,19 @@ class TransactionDTO:
                 if self.three_ds_additional_data is not None
                 else self.three_ds_additional_data
             ),
-            "update": self.update.get_dict() if self.update is not None else self.update,
-            "status": self.status.get_dict() if self.status is not None else self.status,
+            "update": (
+                self.update.get_dict() if self.update is not None else self.update
+            ),
+            "status": (
+                self.status.get_dict() if self.status is not None else self.status
+            ),
         }
 
         # Filtering out fields which are not set
         transaction_dict = {
-            k: v for k, v in transaction_dict.items() if v is not None and len(str(v)) != 0
+            k: v
+            for k, v in transaction_dict.items()
+            if v is not None and len(str(v)) != 0
         }
         return transaction_dict
 
@@ -489,7 +504,9 @@ class TransactionDTO:
             "84": "FUNDS_DISBURSEMENT",
             "92": "ADDRESS_VERIFICATION",
         }
-        return transaction_type_dict.get(self.transaction_type, "UNKNOWN_TRANSACTION_TYPE")
+        return transaction_type_dict.get(
+            self.transaction_type, "UNKNOWN_TRANSACTION_TYPE"
+        )
 
     def __eq__(self, actual_dto):
         if not isinstance(actual_dto, self.__class__):
@@ -524,16 +541,19 @@ class TransactionDTO:
             and self.transaction_id == actual_dto.transaction_id
             and self.system_trace_audit_number == actual_dto.system_trace_audit_number
             and self.transaction_currency == actual_dto.transaction_currency
-            and self.cardholder_billing_currency == actual_dto.cardholder_billing_currency
+            and self.cardholder_billing_currency
+            == actual_dto.cardholder_billing_currency
             and self.retrieval_reference_number == actual_dto.retrieval_reference_number
             and self.network_transaction_id == actual_dto.network_transaction_id
             and self.__get_expected_eci() == actual_dto.eci
             and self.__get_expected_chip_indicator() == actual_dto.chip_indicator
             and self.__get_pin_indicator() == actual_dto.pin_indicator
-            and (self.dcc_indicator.lower() == 'y') == actual_dto.dcc_indicator
-            and (self.three_ds_indicator.lower() == 'y') == actual_dto.three_ds_indicator
-            and (self.credential_on_file.lower() == 'y') == actual_dto.credential_on_file
-            and (self.partial_approval_supported.lower() == 'y')
+            and (self.dcc_indicator.lower() == "y") == actual_dto.dcc_indicator
+            and (self.three_ds_indicator.lower() == "y")
+            == actual_dto.three_ds_indicator
+            and (self.credential_on_file.lower() == "y")
+            == actual_dto.credential_on_file
+            and (self.partial_approval_supported.lower() == "y")
             == actual_dto.partial_approval_supported
             and self.__get_cardholder_condition() == actual_dto.cardholder_condition
         )
@@ -625,7 +645,12 @@ class ClearingDTO:
             "date": self.clearing_date,
             "authorization_code": self.authorization_code,
             "authorizations": (
-                list(map(lambda authorization: authorization.get_dict(), self.authorizations))
+                list(
+                    map(
+                        lambda authorization: authorization.get_dict(),
+                        self.authorizations,
+                    )
+                )
                 if self.authorizations is not None
                 else []
             ),
@@ -670,7 +695,9 @@ class ClearingDTO:
             "8": "AUTH_FOUND_AMOUNT_MISMATCH_OUTSIDE_SCHEME_RULE",
             "9": "MATCHING_AUTH_NOT_FOUND",
         }
-        return clearing_outcome_dict.get(self.clearing_outcome, "UNKNOWN_CLEARING_OUTCOME")
+        return clearing_outcome_dict.get(
+            self.clearing_outcome, "UNKNOWN_CLEARING_OUTCOME"
+        )
 
     def __eq__(self, actual_dto):
         if not isinstance(actual_dto, self.__class__):
@@ -678,20 +705,24 @@ class ClearingDTO:
 
         expected_card_id = self.card_id
         if self.card_id is None:
-            expected_card_id = 'UNKNOWN_CARD_ID'
+            expected_card_id = "UNKNOWN_CARD_ID"
 
         # TODO: Validate transaction_amount, billing_amount and interchange_fee
         return (
             self.record_id_clearing == actual_dto.record_id_clearing
             and self.clearing_category.lower() == actual_dto.clearing_category.lower()
-            and ("FIRST_CLEARING" if self.transaction_type == '1' else "DISPUTE")
+            and ("FIRST_CLEARING" if self.transaction_type == "1" else "DISPUTE")
             == actual_dto.transaction_type
             and self.reason_code == actual_dto.reason_code
             and self.reference_number == actual_dto.reference_number
             and self.sequence_number == actual_dto.sequence_number
             and self.authorization_code == actual_dto.authorization_code
             and self.authorizations
-            == (None if len(actual_dto.authorizations) == 0 else actual_dto.authorizations)
+            == (
+                None
+                if len(actual_dto.authorizations) == 0
+                else actual_dto.authorizations
+            )
             and self.transaction_currency == actual_dto.transaction_currency
             and self.billing_currency == actual_dto.billing_currency
             and self.cashback_amount == actual_dto.cashback_amount
@@ -769,7 +800,9 @@ class DynamicDataStreamDTO:
         dto.transaction_identifier = None
         dto.card = None if dto.card is None else CardDTO.sanitize_card(dto.card)
         dto.customer = (
-            None if dto.customer is None else CustomerDTO.sanitize_customer(dto.customer)
+            None
+            if dto.customer is None
+            else CustomerDTO.sanitize_customer(dto.customer)
         )
         dto.transaction = (
             None
@@ -777,20 +810,27 @@ class DynamicDataStreamDTO:
             else TransactionDTO.sanitize_transaction(dto.transaction)
         )
         dto.acquirer = (
-            None if dto.acquirer is None else AcquirerDTO.sanitize_acquirer(dto.acquirer)
+            None
+            if dto.acquirer is None
+            else AcquirerDTO.sanitize_acquirer(dto.acquirer)
         )
         dto.clearing = (
-            None if dto.clearing is None else ClearingDTO.sanitize_clearing(dto.clearing)
+            None
+            if dto.clearing is None
+            else ClearingDTO.sanitize_clearing(dto.clearing)
         )
         return dto
 
     def __is_clearing(self):
-        return self.message_type.lower() == 'clearing'
+        return self.message_type.lower() == "clearing"
 
     def __get_expected_rrn(self):
         if self.__is_clearing():
-            if self.clearing.authorizations is None or len(self.clearing.authorizations) == 0:
-                return 'UNKNOWN_RETRIEVAL_REFERENCE_NUMBER'
+            if (
+                self.clearing.authorizations is None
+                or len(self.clearing.authorizations) == 0
+            ):
+                return "UNKNOWN_RETRIEVAL_REFERENCE_NUMBER"
             else:
                 return self.clearing.authorizations[0].retrieval_reference_number
 
@@ -847,21 +887,27 @@ class DynamicDataStreamDTO:
             return False
 
         if self.auto_clearing_ts is not None:
-            auto_clearing_ts = datetime.strptime(actual_dto.auto_clearing_ts, "%Y-%m-%dT%H:%M:%S.%fZ")
+            auto_clearing_ts = datetime.strptime(
+                actual_dto.auto_clearing_ts, "%Y-%m-%dT%H:%M:%S.%fZ"
+            )
             create_ts = datetime.strptime(actual_dto.create_ts, "%Y-%m-%dT%H:%M:%S.%fZ")
 
             offset = convert_time_expression_to_offset(self.auto_clearing_ts)
             if not is_second_ts_smaller(auto_clearing_ts, create_ts + offset):
                 return False
 
-        expected_customer_id = '' if self.__is_clearing() else self.customer.customer_id
+        expected_customer_id = "" if self.__is_clearing() else self.customer.customer_id
         expected_card_id = (
-            ('UNKNOWN_CARD_ID' if self.clearing.card_id is None else self.clearing.card_id)
+            (
+                "UNKNOWN_CARD_ID"
+                if self.clearing.card_id is None
+                else self.clearing.card_id
+            )
             if self.__is_clearing()
             else self.card.card_id
         )
         expected_transaction_type = (
-            ("FIRST_CLEARING" if self.clearing.transaction_type == '1' else "DISPUTE")
+            ("FIRST_CLEARING" if self.clearing.transaction_type == "1" else "DISPUTE")
             if self.__is_clearing()
             else self.__get_transaction_type()
         )
@@ -869,7 +915,11 @@ class DynamicDataStreamDTO:
         expected_source = (
             None
             if self.__is_clearing()
-            else (None if self.source is not None and len(self.source) == 0 else self.source)
+            else (
+                None
+                if self.source is not None and len(self.source) == 0
+                else self.source
+            )
         )
         # expected_transmission_ts
 
@@ -885,8 +935,8 @@ class DynamicDataStreamDTO:
             == actual_dto.clowd9_transaction_id
             and is_valid_uuid(actual_dto.service_transaction_id)
             and (
-                actual_dto.processing_status == 'COMPLETE'
-                or actual_dto.processing_status == 'FAILED'
+                actual_dto.processing_status == "COMPLETE"
+                or actual_dto.processing_status == "FAILED"
             )
             and self.message_type.lower() == actual_dto.message_type.lower()
             and self.message_qualifier.lower() == actual_dto.message_qualifier.lower()
@@ -1040,14 +1090,17 @@ class NymcardTransactionDTO:
                 setattr(self, key, value)
 
     def __get_performed_operation_type(self):
-        performed_operation_type_mapping = {"D": "DEBIT_OPERATION", "C": "CREDIT_OPERATION"}
+        performed_operation_type_mapping = {
+            "D": "DEBIT_OPERATION",
+            "C": "CREDIT_OPERATION",
+        }
 
         return performed_operation_type_mapping.get(self.performed_operation_type)
 
     def __get_parsed_interchange_fee_indicator(self):
         interchange_fee_indicator_mapping = {
             "D": "DEBIT_INTERCHANGE_FEE",
-            "C": "CREDIT_INTERCHANGE_FEE"
+            "C": "CREDIT_INTERCHANGE_FEE",
         }
 
         return interchange_fee_indicator_mapping.get(self.interchange_fee_indicator)
@@ -1068,29 +1121,41 @@ class NymcardTransactionDTO:
             return False
 
         if self.auto_clearing_ts is not None:
-            auto_clearing_ts_obj = datetime.strptime(actual_nymcard_transaction.auto_clearing_ts, "%Y-%m-%dT%H:%M:%S.%fZ")
-            create_ts_ts_obj = datetime.strptime(actual_nymcard_transaction.create_ts, "%Y-%m-%dT%H:%M:%S.%fZ")
+            auto_clearing_ts_obj = datetime.strptime(
+                actual_nymcard_transaction.auto_clearing_ts, "%Y-%m-%dT%H:%M:%S.%fZ"
+            )
+            create_ts_ts_obj = datetime.strptime(
+                actual_nymcard_transaction.create_ts, "%Y-%m-%dT%H:%M:%S.%fZ"
+            )
 
             offset = convert_time_expression_to_offset(self.auto_clearing_ts)
-            if not is_second_ts_smaller(auto_clearing_ts_obj, create_ts_ts_obj + offset):
+            if not is_second_ts_smaller(
+                auto_clearing_ts_obj, create_ts_ts_obj + offset
+            ):
                 return False
 
         parsed_interchange_fee_indicator = self.__get_parsed_interchange_fee_indicator()
-        if actual_nymcard_transaction.interchange_fee_indicator != parsed_interchange_fee_indicator:
+        if (
+            actual_nymcard_transaction.interchange_fee_indicator
+            != parsed_interchange_fee_indicator
+        ):
             return False
 
         return (
             actual_nymcard_transaction.id == self.id
-            and actual_nymcard_transaction.parent_transaction_id == self.parent_transaction_id
+            and actual_nymcard_transaction.parent_transaction_id
+            == self.parent_transaction_id
             and actual_nymcard_transaction.sms_clearing_transaction_id
             == self.sms_clearing_transaction_id
-            and actual_nymcard_transaction.transaction_timestamp == self.transaction_timestamp
+            and actual_nymcard_transaction.transaction_timestamp
+            == self.transaction_timestamp
             and actual_nymcard_transaction.network == self.network
             and actual_nymcard_transaction.message_type == self.message_type
             and actual_nymcard_transaction.transaction_type == self.transaction_type
             and actual_nymcard_transaction.transaction_description
             == self.transaction_description
-            and actual_nymcard_transaction.transmission_timestamp == self.transmission_timestamp
+            and actual_nymcard_transaction.transmission_timestamp
+            == self.transmission_timestamp
             and actual_nymcard_transaction.date_time_acquirer == self.date_time_acquirer
             and actual_nymcard_transaction.card_id == self.card_id
             and actual_nymcard_transaction.card_product_id == self.card_product_id
@@ -1107,9 +1172,11 @@ class NymcardTransactionDTO:
             and actual_nymcard_transaction.terminal_id == self.terminal_id
             and actual_nymcard_transaction.rrn == self.rrn
             and actual_nymcard_transaction.stan == self.stan
-            and actual_nymcard_transaction.network_transaction_id == self.network_transaction_id
+            and actual_nymcard_transaction.network_transaction_id
+            == self.network_transaction_id
             and actual_nymcard_transaction.transaction_amount == self.transaction_amount
-            and actual_nymcard_transaction.transaction_currency == self.transaction_currency
+            and actual_nymcard_transaction.transaction_currency
+            == self.transaction_currency
             and actual_nymcard_transaction.billing_amount == self.billing_amount
             and actual_nymcard_transaction.billing_currency == self.billing_currency
             and actual_nymcard_transaction.original_transaction_amount
@@ -1165,7 +1232,9 @@ class TransactionLog:
         }
         # Filtering out fields which are not set
         transactionLog = {
-            k: v for k, v in transactionLog.items() if v is not None and len(str(v)) != 0
+            k: v
+            for k, v in transactionLog.items()
+            if v is not None and len(str(v)) != 0
         }
         return transactionLog
 
@@ -1208,10 +1277,10 @@ class TransactionLogDTO:
         dto.transaction_identifier = None
         dto.linked_transaction_ids = (
             str(list())
-            if dto.linked_transaction_ids == '' or dto.linked_transaction_ids is None
+            if dto.linked_transaction_ids == "" or dto.linked_transaction_ids is None
             else dto.linked_transaction_ids
         )
-        dto.release_type = None if dto.release_type == '' else dto.release_type
+        dto.release_type = None if dto.release_type == "" else dto.release_type
         dto.buffered_bill_amount = (
             dto.billing_amount
             if "DEBIT_CLEAR" in dto.transaction_type
@@ -1228,22 +1297,22 @@ class TransactionLogDTO:
         if not isinstance(actual_dto, self.__class__):
             return False
 
-        if self.fp_transaction_id == 'VALID_UUID' and not is_valid_fp_tx_id(
+        if self.fp_transaction_id == "VALID_UUID" and not is_valid_fp_tx_id(
             actual_dto.fp_transaction_id
         ):
             return False
 
         if (
             self.release_auth_ts != actual_dto.release_auth_ts
-            and not self.release_auth_ts.startswith('T+')
-            and datetime.fromisoformat(actual_dto.initiated_ts[:-1] + '+00:00')
-            + timedelta(days=int(self.release_auth_ts.split('+')[1]))
-            == datetime.fromisoformat(actual_dto.release_auth_ts[:-1] + '+00:00')
+            and not self.release_auth_ts.startswith("T+")
+            and datetime.fromisoformat(actual_dto.initiated_ts[:-1] + "+00:00")
+            + timedelta(days=int(self.release_auth_ts.split("+")[1]))
+            == datetime.fromisoformat(actual_dto.release_auth_ts[:-1] + "+00:00")
         ):
             return False
 
         if (
-            actual_dto.linked_transaction_ids == '[]'
+            actual_dto.linked_transaction_ids == "[]"
             and self.linked_transaction_ids != actual_dto.linked_transaction_ids
         ):
             return False
@@ -1254,7 +1323,8 @@ class TransactionLogDTO:
             and self.card_id == actual_dto.card_id
             and float(self.transaction_amount) == float(actual_dto.transaction_amount)
             and float(self.billing_amount) == float(actual_dto.billing_amount)
-            and float(self.buffered_bill_amount) == float(actual_dto.buffered_bill_amount)
+            and float(self.buffered_bill_amount)
+            == float(actual_dto.buffered_bill_amount)
             and self.transaction_currency == actual_dto.transaction_currency
             and self.billing_currency == actual_dto.billing_currency
             and self.transaction_type == actual_dto.transaction_type
@@ -1286,7 +1356,7 @@ class TransactionLogDetailDTO:
     @classmethod
     def sanitize_transaction_log_detail(cls, dto):
         dto.transaction_identifier = None
-        dto.idempotency_key = None if dto.idempotency_key == '' else dto.idempotency_key
+        dto.idempotency_key = None if dto.idempotency_key == "" else dto.idempotency_key
         dto.buffered_billing_amount = (
             dto.billing_amount
             if "DEBIT_CLEAR" in dto.transaction_type
@@ -1300,7 +1370,7 @@ class TransactionLogDetailDTO:
 
         if dto.transaction_type == "DEBIT_CLEAR":
             dto.conversion_rate = 0
-        elif dto.transaction_amount != '0':
+        elif dto.transaction_amount != "0":
             dto.conversion_rate = str(
                 round_down(float(dto.billing_amount) / float(dto.transaction_amount), 8)
             )
@@ -1313,7 +1383,7 @@ class TransactionLogDetailDTO:
             return False
 
         if self.auto_cleared_ts is not None and datetime.fromisoformat(
-            actual_dto.auto_cleared_ts[:-1] + '+00:00'
+            actual_dto.auto_cleared_ts[:-1] + "+00:00"
         ):
             return False
 
@@ -1322,7 +1392,8 @@ class TransactionLogDetailDTO:
             and self.idempotency_key == actual_dto.idempotency_key
             and float(self.transaction_amount) == float(actual_dto.transaction_amount)
             and float(self.billing_amount) == float(actual_dto.billing_amount)
-            and float(self.buffered_billing_amount) == float(actual_dto.buffered_billing_amount)
+            and float(self.buffered_billing_amount)
+            == float(actual_dto.buffered_billing_amount)
             and self.transaction_type == actual_dto.transaction_type
             and self.transaction_status == actual_dto.transaction_status
         )

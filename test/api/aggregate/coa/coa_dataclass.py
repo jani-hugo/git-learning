@@ -194,5 +194,5 @@ class TransactionCodeDTO:
         return {
             "transaction_code": self.transaction_code,
             "iso_code": self.iso_code,
-            "description": self.description
+            "description": self.description,
         }

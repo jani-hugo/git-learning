@@ -15,12 +15,12 @@ def fetch_providers_by_region(
         path="/payment/v1/providers",
         params={"region": region},
         headers=payment_helper.__get_default_payment_headers(
-            context.data['config_data']['customer_profile_id'], request_origin
+            context.data["config_data"]["customer_profile_id"], request_origin
         ),
     )["data"]["providers"]
 
     for provider in provider_list:
-        if provider['provider_id'] == provider_id:
+        if provider["provider_id"] == provider_id:
             assert f"\nProvider Details: {provider}"
         else:
             assert f"\nExpected provider not found in region: {region}"
@@ -35,7 +35,7 @@ def fetch_txn_modes_by_provider(
     txn_mode_list = context.request.hugoserve_get_request(
         path=f"/payment/v1/providers/{provider_id}/transaction-modes",
         headers=payment_helper.__get_default_payment_headers(
-            context.data['config_data']['customer_profile_id'], request_origin
+            context.data["config_data"]["customer_profile_id"], request_origin
         ),
     )["data"]["txn_mode"]
 

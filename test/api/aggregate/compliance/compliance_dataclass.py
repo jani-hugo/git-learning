@@ -18,9 +18,9 @@ class CustomerProfileDTO:
 
     def get_dict(self):
         return {
-            'provider_id': self.provider_id,
-            'status_code': self.status_code,
-            'region': self.region,
+            "provider_id": self.provider_id,
+            "status_code": self.status_code,
+            "region": self.region,
         }
 
 
@@ -40,13 +40,13 @@ class ProcessComplianceDTO:
 
     def get_dict(self):
         return {
-            'customer_profile_id': self.customer_profile_id,
-            'end_customer_profile_id': self.end_customer_profile_id,
-            'provider_id': self.provider_id,
-            'compliance_type': self.compliance_type,
-            'status_code': self.status_code,
-            'status': self.status,
-            'decision': self.decision,
+            "customer_profile_id": self.customer_profile_id,
+            "end_customer_profile_id": self.end_customer_profile_id,
+            "provider_id": self.provider_id,
+            "compliance_type": self.compliance_type,
+            "status_code": self.status_code,
+            "status": self.status,
+            "decision": self.decision,
         }
 
 
@@ -64,10 +64,10 @@ class ComplianceImageDTO:
 
     def get_dict(self):
         return {
-            'customer_profile_id': self.customer_profile_id,
-            'end_customer_profile_id': self.end_customer_profile_id,
-            'provider_id': self.provider_id,
-            'compliance_type': self.compliance_type,
-            'status_code': self.status_code,
-            'missing_param': self.missing_param,
+            "customer_profile_id": self.customer_profile_id,
+            "end_customer_profile_id": self.end_customer_profile_id,
+            "provider_id": self.provider_id,
+            "compliance_type": self.compliance_type,
+            "status_code": self.status_code,
+            "missing_param": self.missing_param,
         }

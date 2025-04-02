@@ -29,11 +29,11 @@ def push_device_token(context, user_profile_identifier):
         headers=ah.get_user_header(user_prof_id, context),
     )
     check_status_distribute(response, "200")
-    saved_tokens = response['data']['pnToken']
+    saved_tokens = response["data"]["pnToken"]
 
     for t in saved_tokens:
-        print(t, t['token'], tokens, t['token'] in tokens)
-        assert t['token'] in tokens, "Token missing"
+        print(t, t["token"], tokens, t["token"] in tokens)
+        assert t["token"] in tokens, "Token missing"
 
 
 @Step("I delete all device tokens for user ([^']*)")
@@ -53,6 +53,6 @@ def remove_token(context, user_profile_identifier):
         headers=ah.get_user_header(user_prof_id, context),
     )
     check_status_distribute(response, "200")
-    saved_tokens = response['data']['pnToken']
+    saved_tokens = response["data"]["pnToken"]
 
     assert len(saved_tokens) == 0, "Failed deleting tokens"

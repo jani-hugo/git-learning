@@ -1,5 +1,5 @@
-from aggregate.cash import helper as cash_helper
-from aggregate.profile.profile_dataclass import CustomerProfileDTO
+from test.api.aggregate.cash import helper as cash_helper
+from test.api.aggregate.profile.profile_dataclass import CustomerProfileDTO
 from behave import *
 from hugoutils.utilities.dataclass_util import DataClassParser
 from retry import retry
@@ -11,7 +11,10 @@ use_step_matcher("re")
     "I set and verify customer ([^']*), customer profile ([^']*) on cash service on below providers and expect status ([^']*) in the context"
 )
 def setup_customer_profile(
-    context, customer_identifier: str, customer_profile_identifier: str, status_code: str
+    context,
+    customer_identifier: str,
+    customer_profile_identifier: str,
+    status_code: str,
 ):
     request = context.request
     customer_profile_dict = {
@@ -69,7 +72,8 @@ def setup_customer_profile(
             provider_id = each_provider_response["provider_id"]
             assert provider_id in provider_id_list
             assert "provider_id" in each_provider_response, (
-                f"\nExpected data object contains provider_id" f"\nActual data: {provider_id}"
+                f"\nExpected data object contains provider_id"
+                f"\nActual data: {provider_id}"
             )
             actual_onboard_status = each_provider_response["onboard_status"]
             assert (
@@ -125,7 +129,7 @@ def onboard_customer_profile_on_cash(
         },
         headers=cash_helper.__get_default_cash_headers(customer_profile_id),
     )
-    assert response["headers"]["status_code"] == status_code,  (
+    assert response["headers"]["status_code"] == status_code, (
         f"[TraceId: {response['headers']['trace_id']}]\n"
         f"Expect status_code: {status_code}\n"
         f"Actual status_code: {response['headers']['status_code']}"
@@ -137,7 +141,8 @@ def onboard_customer_profile_on_cash(
             provider_id = each_provider_response["provider_id"]
             assert provider_id in provider_id_list
             assert "provider_id" in each_provider_response, (
-                f"\nExpected data object contains provider_id" f"\nActual data: {provider_id}"
+                f"\nExpected data object contains provider_id"
+                f"\nActual data: {provider_id}"
             )
             actual_onboard_status = each_provider_response["onboard_status"]
             assert (
@@ -155,7 +160,9 @@ def onboard_customer_profile_on_cash(
         )
 
 
-@Then("I wait until max time to verify CustomerProfile ([^']*) onboard status as ([^']*)")
+@Then(
+    "I wait until max time to verify CustomerProfile ([^']*) onboard status as ([^']*)"
+)
 def wait_to_onboard_customer_profile(
     context, customer_profile_identifier: str, onboard_status: str
 ):
@@ -165,7 +172,9 @@ def wait_to_onboard_customer_profile(
         max_wait_time = 0
         for provider in context.data[customer_profile_id]:
             max_wait_time = max(
-                cash_helper.cash_providers_config[provider["provider_name"]]["max_wait_time"],
+                cash_helper.cash_providers_config[provider["provider_name"]][
+                    "max_wait_time"
+                ],
                 max_wait_time,
             )
 
@@ -177,7 +186,9 @@ def wait_to_onboard_customer_profile(
             )
 
             for each_provider_onboard_status in response["data"]["providers"]:
-                assert each_provider_onboard_status["onboard_status"] == onboard_status, print(
+                assert (
+                    each_provider_onboard_status["onboard_status"] == onboard_status
+                ), print(
                     f"\nExpect data.account_status: {onboard_status}"
                     f"\nActual data.account_status: {each_provider_onboard_status['onboard_status']}"
                 )
@@ -236,7 +247,8 @@ def onboard_end_customer_profile_on_cash(
             provider_id = each_provider_response["provider_id"]
             assert provider_id in provider_id_list
             assert "provider_id" in each_provider_response, (
-                f"\nExpected data object contains provider_id" f"\nActual data: {provider_id}"
+                f"\nExpected data object contains provider_id"
+                f"\nActual data: {provider_id}"
             )
             actual_onboard_status = each_provider_response["onboard_status"]
             assert (
@@ -275,7 +287,9 @@ def wait_to_onboard_end_customer_profile(
         max_wait_time = 0
         for provider in context.data[end_customer_profile_id]:
             max_wait_time = max(
-                cash_helper.cash_providers_config[provider["provider_name"]]["max_wait_time"],
+                cash_helper.cash_providers_config[provider["provider_name"]][
+                    "max_wait_time"
+                ],
                 max_wait_time,
             )
 

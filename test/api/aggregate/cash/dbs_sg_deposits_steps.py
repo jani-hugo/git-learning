@@ -16,7 +16,9 @@ from test.api.aggregate.payment import helper as payment_helper
 use_step_matcher("re")
 
 
-@Given("I deposit an amount of ([^']*) into ([^']*) using ICN for customerProfileId ([^']*)")
+@Given(
+    "I deposit an amount of ([^']*) into ([^']*) using ICN for customerProfileId ([^']*)"
+)
 def deposit_using_icn(
     context,
     amount: decimal,
@@ -37,7 +39,7 @@ def deposit_using_icn(
         path=f"/cash/v1/account/{bank_account_id}/balance",
         headers=cash_helper.__get_default_cash_headers(customer_profile_id),
     )
-    trace_id = response['headers'].get('trace_id', 'N/A')
+    trace_id = response["headers"].get("trace_id", "N/A")
 
     assert (
         "data" in response
@@ -47,7 +49,9 @@ def deposit_using_icn(
     initial_available_balance = response["data"]["available_balance"]
 
     context.data["initial_total_balance_" + bank_account_id] = initial_total_balance
-    context.data["initial_available_balance_" + bank_account_id] = initial_available_balance
+    context.data["initial_available_balance_" + bank_account_id] = (
+        initial_available_balance
+    )
 
     instant_credit_notification_dto = DataClassParser.parse_row(
         context.table.rows[0], InstantCreditNotification
@@ -66,8 +70,8 @@ def deposit_using_icn(
         data=instant_credit_notification_dto.get_dict(),
         headers=payment_helper.__get_default_payment_headers(customer_profile_id),
     )
-    trace_id = response['headers'].get('trace_id', 'N/A')
-    status_code = response['headers']['status_code']
+    trace_id = response["headers"].get("trace_id", "N/A")
+    status_code = response["headers"]["status_code"]
 
     assert status_code == "200", (
         f"[TraceId: {trace_id}] [AccountId: {bank_account_id}]\n"
@@ -79,13 +83,19 @@ def deposit_using_icn(
 @Given(
     "I deposit an amount of ([^']*) into ([^']*) using DevDeposit expect the header status ([^']*)"
 )
-def deposit_using_payment_dev(context, amount: float, account_id: str, status_code: str):
+def deposit_using_payment_dev(
+    context, amount: float, account_id: str, status_code: str
+):
     request = context.request
 
-    dev_deposit_dto = DataClassParser.parse_row(context.table.rows[0], DevDepositRequestDTO)
+    dev_deposit_dto = DataClassParser.parse_row(
+        context.table.rows[0], DevDepositRequestDTO
+    )
 
     dev_deposit_dto.account_id = context.data[account_id].account_id
-    customer_profile_id = context.data[dev_deposit_dto.customer_profile_id].customer_profile_id
+    customer_profile_id = context.data[
+        dev_deposit_dto.customer_profile_id
+    ].customer_profile_id
 
     response = request.hugoserve_post_request(
         path=f"/payment/v1/dev/transaction/deposit",
@@ -126,15 +136,21 @@ def deposit_using_payment_dev(context, amount: float, account_id: str, status_co
 @Given(
     "I deposit an amount of ([^']*) into ([^']*) using cash DevDeposit and expect the header status ([^']*)"
 )
-def deposit_using_cash_dev(context, amount: float, account_identifier: str, status_code: str):
+def deposit_using_cash_dev(
+    context, amount: float, account_identifier: str, status_code: str
+):
     request = context.request
 
-    dev_deposit_dto = DataClassParser.parse_row(context.table.rows[0], CashDevDepositRequestDTO)
+    dev_deposit_dto = DataClassParser.parse_row(
+        context.table.rows[0], CashDevDepositRequestDTO
+    )
 
     account_id = context.data[account_identifier].account_id
     dev_deposit_dto.account_id = account_id
     dev_deposit_dto.amount = amount
-    customer_profile_id = context.data[dev_deposit_dto.customer_profile_id].customer_profile_id
+    customer_profile_id = context.data[
+        dev_deposit_dto.customer_profile_id
+    ].customer_profile_id
 
     check_initial_balance_response = request.hugoserve_get_request(
         path=f"/cash/v1/account/{account_id}/balance",
@@ -145,7 +161,9 @@ def deposit_using_cash_dev(context, amount: float, account_identifier: str, stat
     ), f"\nExpected non empty data object, found empty. Response:{check_initial_balance_response}"
 
     initial_total_balance = check_initial_balance_response["data"]["total_balance"]
-    initial_available_balance = check_initial_balance_response["data"]["available_balance"]
+    initial_available_balance = check_initial_balance_response["data"][
+        "available_balance"
+    ]
 
     context.data["initial_total_balance_" + account_id] = initial_total_balance
     context.data["initial_available_balance_" + account_id] = initial_available_balance
@@ -160,9 +178,14 @@ def deposit_using_cash_dev(context, amount: float, account_identifier: str, stat
         assert deposit_response["headers"]["message"] == "Success"
 
 
-@Given("I deposit an amount of ([^']*) into ([^']*) using IDN for customerProfileId ([^']*)")
+@Given(
+    "I deposit an amount of ([^']*) into ([^']*) using IDN for customerProfileId ([^']*)"
+)
 def deposit_using_idn(
-    context, amount: decimal, bank_account_identifier: str, customer_profile_identifier: str
+    context,
+    amount: decimal,
+    bank_account_identifier: str,
+    customer_profile_identifier: str,
 ):
     cash_helper.__validate_provider("DBS Bank Ltd")
 
@@ -189,7 +212,9 @@ def deposit_using_idn(
     initial_available_balance = response["data"]["available_balance"]
 
     context.data["initial_total_balance_" + bank_account_id] = initial_total_balance
-    context.data["initial_available_balance_" + bank_account_id] = initial_available_balance
+    context.data["initial_available_balance_" + bank_account_id] = (
+        initial_available_balance
+    )
 
     credit_notification_dto = DataClassParser.parse_row(
         context.table.rows[0], IntraDayCreditNotification

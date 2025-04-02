@@ -43,13 +43,17 @@ def verify_end_customer_success(context, customer_profile_identifier: str):
 
         response = request.hugoserve_get_request(
             path="/profile/v1/end-customer-profile/" + end_customer_profile_id,
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
         assert response["headers"]["status_code"] == "200"
         # we get a list of end-customer-profiles back so code for it as a list here
 
 
-@given("I onboard End Customer-Profile of Customer-Profile ([^']*) on Investment Service")
+@given(
+    "I onboard End Customer-Profile of Customer-Profile ([^']*) on Investment Service"
+)
 def onboard_end_customer_profile_success(context, customer_profile_identifier: str):
     request = context.request
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
@@ -63,7 +67,8 @@ def onboard_end_customer_profile_success(context, customer_profile_identifier: s
         ].end_customer_profile_id
 
         end_customer_dto.provider_id = [
-            provider.strip() for provider in end_customer_dto.provider_id[1:-1].split(',')
+            provider.strip()
+            for provider in end_customer_dto.provider_id[1:-1].split(",")
         ]
         provider_list = []
         for provider in end_customer_dto.provider_id:
@@ -73,7 +78,9 @@ def onboard_end_customer_profile_success(context, customer_profile_identifier: s
         end_customer_dto.provider_id = provider_list
         response = request.hugoserve_post_request(
             data=end_customer_dto.get_dict(),
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             path="/investment/v1/end-customer-profile",
         )
 
@@ -82,7 +89,9 @@ def onboard_end_customer_profile_success(context, customer_profile_identifier: s
     context.data["end-customer-provider-list"] = end_customer_provider_list
 
 
-@given("I onboard End Customer-Profile of invalid Customer-Profile ([^']*) and verify ([^']*)")
+@given(
+    "I onboard End Customer-Profile of invalid Customer-Profile ([^']*) and verify ([^']*)"
+)
 def onboardEndCustomerProfile_invalidCustomerProfile_failure(
     context, customer_profile_identifier: str, status: str
 ):
@@ -97,7 +106,8 @@ def onboardEndCustomerProfile_invalidCustomerProfile_failure(
         ].end_customer_profile_id
 
         end_customer_dto.provider_id = [
-            provider.strip() for provider in end_customer_dto.provider_id[1:-1].split(',')
+            provider.strip()
+            for provider in end_customer_dto.provider_id[1:-1].split(",")
         ]
         provider_list = []
         for provider in end_customer_dto.provider_id:
@@ -107,7 +117,9 @@ def onboardEndCustomerProfile_invalidCustomerProfile_failure(
 
         response = request.hugoserve_post_request(
             data=end_customer_dto.get_dict(),
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             path="/investment/v1/end-customer-profile",
         )
 
@@ -131,7 +143,8 @@ def onboard_end_customer_profile_incorrect_customer_profile_failure(
         ].end_customer_profile_id
 
         end_customer_dto.provider_id = [
-            provider.strip() for provider in end_customer_dto.provider_id[1:-1].split(',')
+            provider.strip()
+            for provider in end_customer_dto.provider_id[1:-1].split(",")
         ]
         provider_list = []
         for provider in end_customer_dto.provider_id:
@@ -141,7 +154,9 @@ def onboard_end_customer_profile_incorrect_customer_profile_failure(
 
         response = request.hugoserve_post_request(
             data=end_customer_dto.get_dict(),
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             path="/investment/v1/end-customer-profile",
         )
 
@@ -157,13 +172,17 @@ def verifyEndCustomerOnboard_success(
     request = context.request
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
 
-    end_customer_profile_id = context.data[end_customer_identifier].end_customer_profile_id
+    end_customer_profile_id = context.data[
+        end_customer_identifier
+    ].end_customer_profile_id
 
     @retry(exceptions=AssertionError, tries=40, delay=10, logger=None)
     def retry_for_onboard_status():
         response = request.hugoserve_get_request(
             path="/investment/v1/end-customer-profile/" + end_customer_profile_id,
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
         assert "data" in response and len(response["data"]["providers"]) == len(
             context.data["end-customer-provider-list"]
@@ -192,7 +211,9 @@ def onboardEndCustomerProfile_incorrectProvider_failure(
         end_customer_dto.provider_id = [end_customer_dto.provider_id]
         response = request.hugoserve_post_request(
             data=end_customer_dto.get_dict(),
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             path="/investment/v1/end-customer-profile",
         )
 
@@ -205,13 +226,17 @@ def onboardEndCustomerProfile_incorrectProvider_failure(
 def deleteEndCustomer_success(context, customer_profile_identifier: str, status: str):
     request = context.request
     for row in context.table:
-        customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
+        customer_profile_id = context.data[
+            customer_profile_identifier
+        ].customer_profile_id
         end_customer_profile_id = context.data[row[1]].end_customer_profile_id
         provider_id = context.data["provider_id_list"][0]
         data = {"provider-id": provider_id}
         response = request.hugoserve_delete_request(
             path="/investment/v1/end-customer-profile/" + end_customer_profile_id,
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             params=data,
         )
         assert response["headers"]["status_code"] == status, f"Expected :{response}"
@@ -225,13 +250,17 @@ def deleteEndCustomer_nonZeroPortfolio_failure(
 ):
     request = context.request
     for row in context.table:
-        customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
+        customer_profile_id = context.data[
+            customer_profile_identifier
+        ].customer_profile_id
         end_customer_profile_id = context.data[row[1]].end_customer_profile_id
         provider_id = context.data["provider_id_list"][0]
         data = {"provider-id": provider_id}
         response = request.hugoserve_delete_request(
             path="/investment/v1/end-customer-profile/" + end_customer_profile_id,
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             params=data,
         )
         time.sleep(10)

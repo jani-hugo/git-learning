@@ -27,7 +27,11 @@ CARD_PROVIDER_CLOWD9 = "CLOWD9"
 CARD_PROVIDER_NYMCARD = "NYMCARD"
 CARD_PROVIDER_PSEUDO = "PSEUDO"
 
-supported_currency = {('108', '152'): 0, ('702', '826', '356', '586'): 2, ('368', '400'): 3}
+supported_currency = {
+    ("108", "152"): 0,
+    ("702", "826", "356", "586"): 2,
+    ("368", "400"): 3,
+}
 
 
 def get_currency_precision(currency_code):
@@ -47,7 +51,9 @@ def validate_provider(provider_name: str):
         raise RuntimeError(f"No such provider found. Provider name: {provider_name}")
 
     if not card_providers_config[provider_name]["supports_integration_test"]:
-        raise RuntimeError(f"Integration tests are not supported for provider {provider_name}")
+        raise RuntimeError(
+            f"Integration tests are not supported for provider {provider_name}"
+        )
 
 
 def fetch_card_provider_id(context, provider_name: str, customer_profile_id: str):
@@ -69,7 +75,9 @@ def fetch_card_provider_id(context, provider_name: str, customer_profile_id: str
 
 
 def get_default_card_headers(
-    customer_profile_id: str, idempotency_key: str = None, customer_access_key: str = None
+    customer_profile_id: str,
+    idempotency_key: str = None,
+    customer_access_key: str = None,
 ):
     headers = {
         "x-customer-profile-id": customer_profile_id,
@@ -81,11 +89,13 @@ def get_default_card_headers(
 
 
 def generate_random_number(length):
-    return ''.join(random.choices('0123456789', k=length))
+    return "".join(random.choices("0123456789", k=length))
 
 
 def get_current_timestamp():
-    return datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
+    return (
+        datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+    )
 
 
 def is_valid_uuid(value: str):
@@ -129,6 +139,7 @@ def round_down(number: float, precision: int = 2):
     factor = 10**precision
     return math.floor(number * factor) / factor
 
+
 def convert_time_expression_to_offset(ts_exp: str):
     minutes = 0
     seconds = 0
@@ -145,6 +156,7 @@ def convert_time_expression_to_offset(ts_exp: str):
         seconds = int(second_match.group(1))
 
     return timedelta(minutes=minutes, seconds=seconds)
+
 
 def is_second_ts_smaller(first_ts: datetime, second_ts: datetime):
     return second_ts < first_ts

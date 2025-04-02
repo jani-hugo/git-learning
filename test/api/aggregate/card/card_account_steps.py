@@ -19,11 +19,15 @@ def create_card_account(context):
     for each_card_account_dto in card_account_requests:
         card_helper.validate_provider(each_card_account_dto.provider_name)
 
-        end_customer_profile_identifier = each_card_account_dto.end_customer_profile_identifier
+        end_customer_profile_identifier = (
+            each_card_account_dto.end_customer_profile_identifier
+        )
         customer_profile_identifier = context.data[
             end_customer_profile_identifier
         ].customer_profile_identifier
-        customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
+        customer_profile_id = context.data[
+            customer_profile_identifier
+        ].customer_profile_id
 
         end_customer_profile_id = context.data[
             end_customer_profile_identifier
@@ -36,7 +40,9 @@ def create_card_account(context):
             ),
             None,
         )["provider_id"]
-        bank_account_id = context.data[each_card_account_dto.bank_account_identifier].account_id
+        bank_account_id = context.data[
+            each_card_account_dto.bank_account_identifier
+        ].account_id
 
         each_card_account_dto.end_customer_profile_id = end_customer_profile_id
         each_card_account_dto.card_account_product_id = context.data["config_data"][
@@ -83,13 +89,17 @@ def wait_to_create_card_account(
     card_helper.validate_provider(provider_name)
 
     customer_profile_id = context.data[card_account_identifier]["customer_profile_id"]
-    end_customer_profile_id = context.data[card_account_identifier]["end_customer_profile_id"]
+    end_customer_profile_id = context.data[card_account_identifier][
+        "end_customer_profile_id"
+    ]
     card_account_id = context.data[card_account_identifier]["card_account_id"]
 
     max_wait_time = 0
     for provider in context.data[end_customer_profile_id]:
         max_wait_time = max(
-            card_helper.card_providers_config[provider["provider_name"]]["max_wait_time"],
+            card_helper.card_providers_config[provider["provider_name"]][
+                "max_wait_time"
+            ],
             max_wait_time,
         )
 
@@ -124,7 +134,7 @@ def delete_card_account(context, card_account_identifier: str):
     customer_profile_id = context.data[card_account_identifier]["customer_profile_id"]
 
     response = request.hugoserve_delete_request(
-        path=f'/card/v1/card-account/{card_account_id}',
+        path=f"/card/v1/card-account/{card_account_id}",
         headers=card_helper.get_default_card_headers(customer_profile_id),
     )
 

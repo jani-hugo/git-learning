@@ -29,7 +29,7 @@ def deposit_using_credit_posting(
 ):
     payment_helper.__validate_provider("PAYSYS")
 
-    payment_account_id = context.data[account_identifier]['account_id']
+    payment_account_id = context.data[account_identifier]["account_id"]
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
 
     account_details = payment_helper.__fetch_payment_account(
@@ -39,14 +39,14 @@ def deposit_using_credit_posting(
     response = request.hugoserve_get_request(
         path=f"/payment/v1/account/{payment_account_id}",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
-    master_account_id = response['data']['master_account_id']
+    master_account_id = response["data"]["master_account_id"]
     response = request.hugoserve_get_request(
         path=f"/payment/v1/account/master-account/{master_account_id}/balance",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
 
@@ -58,7 +58,9 @@ def deposit_using_credit_posting(
     initial_available_balance = response["data"]["available_balance"]
 
     context.data["initial_total_balance_" + master_account_id] = initial_total_balance
-    context.data["initial_available_balance_" + master_account_id] = initial_available_balance
+    context.data["initial_available_balance_" + master_account_id] = (
+        initial_available_balance
+    )
 
     credit_posting_request_dto = DataClassParser.parse_row(
         context.table.rows[0], CreditPostingRequest
@@ -71,9 +73,13 @@ def deposit_using_credit_posting(
     customer_profile_id = credit_posting_request_dto.customer_profile_id
     current_date_time = datetime.now()
     credit_posting_request_dto.txn_info.info.rrn = random.randint(10**11, 10**12 - 1)
-    credit_posting_request_dto.txn_info.info.stan = current_date_time.strftime('%H%M%S')
-    credit_posting_request_dto.txn_info.info.txndate = current_date_time.strftime('%Y%m%d')
-    credit_posting_request_dto.txn_info.info.txntime = current_date_time.strftime('%H%M%S')
+    credit_posting_request_dto.txn_info.info.stan = current_date_time.strftime("%H%M%S")
+    credit_posting_request_dto.txn_info.info.txndate = current_date_time.strftime(
+        "%Y%m%d"
+    )
+    credit_posting_request_dto.txn_info.info.txntime = current_date_time.strftime(
+        "%H%M%S"
+    )
     credit_posting_request_dto.txn_info.payment_info.msg_id = str(uuid.uuid4())[:-1]
 
     response = request.hugoserve_post_request(
@@ -81,7 +87,7 @@ def deposit_using_credit_posting(
         data=credit_posting_request_dto.txn_info.get_dict(),
         headers=payment_helper.__get_default_payment_headers(customer_profile_id),
     )
-    assert response['response']['response_code'] == "200"
+    assert response["response"]["response_code"] == "200"
 
     context.data[credit_posting_request_dto.identifier] = credit_posting_request_dto
 
@@ -94,7 +100,7 @@ def deposit_using_credit_posting_master_account(
 ):
     payment_helper.__validate_provider("PAYSYS")
 
-    master_account_id = context.data[account_identifier]['master_account_id']
+    master_account_id = context.data[account_identifier]["master_account_id"]
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
 
     account_details = payment_helper.__fetch_master_account(
@@ -105,7 +111,7 @@ def deposit_using_credit_posting_master_account(
     response = request.hugoserve_get_request(
         path=f"/payment/v1/account/master-account/{master_account_id}/balance",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
     assert (
@@ -116,7 +122,9 @@ def deposit_using_credit_posting_master_account(
     initial_available_balance = response["data"]["available_balance"]
 
     context.data["initial_total_balance_" + master_account_id] = initial_total_balance
-    context.data["initial_available_balance_" + master_account_id] = initial_available_balance
+    context.data["initial_available_balance_" + master_account_id] = (
+        initial_available_balance
+    )
 
     credit_posting_request_dto = DataClassParser.parse_row(
         context.table.rows[0], CreditPostingRequest
@@ -130,9 +138,13 @@ def deposit_using_credit_posting_master_account(
     customer_profile_id = credit_posting_request_dto.customer_profile_id
     current_date_time = datetime.now()
     credit_posting_request_dto.txn_info.info.rrn = random.randint(10**11, 10**12 - 1)
-    credit_posting_request_dto.txn_info.info.stan = current_date_time.strftime('%H%M%S')
-    credit_posting_request_dto.txn_info.info.txndate = current_date_time.strftime('%Y%m%d')
-    credit_posting_request_dto.txn_info.info.txntime = current_date_time.strftime('%H%M%S')
+    credit_posting_request_dto.txn_info.info.stan = current_date_time.strftime("%H%M%S")
+    credit_posting_request_dto.txn_info.info.txndate = current_date_time.strftime(
+        "%Y%m%d"
+    )
+    credit_posting_request_dto.txn_info.info.txntime = current_date_time.strftime(
+        "%H%M%S"
+    )
     credit_posting_request_dto.txn_info.payment_info.msg_id = str(uuid.uuid4())[:-1]
 
     response = request.hugoserve_post_request(
@@ -140,7 +152,7 @@ def deposit_using_credit_posting_master_account(
         data=credit_posting_request_dto.txn_info.get_dict(),
         headers=payment_helper.__get_default_payment_headers(customer_profile_id),
     )
-    assert response['response']['response_code'] == "200"
+    assert response["response"]["response_code"] == "200"
 
 
 @Given(
@@ -157,9 +169,13 @@ def credit_inquiry(context, credit_identifier: str):
 
     current_date_time = datetime.now()
     credit_inquiry_request_dto.txn_info.info.rrn = random.randint(10**11, 10**12 - 1)
-    credit_inquiry_request_dto.txn_info.info.stan = current_date_time.strftime('%H%M%S')
-    credit_inquiry_request_dto.txn_info.info.txndate = current_date_time.strftime('%Y%m%d')
-    credit_inquiry_request_dto.txn_info.info.txntime = current_date_time.strftime('%H%M%S')
+    credit_inquiry_request_dto.txn_info.info.stan = current_date_time.strftime("%H%M%S")
+    credit_inquiry_request_dto.txn_info.info.txndate = current_date_time.strftime(
+        "%Y%m%d"
+    )
+    credit_inquiry_request_dto.txn_info.info.txntime = current_date_time.strftime(
+        "%H%M%S"
+    )
     credit_inquiry_request_dto.txn_info.orgTxnInfo.orgtxnrrn = org_credit_info.rrn
     credit_inquiry_request_dto.txn_info.orgTxnInfo.orgtxnstan = org_credit_info.stan
     credit_inquiry_request_dto.txn_info.orgTxnInfo.orgtxndate = org_credit_info.txndate
@@ -171,7 +187,7 @@ def credit_inquiry(context, credit_identifier: str):
         data=credit_inquiry_request_dto.txn_info.get_dict(),
     )
 
-    assert response['response']['response_code'] == "200"
+    assert response["response"]["response_code"] == "200"
 
 
 # @Given(
@@ -297,22 +313,24 @@ def credit_inquiry(context, credit_identifier: str):
 @Then(
     "I wait until max time to verify master  account ([^']*) with an increased updated balance of ([^']*) for customerProfileId ([^']*) in Paysys"
 )
-def verify_master_account_balance(context, identifier, amount, customer_profile_identifier):
+def verify_master_account_balance(
+    context, identifier, amount, customer_profile_identifier
+):
     request = context.request
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
 
-    payment_account_id = context.data[identifier]['account_id']
+    payment_account_id = context.data[identifier]["account_id"]
     response = request.hugoserve_get_request(
         path=f"/payment/v1/account/{payment_account_id}",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
-    master_account_id = response['data']['master_account_id']
+    master_account_id = response["data"]["master_account_id"]
     request.hugoserve_get_request(
         path=f"/payment/v1/account/master-account/{master_account_id}/balance",
         headers=payment_helper.__get_default_payment_headers(
-            customer_profile_id, request_origin='CASH_SERVICE'
+            customer_profile_id, request_origin="CASH_SERVICE"
         ),
     )
     expected_total_balance = float(
@@ -332,7 +350,7 @@ def verify_master_account_balance(context, identifier, amount, customer_profile_
         response = request.hugoserve_get_request(
             path=f"/payment/v1/account/master-account/{master_account_id}/balance",
             headers=payment_helper.__get_default_payment_headers(
-                customer_profile_id, request_origin='CASH_SERVICE'
+                customer_profile_id, request_origin="CASH_SERVICE"
             ),
         )
         assert (

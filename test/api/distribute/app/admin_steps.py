@@ -32,7 +32,7 @@ def block_deposits(context, case, user_profile_identifier):
 @Step("I ([^']*) merchant transactions for ([^']*)")
 def block_merchant_transactions(context, case, user_profile_identifier):
     request = context.request
-    user_prof_id = ah.get_user_profile_id( user_profile_identifier, context)
+    user_prof_id = ah.get_user_profile_id(user_profile_identifier, context)
 
     response = None
     if case == "block":

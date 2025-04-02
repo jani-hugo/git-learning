@@ -4,6 +4,7 @@ import dataclasses
 
 # Dataclasses for Workalendar services
 
+
 @dataclasses.dataclass
 class HolidayDTO:
     title: Optional[str]
@@ -18,7 +19,13 @@ class HolidayDTO:
         self.year = year
 
     def get_dict(self):
-        return {"holiday_title": self.title, "date": self.date, "month": self.month, "year": self.year}
+        return {
+            "holiday_title": self.title,
+            "date": self.date,
+            "month": self.month,
+            "year": self.year,
+        }
+
 
 @dataclasses.dataclass
 class AddHoliday:
@@ -32,8 +39,9 @@ class AddHoliday:
             "customer_profile_id": self.customer_profile_id,
             "calendar_name": self.calendar_name,
             "holidays": list(holiday.get_dict() for holiday in self.holidays),
-            "status_code": self.status_code
+            "status_code": self.status_code,
         }
+
 
 @dataclasses.dataclass
 class GetHoliday:
@@ -43,7 +51,13 @@ class GetHoliday:
     status_code: str
 
     def get_dict(self):
-        return {"customer_profile_id": self.customer_profile_id, "calendar-name": self.calendar_name, "year": self.year, "status_code": self.status_code}
+        return {
+            "customer_profile_id": self.customer_profile_id,
+            "calendar-name": self.calendar_name,
+            "year": self.year,
+            "status_code": self.status_code,
+        }
+
 
 @dataclasses.dataclass
 class RemoveHoliday:
@@ -53,7 +67,12 @@ class RemoveHoliday:
     status_code: str
 
     def get_dict(self):
-        return {"customer_profile_id": self.customer_profile_id, "calender_name": self.calendar_name, "holidayDTO": self.holidayDTO, "status_code": self.status_code}
+        return {
+            "customer_profile_id": self.customer_profile_id,
+            "calender_name": self.calendar_name,
+            "holidayDTO": self.holidayDTO,
+            "status_code": self.status_code,
+        }
 
 
 # Dataclasses for Transactions services
@@ -72,6 +91,7 @@ class CreateTransactionCodeDTO:
             "description": self.description,
         }
 
+
 @dataclasses.dataclass
 class CreateTransactionCode:
     customer_profile_id: Optional[str]
@@ -85,13 +105,18 @@ class CreateTransactionCode:
             "status_code": self.status_code,
         }
 
+
 @dataclasses.dataclass
 class FetchTransactionCode:
     customer_profile_id: str
     status_code: str
 
     def get_dict(self):
-        return {"customer_profile_id": self.customer_profile_id, "status_code": self.status_code}
+        return {
+            "customer_profile_id": self.customer_profile_id,
+            "status_code": self.status_code,
+        }
+
 
 @dataclasses.dataclass
 class FetchCoATransactionCode:
@@ -100,7 +125,12 @@ class FetchCoATransactionCode:
     status_code: str
 
     def get_dict(self):
-        return {"customer_profile_id": self.customer_profile_id, "txn-code": self.txn_code, "status_code": self.status_code}
+        return {
+            "customer_profile_id": self.customer_profile_id,
+            "txn-code": self.txn_code,
+            "status_code": self.status_code,
+        }
+
 
 @dataclasses.dataclass
 class TransactionCodeMappingRequestDTO:
@@ -117,6 +147,7 @@ class TransactionCodeMappingRequestDTO:
             "contra_gl_code": self.contra_gl_code,
         }
 
+
 @dataclasses.dataclass
 class TransactionCodeMapping:
     customer_profile_id: str
@@ -127,8 +158,9 @@ class TransactionCodeMapping:
         return {
             "customer_profile_id": self.customer_profile_id,
             "requestDTO": self.requestDTO.get_dict(),
-            "status_code": self.status_code
+            "status_code": self.status_code,
         }
+
 
 @dataclasses.dataclass
 class FetchPaginatedTransactionCode:
@@ -146,8 +178,9 @@ class FetchPaginatedTransactionCode:
             "timestampFromTs": self.timestamp_from_ts,
             "timestampToTs": self.timestamp_to_ts,
             "isForward": self.is_forward,
-            "limit": self.limit
+            "limit": self.limit,
         }
+
 
 @dataclasses.dataclass
 class UpdateTransactionCodeRequestDTO:
@@ -157,8 +190,9 @@ class UpdateTransactionCodeRequestDTO:
     def get_dict(self):
         return {
             "coa_transaction_code": self.coa_transaction_code,
-            "description": self.description
+            "description": self.description,
         }
+
 
 @dataclasses.dataclass
 class UpdateTransactionCodes:
@@ -172,14 +206,15 @@ class UpdateTransactionCodes:
             "customer_profile_id": self.customer_profile_id,
             "txnCode": self.txnCode,
             "transactionCodeDTO": self.transactionCodeDTO.get_dict(),
-            "status_code": self.status_code
+            "status_code": self.status_code,
         }
 
 
 # Enums for Tracker services
 
+
 @dataclasses.dataclass
-class FrequencyDTO(Enum) :
+class FrequencyDTO(Enum):
     UNKNOWN_TRACKER_FREQUENCY = 0
     MINUTE = 1
     HOUR = 2
@@ -188,11 +223,13 @@ class FrequencyDTO(Enum) :
     CALENDER_MONTH = 5
     CALENDER_YEAR = 6
 
+
 @dataclasses.dataclass
 class TrackerEntityType(Enum):
     UNKNOWN_ENTITY_TYPE = 0
     ENTITY_PRODUCT = 1
     ENTITY_END_CUSTOMER_PROFILE = 2
+
 
 @dataclasses.dataclass
 class AGOrigin(Enum):
@@ -223,6 +260,7 @@ class AGOrigin(Enum):
     DBS = 1301
     PAYSYS = 1302
 
+
 @dataclasses.dataclass
 class TrackerReferenceType(Enum):
     UNKNOWN_TRAKER_REFERENCE = 0
@@ -235,6 +273,7 @@ class TrackerReferenceType(Enum):
 
 # Helper classes for Tracker services
 
+
 @dataclasses.dataclass
 class TrackerFrequencyDTO:
     type: FrequencyDTO
@@ -245,6 +284,7 @@ class TrackerFrequencyDTO:
             "type": self.type,
             "value": self.value,
         }
+
 
 @dataclasses.dataclass
 class TrackerEntityRequestDTO:
@@ -262,7 +302,7 @@ class TrackerEntityRequestDTO:
             "transaction_codes": self.transaction_codes,
             "status_code": self.status_code,
             "transaction_type": self.transaction_type,
-            "service_name": self.service_name
+            "service_name": self.service_name,
         }
 
 
@@ -285,8 +325,9 @@ class CreateTrackerDTO:
             "entityRequest": self.entityRequest,
             "frequency": self.frequency.get_dict(),
             "timezone": self.timezone,
-            "referenceType": self.referenceType
+            "referenceType": self.referenceType,
         }
+
 
 @dataclasses.dataclass
 class CreateTracker:
@@ -303,6 +344,7 @@ class CreateTracker:
             "response_code": self.response_code,
         }
 
+
 @dataclasses.dataclass
 class GetTrackerDetails:
     customer_profile_id: str
@@ -310,7 +352,12 @@ class GetTrackerDetails:
     response_code: str
 
     def get_dict(self):
-        return {"customer_profile_id": self.customer_profile_id, "tracker_id": self.tracker_id, "response_code": self.response_code}
+        return {
+            "customer_profile_id": self.customer_profile_id,
+            "tracker_id": self.tracker_id,
+            "response_code": self.response_code,
+        }
+
 
 @dataclasses.dataclass
 class AddTrackerEntityDetails:
@@ -324,8 +371,9 @@ class AddTrackerEntityDetails:
             "customer_profile_id": self.customer_profile_id,
             "tracker_id": self.tracker_id,
             "entityRequestDTO": self.entityRequestDTO.get_dict(),
-            "response_code": self.response_code
+            "response_code": self.response_code,
         }
+
 
 @dataclasses.dataclass
 class UpdateEntityTransactionCodes:
@@ -339,8 +387,9 @@ class UpdateEntityTransactionCodes:
             "customer_profile_id": self.customer_profile_id,
             "trackerEntityId": self.tracker_entity_id,
             "updateEntityTransactionCodes": self.transaction_codes,
-            "response_code": self.response_code
+            "response_code": self.response_code,
         }
+
 
 @dataclasses.dataclass
 class GetTrackerReferenceDetails:
@@ -354,8 +403,9 @@ class GetTrackerReferenceDetails:
             "customer_profile_id": self.customer_profile_id,
             "tracker_id": self.tracker_id,
             "reference_id": self.reference_id,
-            "response_code": self.response_code
+            "response_code": self.response_code,
         }
+
 
 @dataclasses.dataclass
 class GetListTrackerReferencesDetails:
@@ -367,18 +417,21 @@ class GetListTrackerReferencesDetails:
         return {
             "customer_profile_id": self.customer_profile_id,
             "trackerVsReference": self.tracker_vs_reference,
-            "response_code": self.response_code
+            "response_code": self.response_code,
         }
+
 
 @dataclasses.dataclass
 class GetAllTrackerDetails:
     customer_profile_id: str
     response_code: str
+
     def get_dict(self):
         return {
             "customer_profile_id": self.customer_profile_id,
-            "response_code": self.response_code
+            "response_code": self.response_code,
         }
+
 
 @dataclasses.dataclass
 class FetchLocation:
@@ -390,5 +443,5 @@ class FetchLocation:
         return {
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "result": self.result
+            "result": self.result,
         }

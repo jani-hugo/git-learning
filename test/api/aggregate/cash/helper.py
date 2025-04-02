@@ -70,7 +70,9 @@ def __validate_provider(provider_name):
         raise RuntimeError(f"No such provider found. Provider name: {provider_name}")
 
     if not cash_providers_config[provider_name]["supports_integration_test"]:
-        raise RuntimeError(f"Integration tests are not supported for provider {provider_name}")
+        raise RuntimeError(
+            f"Integration tests are not supported for provider {provider_name}"
+        )
 
 
 def __get_default_cash_headers(

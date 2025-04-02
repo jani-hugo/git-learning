@@ -8,8 +8,8 @@ import requests
 import yaml
 
 default_headers = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    "Content-Type": "application/json",
+    "Accept": "application/json",
 }
 
 MAX_RETRY_SERVER_ERROR = 6
@@ -24,7 +24,7 @@ class HugosaveTest:
         self.params = self.__read_yaml(config_file)
         self.tokens = {}
 
-        self.hugosave_base_url = self.params['DISTRIBUTE_ENDPOINT']
+        self.hugosave_base_url = self.params["DISTRIBUTE_ENDPOINT"]
 
     def hugosave_post_request(
         self, path: str, data: dict = None, headers: dict = None, params: dict = None
@@ -34,20 +34,29 @@ class HugosaveTest:
             HugosaveTest.__make_hugo_url(self, path), data, headers, params
         )
 
-    def hugosave_get_request(self, path: str, params: dict = None, headers: dict = None):
+    def hugosave_get_request(
+        self, path: str, params: dict = None, headers: dict = None
+    ):
         """To make get requests to Hugosave endpoints"""
-        return HugosaveTest.__do_get(HugosaveTest.__make_hugo_url(self, path), params, headers)
+        return HugosaveTest.__do_get(
+            HugosaveTest.__make_hugo_url(self, path), params, headers
+        )
 
-    def hugosave_delete_request(self, path: str, params: dict = None, headers: dict = None):
+    def hugosave_delete_request(
+        self, path: str, params: dict = None, headers: dict = None
+    ):
         """To make delete requests to Hugosave endpoints"""
         return HugosaveTest.__do_delete(
             HugosaveTest.__make_hugo_url(self, path), params, headers
         )
 
-    def hugosave_put_request(self, path: str, data: dict = None,params: dict = None, headers: dict = None ):
+    def hugosave_put_request(
+        self, path: str, data: dict = None, params: dict = None, headers: dict = None
+    ):
         """To make put requests to Hugosave endpoints"""
-        return HugosaveTest.__do_put(HugosaveTest.__make_hugo_url(self, path), data, params, headers)
-
+        return HugosaveTest.__do_put(
+            HugosaveTest.__make_hugo_url(self, path), data, params, headers
+        )
 
     @staticmethod
     def __run_command(command):
@@ -57,7 +66,7 @@ class HugosaveTest:
 
     @staticmethod
     def __read_yaml(yaml_file: str):
-        with open(yaml_file, 'r') as file:
+        with open(yaml_file, "r") as file:
             yaml_file = yaml.safe_load(file)
         return dict(yaml_file.items())
 
@@ -66,7 +75,9 @@ class HugosaveTest:
         return self.hugosave_base_url + path
 
     @staticmethod
-    def __do_post(url: str, body: dict = None, headers: dict = None, params: dict = None):
+    def __do_post(
+        url: str, body: dict = None, headers: dict = None, params: dict = None
+    ):
         if headers is not None:
             headers = {**default_headers, **headers}
         else:
@@ -77,7 +88,9 @@ class HugosaveTest:
 
         response = None
         for _ in range(MAX_RETRY_SERVER_ERROR):
-            response = requests.post(url, data=json.dumps(body), headers=headers, params=params)
+            response = requests.post(
+                url, data=json.dumps(body), headers=headers, params=params
+            )
             print(response.status_code)
             print(response.text)
 
@@ -134,7 +147,12 @@ class HugosaveTest:
         return json_response
 
     @staticmethod
-    def __do_put(url: str, body: dict = None,params:dict = None, headers: dict = None,):
+    def __do_put(
+        url: str,
+        body: dict = None,
+        params: dict = None,
+        headers: dict = None,
+    ):
         if headers is not None:
             headers = {**default_headers, **headers}
         else:
@@ -142,10 +160,11 @@ class HugosaveTest:
         if compliance_urls["root"] not in url:
             print(f"PUT URL:{url}, Headers: {headers}, Params: {params}")
 
-
         response = None
         for i in range(MAX_RETRY_SERVER_ERROR):
-            response = requests.put(url, data=json.dumps(body) ,params=params, headers=headers)
+            response = requests.put(
+                url, data=json.dumps(body), params=params, headers=headers
+            )
             if response.status_code < 500:
                 break
             time.sleep(WAIT_TIME)

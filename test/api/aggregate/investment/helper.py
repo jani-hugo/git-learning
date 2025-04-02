@@ -6,12 +6,16 @@ def __get_investment_provider_map(context):
 
     provider_id_map = {}
     for provider_details in provider_list:
-        provider_id_map[provider_details["provider_name"]] = provider_details["provider_id"]
+        provider_id_map[provider_details["provider_name"]] = provider_details[
+            "provider_id"
+        ]
 
     context.data["provider_id_map"] = provider_id_map
 
 
-def __get_default_investment_headers(customer_profile_id: str, customer_access_key: str = None):
+def __get_default_investment_headers(
+    customer_profile_id: str, customer_access_key: str = None
+):
     return {
         "x-customer-profile-id": customer_profile_id,
         "x-customer-access-key": customer_access_key,

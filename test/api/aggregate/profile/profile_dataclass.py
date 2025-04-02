@@ -123,19 +123,19 @@ class EndCustomerProfileDTO(object):
 
     @staticmethod
     def flatten_end_customer_data(data):
-        if 'end_customer_details' in data:
-            end_customer_details = data.pop('end_customer_details', {})
-            data['first_name'] = end_customer_details.get('first_name')
-            data['last_name'] = end_customer_details.get('last_name')
-            data['email'] = end_customer_details.get('email')
-            data['phone_number'] = end_customer_details.get('phone_number')
+        if "end_customer_details" in data:
+            end_customer_details = data.pop("end_customer_details", {})
+            data["first_name"] = end_customer_details.get("first_name")
+            data["last_name"] = end_customer_details.get("last_name")
+            data["email"] = end_customer_details.get("email")
+            data["phone_number"] = end_customer_details.get("phone_number")
         return data
 
 
 def sanitize_date(date):
     if len(date) > 10:
-        split = date.split(' ')
+        split = date.split(" ")
         yyyy_mm_dd_date = split[0]
-        date_split = yyyy_mm_dd_date.split('-')
-        return date_split[2] + '-' + date_split[1] + '-' + date_split[0]
+        date_split = yyyy_mm_dd_date.split("-")
+        return date_split[2] + "-" + date_split[1] + "-" + date_split[0]
     return date

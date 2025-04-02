@@ -14,7 +14,7 @@ from test.api.aggregate.cash.cash_dataclass import (
     Value,
     StringList,
     MultiString,
-    Integer
+    Integer,
 )
 
 use_step_matcher("re")
@@ -35,15 +35,17 @@ def create_product(
     )
 
     provider_id = cash_helper.__get_provider_id(
-        context=context, provider_name=provider_name, customer_profile_id=customer_profile_id
+        context=context,
+        provider_name=provider_name,
+        customer_profile_id=customer_profile_id,
     )
 
     @retry(AssertionError, tries=60 / 5, delay=5, logger=None)
     def retry_for_creation_status():
         product_request_dto.provider_name = provider_name
-        product_request_dto.product_name = ''.join(random.choices(string.digits, k=9))
-        allowed_chars = string.ascii_letters + string.digits + '_'
-        product_request_dto.product_code = ''.join(
+        product_request_dto.product_name = "".join(random.choices(string.digits, k=9))
+        allowed_chars = string.ascii_letters + string.digits + "_"
+        product_request_dto.product_code = "".join(
             random.choices(allowed_chars, k=random.randint(8, 9))
         )
         product_request_dto.provider_id = provider_id
@@ -61,14 +63,18 @@ def create_product(
         country_param = ParamRequestDTO(
             param_name="COUNTRY",
             value=Value(
-                string_list_value=StringList(value=product_request_dto.country).to_dict()
+                string_list_value=StringList(
+                    value=product_request_dto.country
+                ).to_dict()
             ),
         ).to_dict()
 
         balance_policy_limit_param = ParamRequestDTO(
             param_name="BALANCE_POLICY_LIMIT",
             value=Value(
-                double_value=Double(value=product_request_dto.balance_policy_limit).to_dict()
+                double_value=Double(
+                    value=product_request_dto.balance_policy_limit
+                ).to_dict()
             ),
         ).to_dict()
 
@@ -84,11 +90,13 @@ def create_product(
         account_type_param = ParamRequestDTO(
             param_name="ACCOUNT_TYPE",
             value=Value(
-                string_list_value=StringList(value=product_request_dto.account_type).to_dict()
+                string_list_value=StringList(
+                    value=product_request_dto.account_type
+                ).to_dict()
             ),
         ).to_dict()
 
-        product_request_dict['product_params'] = [
+        product_request_dict["product_params"] = [
             currency_param,
             country_param,
             balance_policy_limit_param,
@@ -140,15 +148,17 @@ def create_cash_account_product(
     )
 
     provider_id = cash_helper.__get_provider_id(
-        context=context, provider_name=provider_name, customer_profile_id=customer_profile_id
+        context=context,
+        provider_name=provider_name,
+        customer_profile_id=customer_profile_id,
     )
 
     @retry(AssertionError, tries=60 / 5, delay=5, logger=None)
     def retry_for_creation_status():
         product_request_dto.provider_name = provider_name
-        product_request_dto.product_name = ''.join(random.choices(string.digits, k=9))
-        allowed_chars = string.ascii_letters + string.digits + '_'
-        product_request_dto.product_code = ''.join(
+        product_request_dto.product_name = "".join(random.choices(string.digits, k=9))
+        allowed_chars = string.ascii_letters + string.digits + "_"
+        product_request_dto.product_code = "".join(
             random.choices(allowed_chars, k=random.randint(8, 9))
         )
         product_request_dto.provider_id = provider_id
@@ -157,13 +167,13 @@ def create_cash_account_product(
         num_of_active_account = ParamRequestDTO(
             param_name="NUM_OF_ACTIVE_ACCOUNT",
             value=Value(
-                integer_range_value=Integer(value=product_request_dto.num_of_active_account).to_dict()
+                integer_range_value=Integer(
+                    value=product_request_dto.num_of_active_account
+                ).to_dict()
             ),
         ).to_dict()
 
-        product_request_dict['product_params'] = [
-            num_of_active_account
-        ]
+        product_request_dict["product_params"] = [num_of_active_account]
 
         response = context.request.hugoserve_post_request(
             path="/cash/v1/product",
@@ -177,7 +187,7 @@ def create_cash_account_product(
         )
 
         assert (
-                "product_id" in response["data"]
+            "product_id" in response["data"]
         ), f"Expected data object to contain product_id\nActual data: {response['data']}"
         context.data[product_request_dto.identifier] = response["data"]["product_id"]
 
@@ -188,7 +198,6 @@ def create_cash_account_product(
         )
 
     retry_for_creation_status()
-
 
 
 @Step(

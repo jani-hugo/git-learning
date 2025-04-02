@@ -591,7 +591,10 @@ class CreditPostingReceiverInfo:
     to_account_title: Optional[str]
 
     def get_dict(self):
-        return {"to_account": self.to_account, "to_account_title": self.to_account_title}
+        return {
+            "to_account": self.to_account,
+            "to_account_title": self.to_account_title,
+        }
 
 
 @dataclasses.dataclass
@@ -686,7 +689,10 @@ class CreditAdviseReceiverInfo:
     to_account_title: Optional[str] = None
 
     def get_dict(self):
-        return {"to_account": self.to_account, "to_account_title": self.to_account_title}
+        return {
+            "to_account": self.to_account,
+            "to_account_title": self.to_account_title,
+        }
 
 
 @dataclasses.dataclass

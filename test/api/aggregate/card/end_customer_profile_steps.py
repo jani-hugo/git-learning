@@ -13,7 +13,10 @@ use_step_matcher("re")
     "I onboard End-Customer Profile ([^']*) of Customer Profile ([^']*) on fund provider ([^']*) and on card service on below providers"
 )
 def onboard_end_customer_profile(
-    context, end_customer_profile_identifier: str, customer_profile_identifier: str,  fund_provider: str
+    context,
+    end_customer_profile_identifier: str,
+    customer_profile_identifier: str,
+    fund_provider: str,
 ):
     request = context.request
     provider_name_list = DataClassParser.row_to_dict(context.table.rows)
@@ -43,13 +46,12 @@ def onboard_end_customer_profile(
             data={
                 "end_customer_profile_id": end_customer_profile_id,
                 "provider_id": [provider_id],
-                "fund_provider_id": fund_provider
+                "fund_provider_id": fund_provider,
             },
             headers=card_helper.get_default_card_headers(
                 customer_profile_id, idempotency_key=str(uuid.uuid4())
             ),
         )
-
 
         assert int(response["headers"]["status_code"]) == 200, print(
             f"[TraceId: {response['headers']['trace_id']}]\n"
@@ -67,7 +69,10 @@ def onboard_end_customer_profile(
     "I wait until max time to verify End-Customer Profile ([^']*) onboard status on card service provider ([^']*) as ([^']*)"
 )
 def wait_to_onboard_end_customer_profile(
-    context, end_customer_profile_identifier: str, provider_name: str, onboard_status: str
+    context,
+    end_customer_profile_identifier: str,
+    provider_name: str,
+    onboard_status: str,
 ):
     request = context.request
     card_helper.validate_provider(provider_name)
@@ -82,7 +87,9 @@ def wait_to_onboard_end_customer_profile(
     max_wait_time = 0
     for provider in context.data[end_customer_profile_id]:
         max_wait_time = max(
-            card_helper.card_providers_config[provider["provider_name"]]["max_wait_time"],
+            card_helper.card_providers_config[provider["provider_name"]][
+                "max_wait_time"
+            ],
             max_wait_time,
         )
 

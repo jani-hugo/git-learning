@@ -13,9 +13,7 @@ use_step_matcher("re")
 
 
 @Given("I create a product with customer profile ([^']*)")
-def create_product(
-        context, customer_profile_identifier: str
-):
+def create_product(context, customer_profile_identifier: str):
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
     product_dto_list = DataClassParser.parse_rows(context.table.rows, ProductRequestDTO)
     product_request_dto = DataClassParser.parse_row(
@@ -23,9 +21,9 @@ def create_product(
     )
 
     for product_dto in product_dto_list:
-        product_dto.product_name = ''.join(random.choices(string.digits, k=9))
-        allowed_chars = string.ascii_letters + string.digits + '_'
-        product_dto.product_code = ''.join(
+        product_dto.product_name = "".join(random.choices(string.digits, k=9))
+        allowed_chars = string.ascii_letters + string.digits + "_"
+        product_dto.product_code = "".join(
             random.choices(allowed_chars, k=random.randint(8, 9))
         )
         product_dto.provider_id = product_dto.provider_id
@@ -46,16 +44,18 @@ def create_product(
             value=Value(string_value=String(product_dto.re_balance_strategy).to_dict()),
         ).to_dict()
 
-        product_request_dict['product_params'] = [
+        product_request_dict["product_params"] = [
             allocation_param,
             allocation_strategy_param,
-            re_balance_strategy_param
+            re_balance_strategy_param,
         ]
 
         response = context.request.hugoserve_post_request(
             path="/investment/v1/product",
             data=product_request_dict,
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
 
         assert response["headers"]["status_code"] == "200", (
@@ -64,7 +64,7 @@ def create_product(
         )
 
         assert (
-                "product_id" in response["data"]
+            "product_id" in response["data"]
         ), f"Expected data object to contain product_id\nActual data: {response['data']}"
         context.data[product_request_dto.identifier] = response["data"]["product_id"]
         context.data[response["data"]["product_id"]] = product_request_dto
@@ -72,83 +72,93 @@ def create_product(
 
         allocation_request = {
             "customerProfileId": customer_profile_id,
-            "allocationCode": ''.join(random.choices(string.digits, k=9)),
+            "allocationCode": "".join(random.choices(string.digits, k=9)),
             "productId": product_id,
             "providerId": product_dto.provider_id,
             "allocationDetails": json.loads(product_dto.allocation),
-            "allocationDescription": "int"
+            "allocationDescription": "int",
         }
         response = context.request.hugoserve_post_request(
             path="/investment/v1/allocation",
             data=allocation_request,
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
 
         assert response["headers"]["status_code"] == "200", (
             f"Expect status_code: {200}\n"
             f"Actual status_code: {response['headers']['status_code']}"
         )
-        allocation_id = response['data']['allocation_id']
+        allocation_id = response["data"]["allocation_id"]
 
-        allocation_param = {
-            "value":{
-                "stringValue": {
-                    "values": [
-                        allocation_id
-                    ]
-                }
-            }
-        }
+        allocation_param = {"value": {"stringValue": {"values": [allocation_id]}}}
 
         context.request.hugoserve_put_request(
             path=f"/investment/v1/product/{product_id}/param?param-name=allocation",
             data=allocation_param,
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
 
         response = context.request.hugoserve_put_request(
             path=f"/investment/v1/product/{product_id}/activate",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
 
         status_code = "200"
         assert (
-                response["headers"]["status_code"] == status_code
+            response["headers"]["status_code"] == status_code
         ), f"Expected status_code: {status_code}, Actual: {response['headers']['status_code']}"
 
         response = context.request.hugoserve_get_request(
             path=f"/investment/v1/product/{product_id}",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
         )
         assert (
-                response["headers"]["status_code"] == status_code
+            response["headers"]["status_code"] == status_code
         ), f"Expected status_code: {status_code}, Actual: {response['headers']['status_code']}"
 
 
-
-@Given("I create Portfolio for End Customer-Profile ([^']*) of Customer-Profile ([^']*)")
+@Given(
+    "I create Portfolio for End Customer-Profile ([^']*) of Customer-Profile ([^']*)"
+)
 def create_portfolio_success(
     context, end_customer_profile_identifier: str, customer_profile_identifier: str
 ):
     request = context.request
-    customer_profile_id = context.data[end_customer_profile_identifier].customer_profile_id
+    customer_profile_id = context.data[
+        end_customer_profile_identifier
+    ].customer_profile_id
 
-    portfolio_dto_list = DataClassParser.parse_rows(context.table.rows, PortfolioRequestDTO)
+    portfolio_dto_list = DataClassParser.parse_rows(
+        context.table.rows, PortfolioRequestDTO
+    )
     for portfolio_dto in portfolio_dto_list:
-        enc_customer_profile_id = context.data[end_customer_profile_identifier].end_customer_profile_id
+        enc_customer_profile_id = context.data[
+            end_customer_profile_identifier
+        ].end_customer_profile_id
         product_id = context.data[portfolio_dto.product_id]
         p_request = {
             "end_customer_profile_id": enc_customer_profile_id,
-            "product_id": product_id
+            "product_id": product_id,
         }
         response = request.hugoserve_post_request(
             path="/investment/v1/portfolio",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             data=p_request,
         )
 
         assert (
-            response["headers"]["status_code"] == "200" and "portfolio_id" in response["data"]
+            response["headers"]["status_code"] == "200"
+            and "portfolio_id" in response["data"]
         )
         portfolio_response_dto = DataClassParser.dict_to_object(
             response["data"], data_class=PortfolioResponseDTO
@@ -168,14 +178,18 @@ def verify_portfolio_success(context, customer_profile_identifier: str):
     for row in context.table:
         portfolio_identifier = row[0]
         portfolio_id = context.data[portfolio_identifier].portfolio_id
-        customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
+        customer_profile_id = context.data[
+            customer_profile_identifier
+        ].customer_profile_id
         status = row[2]
 
         @retry(exceptions=AssertionError, tries=15, delay=10, logger=None)
         def retry_for_portfolio_creation_status():
             response = request.hugoserve_get_request(
                 path="/investment/v1/portfolio/" + portfolio_id,
-                headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+                headers=investment_helper.__get_default_investment_headers(
+                    customer_profile_id
+                ),
             )
             assert (
                 response["headers"]["status_code"] == "200"
@@ -196,7 +210,9 @@ def get_portfolio_asset_rate_success(
 ):
     request = context.request
     portfolio_id = context.data[portfolio_identifier].portfolio_id
-    customer_profile_id = context.data[end_customer_profile_identifier].customer_profile_id
+    customer_profile_id = context.data[
+        end_customer_profile_identifier
+    ].customer_profile_id
 
     response = request.hugoserve_get_request(
         path="/investment/v1/portfolio/" + portfolio_id + "/rate",
@@ -217,7 +233,9 @@ def delete_portfolio_success(
 ):
     request = context.request
     portfolio_id = context.data[portfolio_identifier].portfolio_id
-    customer_profile_id = context.data[end_customer_profile_identifier].customer_profile_id
+    customer_profile_id = context.data[
+        end_customer_profile_identifier
+    ].customer_profile_id
     response = request.hugoserve_delete_request(
         path="/investment/v1/portfolio/" + portfolio_id,
         headers=investment_helper.__get_default_investment_headers(customer_profile_id),
@@ -226,13 +244,17 @@ def delete_portfolio_success(
     assert response["headers"]["status_code"] == "200", f"Expected JSON. {response}"
 
 
-@then("I verify Asset Rate is not found for Portfolio ([^']*) of End Customer-Profile ([^']*)")
+@then(
+    "I verify Asset Rate is not found for Portfolio ([^']*) of End Customer-Profile ([^']*)"
+)
 def get_portfolio_asset_rate_deleted_portfolio_failure(
     context, portfolio_identifier: str, end_customer_profile_identifier: str
 ):
     request = context.request
     portfolio_id = context.data[portfolio_identifier].portfolio_id
-    customer_profile_id = context.data[end_customer_profile_identifier].customer_profile_id
+    customer_profile_id = context.data[
+        end_customer_profile_identifier
+    ].customer_profile_id
 
     response = request.hugoserve_get_request(
         path="/investment/v1/portfolio/" + portfolio_id + "/rate",
@@ -249,7 +271,9 @@ def get_portfolio_deleted_portfolio_failure(
 ):
     request = context.request
     portfolio_id = context.data[portfolio_identifier].portfolio_id
-    customer_profile_id = context.data[end_customer_profile_identifier].customer_profile_id
+    customer_profile_id = context.data[
+        end_customer_profile_identifier
+    ].customer_profile_id
 
     response = request.hugoserve_get_request(
         path="/investment/v1/portfolio/" + portfolio_id,
@@ -272,12 +296,11 @@ def create_portfolio_incorrect_customer_failure(
     request = context.request
     customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
 
-    portfolio_dto = DataClassParser.parse_row(context.table.rows[0], PortfolioRequestDTO)
+    portfolio_dto = DataClassParser.parse_row(
+        context.table.rows[0], PortfolioRequestDTO
+    )
     product_id = context.data[portfolio_dto.product_id]
-    p_request = {
-        "end_customer_profile_id": None,
-        "product_id": product_id
-    }
+    p_request = {"end_customer_profile_id": None, "product_id": product_id}
     response = request.hugoserve_post_request(
         path="/investment/v1/portfolio",
         headers=investment_helper.__get_default_investment_headers(customer_profile_id),
@@ -303,13 +326,15 @@ def create_portfolio_incorrect_end_customer_failure(
     end_customer_profile_id = end_customer_profile_identifier
     customer_profile_id = end_customer_profile_identifier
 
-    portfolio_dto = DataClassParser.parse_row(context.table.rows[0], PortfolioRequestDTO)
+    portfolio_dto = DataClassParser.parse_row(
+        context.table.rows[0], PortfolioRequestDTO
+    )
     portfolio_dto.portfolio.end_customer_profile_id = end_customer_profile_id
 
     portfolio_allocation_list = portfolio_dto.portfolio.portfolio_allocation
     for portfolio_allocation in portfolio_allocation_list:
-        for asset in portfolio_allocation['assets']:
-            asset['provider_id'] = context.data["provider_id_map"][asset['provider_id']]
+        for asset in portfolio_allocation["assets"]:
+            asset["provider_id"] = context.data["provider_id_map"][asset["provider_id"]]
 
     portfolio_dto.portfolio.portfolio_allocation = portfolio_allocation_list
 
@@ -331,9 +356,13 @@ def create_portfolio_incorrect_portfolio_allocation_failure(
     context, end_customer_profile_identifier: str, status_code: str
 ):
     request = context.request
-    customer_profile_id = context.data[end_customer_profile_identifier].customer_profile_id
+    customer_profile_id = context.data[
+        end_customer_profile_identifier
+    ].customer_profile_id
 
-    portfolio_dto_list = DataClassParser.parse_rows(context.table.rows, PortfolioRequestDTO)
+    portfolio_dto_list = DataClassParser.parse_rows(
+        context.table.rows, PortfolioRequestDTO
+    )
     for portfolio_dto in portfolio_dto_list:
         portfolio_dto.portfolio.end_customer_profile_id = context.data[
             end_customer_profile_identifier
@@ -341,13 +370,17 @@ def create_portfolio_incorrect_portfolio_allocation_failure(
 
         portfolio_allocation_list = portfolio_dto.portfolio.portfolio_allocation
         for portfolio_allocation in portfolio_allocation_list:
-            for asset in portfolio_allocation['assets']:
-                asset['provider_id'] = context.data["provider_id_map"][asset['provider_id']]
+            for asset in portfolio_allocation["assets"]:
+                asset["provider_id"] = context.data["provider_id_map"][
+                    asset["provider_id"]
+                ]
 
         portfolio_dto.portfolio.portfolio_allocation = portfolio_allocation_list
         response = request.hugoserve_post_request(
             path="/investment/v1/portfolio",
-            headers=investment_helper.__get_default_investment_headers(customer_profile_id),
+            headers=investment_helper.__get_default_investment_headers(
+                customer_profile_id
+            ),
             data=portfolio_dto.portfolio.get_dict(),
         )
 
@@ -365,19 +398,23 @@ def create_portfolio_inactive_end_customer_failure(
     request = context.request
 
     end_customer_profile_id = end_customer_profile_identifier
-    customer_profile_id = context.data[end_customer_profile_identifier].customer_profile_id
+    customer_profile_id = context.data[
+        end_customer_profile_identifier
+    ].customer_profile_id
 
     # update provider id in body
     provider_id_list = context.data["provider_id_list"]
-    portfolio_dto = DataClassParser.parse_row(context.table.rows[0], PortfolioRequestDTO)
+    portfolio_dto = DataClassParser.parse_row(
+        context.table.rows[0], PortfolioRequestDTO
+    )
     portfolio_dto.portfolio.end_customer_profile_id = end_customer_profile_id
 
     portfolio_allocation_list = portfolio_dto.portfolio.portfolio_allocation
     # TO-DO: why replacing all provider by last-one
     for provider_id in provider_id_list:
         for portfolio_allocation in portfolio_allocation_list:
-            for asset in portfolio_allocation['assets']:
-                asset['provider_id'] = provider_id
+            for asset in portfolio_allocation["assets"]:
+                asset["provider_id"] = provider_id
     portfolio_dto.portfolio.portfolio_allocation = portfolio_allocation_list
 
     response = request.hugoserve_post_request(
@@ -395,11 +432,16 @@ def create_portfolio_inactive_end_customer_failure(
     "I request to get Asset Rate for incorrect Portfolio ([^']*) of End Customer-Profile ([^']*) and verify ([^']*)"
 )
 def get_portfolio_asset_rate_incorrect_portfolio_failure(
-    context, portfolio_identifier: str, end_customer_profile_identifier: str, status_code: str
+    context,
+    portfolio_identifier: str,
+    end_customer_profile_identifier: str,
+    status_code: str,
 ):
     request = context.request
     portfolio_id = portfolio_identifier
-    customer_profile_id = context.data[end_customer_profile_identifier].customer_profile_id
+    customer_profile_id = context.data[
+        end_customer_profile_identifier
+    ].customer_profile_id
 
     response = request.hugoserve_get_request(
         path="/investment/v1/portfolio/" + portfolio_id + "/rate",
@@ -468,7 +510,9 @@ def delete_portfolio_incorrect_portfolio_failure(
 ):
     request = context.request
     portfolio_id = portfolio_identifier
-    customer_profile_id = context.data[end_customer_profile_identifier].customer_profile_id
+    customer_profile_id = context.data[
+        end_customer_profile_identifier
+    ].customer_profile_id
     response = request.hugoserve_delete_request(
         path="/investment/v1/portfolio/" + portfolio_id,
         headers=investment_helper.__get_default_investment_headers(customer_profile_id),

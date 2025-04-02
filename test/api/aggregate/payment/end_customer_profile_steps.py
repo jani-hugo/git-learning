@@ -47,7 +47,9 @@ def onboard_end_customer_profile_on_payment(
             "provider_id": provider_id_list,
             "on_behalf_of": on_behalf_of,
         },
-        headers=payment_helper.__get_default_payment_headers(customer_profile_id, request_origin),
+        headers=payment_helper.__get_default_payment_headers(
+            customer_profile_id, request_origin
+        ),
     )
 
     assert response["headers"]["status_code"] == status_code

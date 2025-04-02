@@ -16,7 +16,7 @@ use_step_matcher("re")
 
 
 def get_schedule_map_invest_data(
-        context, user_map_id, user_profile_id, user_main_account_id, amount
+    context, user_map_id, user_profile_id, user_main_account_id, amount
 ):
     request = context.request
     print(user_map_id)
@@ -41,31 +41,34 @@ def get_schedule_map_invest_data(
     )
 
 
-def get_account_id_by_subtype(context, user_profile_identifier: str, account_subtype: str):
-    for account in context.data['users'][user_profile_identifier]['userAccounts']:
-        if account['accountSubtype'] == account_subtype:
-            return account['accountId']
+def get_account_id_by_subtype(
+    context, user_profile_identifier: str, account_subtype: str
+):
+    for account in context.data["users"][user_profile_identifier]["userAccounts"]:
+        if account["accountSubtype"] == account_subtype:
+            return account["accountId"]
 
     assert (
         False
     ), f"User {user_profile_identifier} account not found for subtype : {account_subtype}"
 
+
 def get_account_field(user_details, account_type):
     account = None
-    for acc in user_details['user_details_response']["userCashAccounts"]: #changed userAccounts to userCashAccounts
+    for acc in user_details["user_details_response"][
+        "userCashAccounts"
+    ]:  # changed userAccounts to userCashAccounts
         if account_type == "cash":
-            account = acc['accountId']
+            account = acc["accountId"]
             print(account)
         else:
-            if (
-                    "userCardAccounts" in acc
-                    and acc["userCardAccounts"]
-            ):
+            if "userCardAccounts" in acc and acc["userCardAccounts"]:
                 print(acc["userCardAccounts"][0]["cardAccountId"])
                 account = acc["userCardAccounts"][0]["cardAccountId"]
             else:
                 print("Card ID not found.")
     return account
+
 
 @Step("I create a schedule for map ([^']*) and expect status ([^']*)")
 def create_map_schedule(context, map_identifier: str, status: str):
@@ -75,25 +78,23 @@ def create_map_schedule(context, map_identifier: str, status: str):
     )
     user_profile_identifier = schedule_map_dto.user_profile_identifier
 
-    user_prof_id = ah.get_user_profile_id(user_profile_identifier,context)
+    user_prof_id = ah.get_user_profile_id(user_profile_identifier, context)
 
     user_map_id = ah.get_user_map_id(context, map_identifier, user_profile_identifier)
     amount = schedule_map_dto.amount
     user_details = context.data["users"].get(user_profile_identifier)
 
-    user_main_account_id = get_account_field(
-        user_details, 'cash'
-    )
+    user_main_account_id = get_account_field(user_details, "cash")
     schedule_map_dto.schedule_map_invest = get_schedule_map_invest_data(
         context, user_map_id, user_prof_id, user_main_account_id, amount
     )
 
     schedule_map_dto.target_week = 0
     schedule_map_dto.frequency = list(Frequency)[random.randrange(0, 3)].name
-    if schedule_map_dto.frequency == 'MONTHLY':
+    if schedule_map_dto.frequency == "MONTHLY":
         schedule_map_dto.target_weekdays = list(WeekDay)[random.randrange(1, 6)].name
         schedule_map_dto.target_week = random.randrange(1, 5)
-    elif schedule_map_dto.frequency == 'WEEKLY':
+    elif schedule_map_dto.frequency == "WEEKLY":
         schedule_map_dto.target_weekdays = list(WeekDay)[random.randrange(1, 6)].name
 
     response = request.hugosave_post_request(
@@ -111,7 +112,7 @@ def create_map_schedule(context, map_identifier: str, status: str):
 @Step("I trigger schedule ([^']*) for user ([^']*)")
 def trigger_schedule(context, schedule_identifier: str, user_identifier: str):
     request = context.request
-    user_prof_id = ah.get_user_profile_id( user_identifier,context)
+    user_prof_id = ah.get_user_profile_id(user_identifier, context)
 
     if "SCHEDULE_ROUNDUP" in schedule_identifier:
         round_up_schedule_repsonse = request.hugosave_post_request(
@@ -120,7 +121,7 @@ def trigger_schedule(context, schedule_identifier: str, user_identifier: str):
         )
         check_status_distribute(round_up_schedule_repsonse, "200")
     else:
-        schedule_id = context.data[schedule_identifier]['scheduleId']
+        schedule_id = context.data[schedule_identifier]["scheduleId"]
         response = request.hugosave_put_request(
             ah.dev_urls["schedule_trigger"].replace("schedule-id", schedule_id),
             headers=ah.get_user_header(user_prof_id, context),
@@ -131,8 +132,8 @@ def trigger_schedule(context, schedule_identifier: str, user_identifier: str):
 @then("I check if the schedule ([^']*) status ([^']*) for user ([^']*)")
 def step_impl(context, schedule_identifier: str, status: str, user_identifier: str):
     request = context.request
-    user_prof_id = ah.get_user_profile_id( user_identifier,context)
-    schedule_id = context.data[schedule_identifier]['scheduleId']
+    user_prof_id = ah.get_user_profile_id(user_identifier, context)
+    schedule_id = context.data[schedule_identifier]["scheduleId"]
 
     response = request.hugosave_get_request(
         ah.map_schedule_urls["detail"].replace("schedule-id", schedule_id),
@@ -144,27 +145,29 @@ def step_impl(context, schedule_identifier: str, status: str, user_identifier: s
 @then("I delete schedule ([^']*) for user ([^']*)")
 def step_impl(context, schedule_identifier: str, user_identifier: str):
     request = context.request
-    user_prof_id = ah.get_user_profile_id( user_identifier,context)
-    schedule_id = context.data[schedule_identifier]['scheduleId']
+    user_prof_id = ah.get_user_profile_id(user_identifier, context)
+    schedule_id = context.data[schedule_identifier]["scheduleId"]
 
     response = request.hugosave_delete_request(
         ah.map_schedule_urls["root"] + "/" + schedule_id,
         headers=ah.get_user_header(user_prof_id, context),
-        )
+    )
     check_status_distribute(response, "200")
 
 
 @then("I check schedule status as ([^']*) for schedule ([^']*) for user ([^']*)")
-def step_impl(context, status: str, schedule_identifier: str, user_profile_identifier: str):
+def step_impl(
+    context, status: str, schedule_identifier: str, user_profile_identifier: str
+):
     request = context.request
-    user_prof_id = ah.get_user_profile_id( user_profile_identifier,context)
-    schedule_id = context.data[schedule_identifier]['scheduleId']
+    user_prof_id = ah.get_user_profile_id(user_profile_identifier, context)
+    schedule_id = context.data[schedule_identifier]["scheduleId"]
 
     response = request.hugosave_get_request(
-        ah.map_schedule_urls["detail"].replace('schedule-id', schedule_id),
+        ah.map_schedule_urls["detail"].replace("schedule-id", schedule_id),
         headers=ah.get_user_header(user_prof_id, context),
     )
     check_status_distribute(response, "200")
     assert (
-            response["data"]["scheduleStatus"] == status
+        response["data"]["scheduleStatus"] == status
     ), f'Schedule status expected to be {status}. But received: {response["data"]}'

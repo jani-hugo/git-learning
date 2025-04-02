@@ -12,15 +12,17 @@ use_step_matcher("re")
 @Then(
     "I intiate a request to link VirtualId to the account from ([^']*) and expect the header status ([^']*) and status as ([^']*) in Paysys"
 )
-def virtual_id_link(context, request_origin: str, status_code: str, virtual_id_status: str):
+def virtual_id_link(
+    context, request_origin: str, status_code: str, virtual_id_status: str
+):
     request = context.request
 
     virtual_id_out_request_dto = DataClassParser.parse_row(
         context.table.rows[0], VirtualIdRequestDTO
     )
-    virtual_id_out_request_dto.account_id = context.data[virtual_id_out_request_dto.account_id][
-        'account_id'
-    ]
+    virtual_id_out_request_dto.account_id = context.data[
+        virtual_id_out_request_dto.account_id
+    ]["account_id"]
 
     customer_profile_id = context.data[
         virtual_id_out_request_dto.customer_profile_id
@@ -60,7 +62,8 @@ def process_virtual_id_link_request(
 
     if response["headers"]["status_code"] == "200":
         assert "account_id" in response["data"], (
-            f"\nExpected data object contains account_id" f"\nActual data: {response['data']}"
+            f"\nExpected data object contains account_id"
+            f"\nActual data: {response['data']}"
         )
         assert "virtual_id_details" in response["data"], (
             f"\nExpected data object contains virtual_id_details"
@@ -77,15 +80,17 @@ def process_virtual_id_link_request(
 @Then(
     "I intiate a request to unlink VirtualId to the account from ([^']*) and expect the header status ([^']*) and status as ([^']*) in Paysys"
 )
-def virtual_id_unlink(context, request_origin: str, status_code: str, virtual_id_status: str):
+def virtual_id_unlink(
+    context, request_origin: str, status_code: str, virtual_id_status: str
+):
     request = context.request
 
     virtual_id_out_request_dto = DataClassParser.parse_row(
         context.table.rows[0], VirtualIdRequestDTO
     )
-    virtual_id_out_request_dto.account_id = context.data[virtual_id_out_request_dto.account_id][
-        'account_id'
-    ]
+    virtual_id_out_request_dto.account_id = context.data[
+        virtual_id_out_request_dto.account_id
+    ]["account_id"]
 
     customer_profile_id = context.data[
         virtual_id_out_request_dto.customer_profile_id
@@ -124,7 +129,8 @@ def process_virtual_id_unlink_request(
 
     if response["headers"]["status_code"] == "200":
         assert "account_id" in response["data"], (
-            f"\nExpected data object contains account_id" f"\nActual data: {response['data']}"
+            f"\nExpected data object contains account_id"
+            f"\nActual data: {response['data']}"
         )
         assert "virtual_id_details" in response["data"], (
             f"\nExpected data object contains virtual_id_details"
@@ -149,9 +155,9 @@ def virtual_id_unlink_failure(
     virtual_id_out_request_dto = DataClassParser.parse_row(
         context.table.rows[0], VirtualIdRequestDTO
     )
-    virtual_id_out_request_dto.account_id = context.data[virtual_id_out_request_dto.account_id][
-        'account_id'
-    ]
+    virtual_id_out_request_dto.account_id = context.data[
+        virtual_id_out_request_dto.account_id
+    ]["account_id"]
 
     customer_profile_id = context.data[
         virtual_id_out_request_dto.customer_profile_id
@@ -190,7 +196,8 @@ def process_virtual_id_unlink_request(
 
     if response["headers"]["status_code"] == "200":
         assert "account_id" in response["data"], (
-            f"\nExpected data object contains account_id" f"\nActual data: {response['data']}"
+            f"\nExpected data object contains account_id"
+            f"\nActual data: {response['data']}"
         )
         assert "virtual_id_details" in response["data"], (
             f"\nExpected data object contains virtual_id_details"

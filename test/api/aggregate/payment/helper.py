@@ -11,7 +11,7 @@ payment_providers_config = {
 
 
 def __get_payment_provider_id(
-    context, provider_name: str, customer_profile_id: str, request_origin:str
+    context, provider_name: str, customer_profile_id: str, request_origin: str
 ):
     region = None
     if provider_name == "DBS Bank Ltd":
@@ -35,7 +35,9 @@ def __validate_provider(provider_name):
         raise RuntimeError(f"No such provider found. Provider name: {provider_name}")
 
     if not payment_providers_config[provider_name]["supports_integration_test"]:
-        raise RuntimeError(f"Integration tests are not supported for provider {provider_name}")
+        raise RuntimeError(
+            f"Integration tests are not supported for provider {provider_name}"
+        )
 
 
 def __validate_payment_provider(provider_name):
@@ -60,7 +62,9 @@ def __get_default_payment_headers(
 def __fetch_payment_account(customer_profile_id, context, account_id: str):
     response = context.request.hugoserve_get_request(
         f"/payment/v1/account/{account_id}",
-        headers=__get_default_payment_headers(customer_profile_id, request_origin='CASH_SERVICE'),
+        headers=__get_default_payment_headers(
+            customer_profile_id, request_origin="CASH_SERVICE"
+        ),
     )
     return DataClassParser.dict_to_object(response["data"], AccountDTO)
 
@@ -68,6 +72,8 @@ def __fetch_payment_account(customer_profile_id, context, account_id: str):
 def __fetch_master_account(customer_profile_id, context, account_id: str):
     response = context.request.hugoserve_get_request(
         f"/payment/v1/account/master-account/{account_id}",
-        headers=__get_default_payment_headers(customer_profile_id, request_origin='CASH_SERVICE'),
+        headers=__get_default_payment_headers(
+            customer_profile_id, request_origin="CASH_SERVICE"
+        ),
     )
     return DataClassParser.dict_to_object(response["data"], MasterAccountDTO)

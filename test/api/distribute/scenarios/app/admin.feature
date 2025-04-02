@@ -2,33 +2,65 @@ Feature: Admin
 
   Scenario: Deposits - Block and Unblock
 
-    Given I open user account
-      | user_profile_identifier | phone_number | email          | legal_name  | name  | status              | prefix_ph_num |
-      | UID1                    | random       | test@gmail.com | Irwin Trott | Matty | PROFILE_IN_PROGRESS | +37           |
+    Given The user UID1 provides a valid mobile number
+      | mobile_number | ph_prefix |
+      | random        | +65       |
+    Then The user UID1 submits OTP to proceed with verification
 
-    Then I check account status
-      | user_profile_identifier | status         |
-      | UID1                    | PROFILE_ACTIVE |
+    Given I open a new user account
+      | user_profile_identifier | email          | legal_name  | name   | account_type |
+      | UID1                    | test@gmail.com |  John Doe   | Johnny | PERSONAL     |
 
-    Given I open user account
-      | user_profile_identifier | phone_number | email           | legal_name     | status              | prefix_ph_num |
-      | UID2                    | random       | test2@gmail.com | John Doe       | PROFILE_IN_PROGRESS | +37           |
+    When I initiate the initial onboarding for the user UID1
 
-    Then I check account status
-      | user_profile_identifier | status         |
-      | UID2                    | PROFILE_ACTIVE |
+    Then I submit the initial onboarding for UID1
+
+    And I check the status of initial onboarding for UID1
+
+    And I get user details for user UID1
+
+    Given The user UID2 provides a valid mobile number
+      | mobile_number | ph_prefix |
+      | random        | +65       |
+    Then The user UID2 submits OTP to proceed with verification
+
+    Given I open a new user account
+      | user_profile_identifier | email           | legal_name | name | account_type |
+      | UID2                    | test2@gmail.com | John Lee   | Lee  | PERSONAL     |
+
+    When I initiate the initial onboarding for the user UID2
+
+    Then I submit the initial onboarding for UID2
+
+    And I check the status of initial onboarding for UID2
+
+    And I get user details for user UID2
+
+    Then I initiate the initial user authorisation token for ADD_PAYEE of user UID1
+
+    Then I initiate the final user authorisation token for ADD_PAYEE of user UID1
+
+    And I initiate otp journey for user UID1
+
+    And I submit otp journey for user UID1
+
+    And I submit the final user authorisation for ADD_PAYEE of user UID1
+
+    And I get the final user authorisation token for ADD_PAYEE of user UID1
+
+    And I wait for 5 seconds
 
     Given I deposit 50 SGD into account subtype HUGO_CASH of user UID1
 
     And I check the balance of account subtype HUGO_CASH of user UID1 is 50 SGD exact
 
-    Then I add the account subtype HUGO_MAIN of user UID2 to user UID1 as payee PID1 with valid_swift_bic
+    Then I add the account subtype HUGO_CASH of user UID2 to user UID1 as payee PID1 with valid_swift_bic
 
-    Then I submit otp of user UID1 for payee PID1
-      | otp    |
-      | 123456 |
+#    Then I submit otp of user UID1 for payee PID1
+#      | otp    |
+#      | 123456 |
 
-    And I check if the account subtype HUGO_MAIN of user UID2 is added as payee to user UID1
+    And I check if the account subtype HUGO_CASH of user UID2 is added as payee to user UID1
 
     And I block deposits for UID2
 
@@ -50,13 +82,22 @@ Feature: Admin
 
   Scenario: Merchant Trxns - Block and Unblock
 
-    Given I open user account
-      | user_profile_identifier | phone_number | email          | legal_name | status              |
-      | UID1                    | random       | test@gmail.com | John Doe   | PROFILE_IN_PROGRESS |
+    Given The user UID1 provides a valid mobile number
+      | mobile_number | ph_prefix |
+      | random        | +65       |
+    Then The user UID1 submits OTP to proceed with verification
 
-    Then I check account status
-      | user_profile_identifier | status         |
-      | UID1                    | PROFILE_ACTIVE |
+    Given I open a new user account
+      | user_profile_identifier | email          | legal_name  | name   | account_type |
+      | UID1                    | test@gmail.com |  John Doe   | Johnny | PERSONAL     |
+
+    When I initiate the initial onboarding for the user UID1
+
+    Then I submit the initial onboarding for UID1
+
+    And I check the status of initial onboarding for UID1
+
+    And I get user details for user UID1
 
     Given I deposit 50 SGD into account subtype HUGO_CASH of user UID1
 

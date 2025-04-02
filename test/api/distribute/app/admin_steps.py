@@ -6,9 +6,9 @@ use_step_matcher("re")
 
 
 @Step("I ([^']*) deposits for ([^']*)")
-def block_deposits(context, case, user):
+def block_deposits(context, case, user_profile_identifier):
     request = context.request
-    user_prof_id = ah.get_user_prof_id(context, user)
+    user_prof_id = ah.get_user_profile_id(user_profile_identifier, context)
 
     url = None
     response = None
@@ -30,9 +30,9 @@ def block_deposits(context, case, user):
 
 
 @Step("I ([^']*) merchant transactions for ([^']*)")
-def block_merchant_transactions(context, case, user):
+def block_merchant_transactions(context, case, user_profile_identifier):
     request = context.request
-    user_prof_id = ah.get_user_prof_id(context, user)
+    user_prof_id = ah.get_user_profile_id( user_profile_identifier, context)
 
     response = None
     if case == "block":

@@ -6,9 +6,9 @@ use_step_matcher("re")
 
 
 @Step("I reward gold worth ([^']*) SGD for user ([^']*)")
-def reward_gold_for_user(context, amount, user):
+def reward_gold_for_user(context, amount, user_profile_identifier):
     request = context.request
-    user_prof_id = ah.get_user_prof_id(context, user)
+    user_prof_id = ah.get_user_profile_id(user_profile_identifier, context)
 
     data = {
         "amount": amount,

@@ -2,12 +2,10 @@ import base64
 import os
 import random
 import uuid
-from os import device_encoding
 from pathlib import Path
 
 ORG_ID_HUGOBANK_PK = "HUGOBANK_PK"
 ORG_ID_HUGOSAVE_SG = "HUGOSAVE_SG"
-
 
 app_base_url = "/app/v2"
 auth_base_url = "/auth/v2"
@@ -61,7 +59,7 @@ user_profile_urls = {
     "card_name": app_base_url + "/user-profile/card-names",
     "cards": app_base_url + "/user-profile/cards",
     "credit-account-list": app_base_url + "/user-profile/credit-accounts",
-    "payees-list": app_base_url + "/user-profile/payees"
+    "payees-list": app_base_url + "/user-profile/payees",
 }
 
 payee_urls = {
@@ -94,7 +92,7 @@ balance_urls = {
     "root": app_base_url + "/balance",
     "account": app_base_url + "/balance/cash/acc-id",
     "map": app_base_url + "/balance/map/map-id",
-    "balances": app_base_url + "/balance/list"
+    "balances": app_base_url + "/balance/list",
 }
 
 compliance_urls = {
@@ -102,6 +100,25 @@ compliance_urls = {
     "trust-compliance": app_base_url + "/compliance/trust",
     "initiate-compliance": app_base_url + "/compliance/initiate",
     "submit-compliance": app_base_url + "/compliance/submit",
+}
+
+asset_ids = {
+    "CASH": "dc3a889c-8199-4683-be3a-7061bb8624c8",
+    "GOLD": "524d466e-28a7-44db-b1c4-175953277629",
+}
+
+card_urls = {
+    "root": app_base_url + "/card",
+    "activation_token": app_base_url + "/card/card-id/activation-token",
+    "activate_card": app_base_url + "/card/card-id/activate",
+    "update_status": app_base_url + "/card/card-id/status",
+    "card_details": app_base_url + "/card/card-id",
+    "secure_card_details": app_base_url + "/card/card-id/secure-details",
+    "replace_card": app_base_url + "/card/card-id/replace",
+    "auto_top_up": app_base_url + "/card-account/card-account-id/auto-top-up",
+    "order_card": app_base_url + "/card/issue-card",
+    "cards": app_base_url + "/card-account/card-account-id/cards",
+    "transfer": app_base_url + "/card-account/card-account-id/transfer",
 }
 
 progress_onboarding_urls = {
@@ -125,41 +142,12 @@ progress_onboarding_urls = {
     + f"/status",
 }
 
-initial_onboarding_urls = {
-    "initiate-initial-onboarding": app_base_url
-    + initial_onboarding_base_url
-    + "/initiate",
-    "initial-onboarding-status": app_base_url + initial_onboarding_base_url + "/status",
-    "submit-initial-onboarding": app_base_url + initial_onboarding_base_url + "/submit",
-}
-
-
-asset_ids = {
-    "CASH": "dc3a889c-8199-4683-be3a-7061bb8624c8",
-    "GOLD": "524d466e-28a7-44db-b1c4-175953277629",
-}
-
-card_urls = {
-    "root": app_base_url + "/card",
-    "activation_token": app_base_url + "/card/card-id/activation-token",
-    "activate_card": app_base_url + "/card/card-id/activate",
-    "update_status": app_base_url + "/card/card-id/status",
-    "card_details": app_base_url + "/card/card-id",
-    "secure_card_details": app_base_url + "/card/card-id/secure-details",
-    "replace_card": app_base_url + "/card/card-id/replace",
-    "auto_top_up": app_base_url + "/card-account/card-account-id/auto-top-up",
-    "order_card": app_base_url + "/card/issue-card",
-    "cards": app_base_url + "/card-account/card-account-id/cards",
-    "transfer": app_base_url + "/card-account/card-account-id/transfer"
-}
-
-
 roundup_urls = {
     "root": app_base_url + "/roundup",
     "enable": app_base_url + "/roundup/status",
     "update_sweep_vault": app_base_url + "/roundup/sweep-details",
     "transfer": app_base_url + "/roundup/transfer",
-    "sweep": app_base_url + "/roundup/sweep"
+    "sweep": app_base_url + "/roundup/sweep",
 }
 
 intent_urls = {
@@ -167,7 +155,7 @@ intent_urls = {
     "list_intents_for_map": app_base_url + "/intent/map/map-id",
     "list_spend_view_intents": app_base_url + "/intent/spend",
     "list_intents_for_account": app_base_url + "/intent/cash/cash-account-id",
-    "list_intents_for_cards": app_base_url + "/intent/card/card-id"
+    "list_intents_for_cards": app_base_url + "/intent/card/card-id",
 }
 
 device_urls = {
@@ -203,26 +191,26 @@ token_urls = {
 
 verification_urls = {
     "root": auth_base_url + "/verify/verify-mobile",
-    "submit": auth_base_url + "/verify/verify-mobile"
+    "submit": auth_base_url + "/verify/verify-mobile",
 }
 
 initial_onboarding_urls = {
-    "initiate-initial-onboarding": app_base_url + initial_onboarding_base_url + "/initiate",
+    "initiate-initial-onboarding": app_base_url
+    + initial_onboarding_base_url
+    + "/initiate",
     "initial-onboarding-status": app_base_url + initial_onboarding_base_url + "/status",
-    "submit-initial-onboarding":app_base_url+initial_onboarding_base_url+"/submit",
+    "submit-initial-onboarding": app_base_url + initial_onboarding_base_url + "/submit",
 }
 
-verify_mobile_urls = {
-    "initiate-verification": auth_base_url + "/verify/verify-mobile"
-}
+verify_mobile_urls = {"initiate-verification": auth_base_url + "/verify/verify-mobile"}
 
 get_user_authorisation_token_urls = {
     "initial-initiate": app_base_url + "/user-authorise/initial/initiate",
     "final-initiate": app_base_url + "/user-authorise/final/initiate",
     "journey-initiate": app_base_url + "/user-authorise/journey/journey-id/initiate",
     "journey-submit": app_base_url + "/user-authorise/journey/journey-id/submit",
-    "final-submit":app_base_url + "/user-authorise/final/session-id/submit",
-    "final-status":app_base_url + "/user-authorise/final/session-id/status"
+    "final-submit": app_base_url + "/user-authorise/final/session-id/submit",
+    "final-status": app_base_url + "/user-authorise/final/session-id/status",
 }
 
 forgot_passcode_token_urls = {
@@ -232,53 +220,35 @@ forgot_passcode_token_urls = {
     "journey-submit": app_base_url + "/forgot-passcode/journey/journey-id/submit",
     "final-submit": app_base_url + "/forgot-passcode/submit",
     "final-status": app_base_url + "/forgot-passcode/session-id/status",
-    "update-passcode": app_base_url + "/forgot-passcode"
+    "update-passcode": app_base_url + "/forgot-passcode",
 }
 
-update_passcode_urls = {
-    "root": app_base_url + "/account-management/reset-pin"
-}
-
-def get_create_account_header(context,uid):
-    return{
-        'x-verification-token': context.data['users'][uid]['submit_mobile_verification_response']['verificationToken'],
-        'x-device-id':context.data['device_info']['x-device-id']
-    }
-
-
-def get_initial_onboarding_headers(user_profile_id, context, uid):
-    return{
-        'x-user-profile-id':user_profile_id,
-        'x-authentication-token':context.data['users'][uid]['create_new_user_response']['authenticationToken']
-    }
-
-
-def get_user_header(uid, context):
-    return {"x-user-profile-id": uid, "x-enforce-auth": "false"}
-
-
-def get_mobile_verification_header(x_initiation_signature, device_info, context):
-    return {
-        "os": device_info["os"],
-        "os-build-number": device_info["os-build-number"],
-        "os-version": device_info["os-version"],
-        "device-brand-name": device_info["device-brand-name"],
-        "x-device-id": device_info["x-device-id"],
-        "device-type": device_info["device-type"],
-        "app-first-install-time": device_info["app-first-install-time"],
-        "app-version": device_info["app-version"],
-        "app-bundle-identifier": device_info["app-bundle-identifier"],
-        "app-build-version": device_info["app-build-version"],
-        "x-epoch": str(device_info["x-epoch"]),
-        "x-initiation-signature": x_initiation_signature,
-    }
+update_passcode_urls = {"root": app_base_url + "/account-management/reset-pin"}
 
 
 def get_create_account_header(context, uid):
     return {
-        'x-user-profile-id': uid,
+        "x-verification-token": context.data["users"][uid][
+            "submit_mobile_verification_response"
+        ]["verificationToken"],
+        "x-device-id": context.data["device_info"]["x-device-id"],
+    }
+
+
+def get_initial_onboarding_headers(user_profile_id, context, uid):
+    return {
+        "x-user-profile-id": user_profile_id,
+        "x-authentication-token": context.data["users"][uid][
+            "create_new_user_response"
+        ]["authenticationToken"],
+    }
+
+
+def get_user_header(uid, context):
+    return {
+        "x-user-profile-id": uid,
         "app-build-version": context.data["config_data"]["app-build-version"],
-        'x-device-id': "123456"
+        "x-device-id": "123456",
     }
 
 
@@ -286,20 +256,20 @@ def get_header(context):
     return {
         "app-build-version": context.data["config_data"]["app-build-version"],
         "x-verification-token": context.data["users"]["verification-token"],
-        "x-device-id" : "12345"
+        "x-device-id": "12345",
     }
 
 
 def get_auth_header(uid, context):
     return {
-        'x-initiation-signature': uid,
+        "x-initiation-signature": uid,
         "app-build-version": context.data["config_data"]["app-build-version"],
     }
 
 
-def get_user_profile_id(uid,context):
+def get_user_profile_id(uid, context):
     try:
-        return context.data['users'][uid]['create_new_user_response']['userProfileId']
+        return context.data["users"][uid]["create_new_user_response"]["userProfileId"]
     except Exception:
         return ""
 
@@ -313,7 +283,9 @@ def get_rand_number(n):
 
 
 def get_cash_account_id(context, user_profile_identifier):
-    user_details = context.data["users"][user_profile_identifier]["user_details_response"]
+    user_details = context.data["users"][user_profile_identifier][
+        "user_details_response"
+    ]
     account = None
     account = user_details["userCashAccounts"][1]["accountId"]
     return account
@@ -368,7 +340,7 @@ def get_add_payee_data(name, account_number, email, phone_number, case):
             "street": "123 Main St",
             "city": "Anytown",
             "zip": "12345",
-            "country": "USA"
+            "country": "USA",
         },
         "transfer_out_account_details": {
             "account_holder_name": name,
@@ -377,11 +349,11 @@ def get_add_payee_data(name, account_number, email, phone_number, case):
             "code_details": {
                 "sg_bank_details": {
                     "account_number": account_number,
-                    "swift_bic": "DBSSSGSGXXX"
+                    "swift_bic": "DBSSSGSGXXX",
                 }
             },
-            "bank_name": "DBS Bank Ltd"
-        }
+            "bank_name": "DBS Bank Ltd",
+        },
     }
     if case == "invalid_swift_bic":
         req["bank_code"]["sg_bank_code_details"]["swift_bic"] = "DBSSSGSGXYX"
@@ -395,44 +367,62 @@ def filter_gold_vault(maps):
 
 
 def get_user_map_id(context, map_identifier, user_profile_identifier):
-    user_maps = context.data['users'][user_profile_identifier]["user_details_response"]['userMaps']
+    user_maps = context.data["users"][user_profile_identifier]["user_details_response"][
+        "userMaps"
+    ]
     print(user_maps)
     map_id = None
 
     for map_data in user_maps:
-        if 'GOLD' in map_identifier and map_data['mapName'] == 'GOLD_VAULT':
-            map_id = map_data['userMapId']
+        if "GOLD" in map_identifier and map_data["mapName"] == "GOLD_VAULT":
+            map_id = map_data["userMapId"]
             print("Found GOLD_VAULT map_id:", map_id)
             break
-        elif 'SILVER' in map_identifier and map_data['mapName'] == 'SILVER_VAULT':
-            map_id = map_data['userMapId']
+        elif "SILVER" in map_identifier and map_data["mapName"] == "SILVER_VAULT":
+            map_id = map_data["userMapId"]
             print("Found SILVER_VAULT map_id:", map_id)
             break
-        elif 'PLATINUM' == map_identifier and map_data['mapName'] == 'PLATINUM_VAULT':
-            map_id = map_data['userMapId']
+        elif "PLATINUM" == map_identifier and map_data["mapName"] == "PLATINUM_VAULT":
+            map_id = map_data["userMapId"]
             print("Found PLATINUM_VAULT map_id:", map_id)
             break
-        elif 'ETF_GROWTH_VAULT' == map_identifier and map_data['mapName'] == 'GROWTH_VAULT':
-            map_id = map_data['userMapId']
+        elif (
+            "ETF_GROWTH_VAULT" == map_identifier
+            and map_data["mapName"] == "GROWTH_VAULT"
+        ):
+            map_id = map_data["userMapId"]
             print("Found GROWTH_VAULT map_id:", map_id)
             break
-        elif 'ETF_BALANCED_VAULT' == map_identifier and map_data['mapName'] == 'BALANCED_VAULT':
-            map_id = map_data['userMapId']
+        elif (
+            "ETF_BALANCED_VAULT" == map_identifier
+            and map_data["mapName"] == "BALANCED_VAULT"
+        ):
+            map_id = map_data["userMapId"]
             print("found BALANCED_VAULT map_id:", map_id)
             break
-        elif 'ETF_CAUTIOUS_VAULT' == map_identifier and map_data['mapName'] == 'CAUTIOUS_VAULT':
-            map_id = map_data['userMapId']
+        elif (
+            "ETF_CAUTIOUS_VAULT" == map_identifier
+            and map_data["mapName"] == "CAUTIOUS_VAULT"
+        ):
+            map_id = map_data["userMapId"]
             print("Found CAUTIOUS_VAULT map_id:", map_id)
             break
-        elif 'ETF_MONEY_MARKET_VAULT' == map_identifier and map_data['mapName'] == 'MONEY_MARKET_VAULT':
-            map_id = map_data['userMapId']
+        elif (
+            "ETF_MONEY_MARKET_VAULT" == map_identifier
+            and map_data["mapName"] == "MONEY_MARKET_VAULT"
+        ):
+            map_id = map_data["userMapId"]
             print("Found MONEY_MARKET_VAULT map_id:", map_id)
             break
-        elif (context.data.get("users", {})
-                        .get(user_profile_identifier, {})
-                        .get(map_identifier, {})
-                        .get("userMapId")):
-            map_id = context.data["users"][user_profile_identifier][map_identifier]["userMapId"]
+        elif (
+            context.data.get("users", {})
+            .get(user_profile_identifier, {})
+            .get(map_identifier, {})
+            .get("userMapId")
+        ):
+            map_id = context.data["users"][user_profile_identifier][map_identifier][
+                "userMapId"
+            ]
             break
 
     return map_id
@@ -460,44 +450,50 @@ def get_card_id(context, user_profile_identifier):
 
 
 def get_card_account_id(context, user_identifier):
-    card_account_id = context.data["users"][user_identifier]["user_details_response"]["userCashAccounts"][0]["userCardAccounts"][0]["cardAccountId"]
+    card_account_id = context.data["users"][user_identifier]["user_details_response"][
+        "userCashAccounts"
+    ][0]["userCardAccounts"][0]["cardAccountId"]
     return card_account_id
 
 
-def get_initial_onboarding_id(uid,context):
+def get_initial_onboarding_id(uid, context):
     try:
-        return context.data['users'][uid]['initiate_onboarding_initial_onboarding_response']['onboardingId']
+        return context.data["users"][uid][
+            "initiate_onboarding_initial_onboarding_response"
+        ]["onboardingId"]
     except Exception:
         return ""
 
 
 def get_progress_onboarding_id(context, uid):
     try:
-        return context.data['users'][uid]['initiate_onboarding_response']['onboardingId']
+        return context.data["users"][uid]["initiate_onboarding_response"][
+            "onboardingId"
+        ]
     except Exception:
         return "Could not find progress onboarding Id"
 
 
-def get_journey_id(context,uid,journey_type):
-    response = context.data['users'][uid]['initiate_onboarding_response']['journeys']
-    journeys = [journey for journey in response if journey['journey']== journey_type]
-    if context.data['users'][uid]["current_journey_index"] < len(journeys):
+def get_journey_id(context, uid, journey_type):
+    response = context.data["users"][uid]["initiate_onboarding_response"]["journeys"]
+    journeys = [journey for journey in response if journey["journey"] == journey_type]
+    if context.data["users"][uid]["current_journey_index"] < len(journeys):
         journey_id = [journey["journeyId"] for journey in journeys]
         return journey_id
 
 
 def get_mobile_verification_header(x_initiation_signature, device_info, context):
-    return{
-        'os':device_info['os'],
-        'os-build-number':device_info['os-build-number'],
-        'os-version':device_info['os-version'],
-        'device-brand-name':device_info['device-brand-name'],
-        'x-device-id': device_info['x-device-id'],
-        'device-type':device_info['device-type'],
-        'app-first-install-time':device_info['app-first-install-time'],
-        'app-version':device_info['app-version'],
-        'app-bundle-identifier':device_info['app-bundle-identifier'],
-        'app-build-version':device_info['app-build-version'],
-        'x-epoch':str(device_info['x-epoch']),
-        'x-initiation-signature': x_initiation_signature,
+    return {
+        "os": device_info["os"],
+        "os-build-number": device_info["os-build-number"],
+        "os-version": device_info["os-version"],
+        "device-brand-name": device_info["device-brand-name"],
+        "x-device-id": device_info["x-device-id"],
+        "device-type": device_info["device-type"],
+        "app-first-install-time": device_info["app-first-install-time"],
+        "app-version": device_info["app-version"],
+        "app-bundle-identifier": device_info["app-bundle-identifier"],
+        "app-build-version": device_info["app-build-version"],
+        "x-epoch": str(device_info["x-epoch"]),
+        "x-initiation-signature": x_initiation_signature,
     }

@@ -1,6 +1,6 @@
 from behave import *
 import test.api.distribute.app.app_helper as ah
-from api.distribute.app.app_dataclass import CreateNewAccountDTO
+from test.api.distribute.app.app_dataclass import CreateNewAccountDTO
 from test.util.common_util import check_status_distribute
 from hugoutils.utilities.dataclass_util import DataClassParser
 from retry import retry

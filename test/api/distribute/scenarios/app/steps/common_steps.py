@@ -23,6 +23,7 @@ import test.api.distribute.app.update_details_steps
 import test.api.distribute.app.credit_account_steps
 import test.api.distribute.app.create_account_steps
 import test.api.distribute.app.premium_account_steps
+import test.api.distribute.app.update_passcode
 
 
 @Step("I wait for ([^']*) seconds")

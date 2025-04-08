@@ -1,8 +1,4 @@
 import time
-
-from test.api.distribute.scenarios.app.initiation_signature import (
-    generate_initiation_signature,
-)
 from behave import *
 from hugoutils.utilities.dataclass_util import DataClassParser
 

@@ -9,3 +9,4 @@ import test.api.aggregate.profile.customer_profile_steps
 import test.api.aggregate.profile.customer_steps
 import test.api.aggregate.profile.end_customer_profile_steps
 import test.api.aggregate.cms.transaction_steps
+import test.api.aggregate.cms.loan_account_steps

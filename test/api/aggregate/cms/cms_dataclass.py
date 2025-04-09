@@ -68,6 +68,23 @@ class UpdateProductDTO:
     def get_dict(self):
         return {k: v for k, v in self.__dict__.items() if v is not None}
 
+@dataclasses.dataclass
+class CreateLoanAccountRequestDTO:
+    end_customer_profile_id: Optional[str]
+    account_id: Optional[str]
+    product_id: Optional[str]
+    approved_amount: Optional[float]
+    tenure: Optional[int]
+    interest_rate: Optional[float]
+
+    def get_dict(self):
+        return {
+            "end_customer_profile_id": self.end_customer_profile_id,
+            "product_id": self.product_id,
+            "approved_amount": self.approved_amount,
+            "tenure": self.tenure,
+            "interest_rate": self.interest_rate,
+        }
 
 @dataclasses.dataclass
 class CreateAccountRequestDTO:

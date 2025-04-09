@@ -43,6 +43,11 @@ credit_account_urls = {
     "balance": cms_base_url + "/credit-account/$account_id$/balance",
 }
 
+loan_account_urls = {
+    "create": cms_base_url + '/loan-account',
+    "get_details": cms_base_url + "/loan-account/$account_id$"
+}
+
 txn_urls = {
     "create": cms_base_url + "/transaction",
     "get": cms_base_url + "/transaction/$transaction_id$",
@@ -102,6 +107,93 @@ TRANSACTION_RECEIVER_GROUPS = {
 }
 
 PRODUCT_PARAMS = {
+    "normal_case_loan_account_params": [
+        {
+            "param_name": "COUNTRY",
+            "data_type": "STRING_LIST",
+            "value": {
+                "string_list_value": {
+                    "value": ["SGP"]
+                }
+            }
+        },
+        {
+            "param_name": "CURRENCY",
+            "data_type": "STRING_LIST",
+            "value": {
+                "string_list_value": {
+                    "value": ["SGD"]
+                }
+            }
+        },
+        {
+            "param_name": "LOAN_TYPE",
+            "data_type": "STRING_LIST",
+            "value": {
+                "string_list_value": {
+                    "value": ["UNSECURED"]
+                }
+            }
+        },
+        {
+            "param_name": "LOAN_AMOUNT_RANGE",
+            "data_type": "RANGE_INTEGERS",
+            "value": {
+                "range_integers_value": {
+                    "min_value": 1000,
+                    "max_value": 100000
+                }
+            }
+        },
+        {
+            "param_name": "LOAN_TENURE_RANGE",
+            "data_type": "RANGE_INTEGERS",
+            "value": {
+                "range_integers_value": {
+                    "min_value": 6,
+                    "max_value": 60
+                }
+            }
+        },
+        {
+            "param_name": "INTEREST_RATE_TYPE",
+            "data_type": "STRING_LIST",
+            "value": {
+                "string_list_value": {
+                    "value": ["FIXED"]
+                }
+            }
+        },
+        {
+            "param_name": "INTEREST_RATE_RANGE",
+            "data_type": "RANGE_DOUBLES",
+            "value": {
+                "range_doubles_value": {
+                    "min_value": 5.0,
+                    "max_value": 15.0
+                }
+            }
+        },
+        {
+            "param_name": "DISBURSEMENT_TYPE",
+            "data_type": "STRING_LIST",
+            "value": {
+                "string_list_value": {
+                    "value": ["ONE_TIME"]
+                }
+            }
+        },
+        {
+            "param_name": "REPAYMENT_FREQUENCY",
+            "data_type": "STRING_LIST",
+            "value": {
+                "string_list_value": {
+                    "value": ["MONTHLY"]
+                }
+            }
+        }
+    ]
+,
     "normal_case_params_group": [
         {
             "param_name": "ANNUAL_PERCENTAGE_RATE",

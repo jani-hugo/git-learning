@@ -22,6 +22,18 @@ Feature: CMS service's Credit Account scenarios
       | product_id | product_name   | product_type   | description                               | product_class | profile_type | product_category | param_group              |
       | Pid1       | My Credit Card | CREDIT_ACCOUNT | Premium Credit Card for Premium Customers | STANDARD      | CUSTOMER     | GEN              | normal_case_params_group |
 
+    Then I create the following transaction codes and verify status code is 200
+      | transaction_code | iso_code | description            |
+      | TXN1             | ISO1     | First transaction code |
+      | TXN2             | ISO2     | Second one             |
+      | TXN3             | ISO3     | Third transaction code |
+      | TXN4             | ISO4     | Fourth one             |
+
+    Then I create bucket config for product Pid1 and verify status code is 200
+      | bucket_name               | bucket_code | txn_codes  | interest_type      | repayment_priority | limit_percentage | apr  |
+      | Standard Interest Bucket  | STD_001     | TXN1, TXN2 | STANDARD_INTEREST  | 1                  | 50.0             | 10.5 |
+      | Immediate Interest Bucket | IMD_002     | TXN3, TXN4 | IMMEDIATE_INTEREST | 2                  | 30.0             | 12.0 |
+
     Then I approve following products and verify product status to be PRODUCT_SUCCESS and status code is 200
       | product_id |
       | Pid1       |

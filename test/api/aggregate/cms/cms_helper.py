@@ -53,6 +53,14 @@ txn_urls = {
     "get": cms_base_url + "/transaction/$transaction_id$",
 }
 
+txn_code_urls = {
+    'create': core_base_url + '/transaction-code'
+}
+
+bucket_config_urls = {
+    'create':  cms_base_url +'/bucket-config'
+}
+
 card_txn_urls = {
     "attach": cms_base_url + "/card/attach",
     "auth": cms_base_url + "/card/transaction/debit/auth",

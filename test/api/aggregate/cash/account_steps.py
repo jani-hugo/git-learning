@@ -390,6 +390,12 @@ def create_end_customer_profile_bank_account(
             end_cust_profile_bank_acc_dto
         )
 
+        end_cust_profile_bank_acc_dto.account_details = cash_helper.__get_account_details(
+            context=context,
+            account_id=end_cust_profile_bank_acc_dto.account_id,
+            customer_profile_id=customer_profile_id
+        )
+
 
 @Then(
     "I verify EndCustomerProfile with id ([^']*) for CustomerProfile ([^']*) has bank account (["

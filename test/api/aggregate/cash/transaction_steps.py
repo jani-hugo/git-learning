@@ -58,7 +58,6 @@ def wait_and_verify_transaction_status(
 
     retry_for_transaction_status()
 
-
 @Then(
     "I initiate refund for transaction with below details expect the header statuscode ([^']*)"
 )
@@ -96,9 +95,9 @@ def refund_transaction(context, status_code):
             f"\nActual data: {response['data']}"
         )
 
-        context.data["TxId2"] = response["data"]["transaction_id"]
+    context.data["TxId2"] = response["data"]["transaction_id"]
 
-        assert response["data"]["transaction_status"] == "TRANSACTION_PENDING", (
+    assert response["data"]["transaction_status"] == "TRANSACTION_PENDING", (
             f"\nExpect data.account_status: TRANSACTION_PENDING"
             f"\nActual data.account_status: {response['data']['transaction_status']}, data: {response['data']}"
         )
@@ -131,13 +130,13 @@ def initiate_transaction_and_verify_status(context, status_code, txn_status):
             context.table.rows[0]["receiver_account_id"]
         ].account_details
         transfer_out_details = {
-            "account_holder_name": account_details.account_holder_name,
-            "country": account_details.country,
-            "currency": account_details.currency,
+            "account_holder_name": account_details["account_holder_name"],
+            "country": account_details["country"],
+            "currency": account_details["currency"],
             "code_details": {
                 "sg_bank_details": {
-                    "account_number": account_details.code_details.sg_code_details.account_number,
-                    "swift_bic": account_details.code_details.sg_code_details.swift_bic,
+                    "account_number": account_details["code_details"]["sg_code_details"]["account_number"],
+                    "swift_bic": account_details["code_details"]["sg_code_details"]["swift_bic"],
                 }
             },
         }
@@ -673,3 +672,31 @@ def settle_transaction_and_verify_status(
 )
 def idempotency_and_verify_status(context, txid1, txid2):
     assert context.data[txid1] == context.data[txid2]
+
+
+@Then(
+    "I get the transaction details for bank account ([^']*) for customerProfileId ([^']*)"
+)
+def get_transactions(
+        context,
+        identifier,
+        customer_profile_identifier,
+):
+    request = context.request
+    bank_account_id = context.data[identifier].account_id
+    customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
+
+    @retry(
+        AssertionError,
+        tries=10,
+        delay=5,
+        logger=None,
+    )
+    def retry_for_transaction_details():
+        response = request.hugoserve_get_request(
+            path = f"/cash/v1/account/{bank_account_id}/transactions",
+            headers=cash_helper.__get_default_cash_headers(customer_profile_id ),
+        )
+        context.data["TxId3"] = [txn["transaction_id"] for txn in response["data"]["transactions"] if txn["transaction_type"] == "CREDIT"][0]
+
+    retry_for_transaction_details()

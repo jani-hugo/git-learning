@@ -496,3 +496,65 @@ Feature: Banking Service Settle transactions various cases
     Examples:
       | deposit_amount | initiate_transaction_amount | requested_amount | currency | bank_name    | account_type | is_overdraft_allowed | is_overdraft_allowed | is_overdraft_allowed | transaction_rail | initial_total_balance | initial_available_balance | updated_total_balance | updated_available_balance | treasury_total_balance | treasury_available_balance | status_code | txn_status          | overdraft_funding_account_id | country | balance_policy_limit | balance_policy_type |
       | 80             | 120                         | 100              | SGD      | DBS Bank Ltd | e-money      | true                 | true                 | true                 | FAST             | 80                    | -40                       | -20                   | -40                       | 980                    | 980                        | 200         | TRANSACTION_SETTLED | CustomerProfileBA1           | SGP     | 0                    | LENIENT             |
+
+  Scenario Outline: User has available balance, then user initiate a transaction with an amount less than the available balance. now user Settle transaction with settle amount is equal to initial blocked amount.later,the user gets refunded
+
+    Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
+      | identifier    | product_type   | profile_type | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
+      | ProductID1    | WALLET         | CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | 0                       | STRICT                 |
+
+    Then I approve the product ProductID1 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
+
+    Given I create account for CustomerProfile with id BCPID1 with product id as ProductID1 with bank account type as Payments Account with provider DBS Bank Ltd and expect the header status 200
+      | identifier         | customer_profile_id | currency | country | in_trust  | on_behalf_of | metadata              | kyc_completed | trust_verification_completed |
+      | CustomerProfileBA1 | IntegrationTest1    | SGD      | SGP     | false     | CUSTOMER     | {"key": "MyMetaData"} | false         | false                        |
+
+    Then I wait until max time to verify the bank account CustomerProfileBA1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
+
+    Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
+      | identifier    | product_type   | profile_type     | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
+      | ProductID2    | WALLET         | END_CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | <balance_policy_limit>  | <balance_policy_type>  |
+
+    Then I approve the product ProductID2 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
+
+    Given I create account for EndCustomerProfile with id ECPID1 for CustomerProfile BCPID1 with product id ProductID2 with bank account type as <account_type> with provider <bank_name> and expect the header status 200
+      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust    | on_behalf_of | metadata                           |
+      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false       | CUSTOMER     | {"key": "TransactionIntegration1"} |
+
+    Given I create account for EndCustomerProfile with id ECPID1 for CustomerProfile BCPID1 with product id ProductID2 with bank account type as <account_type> with provider <bank_name> and expect the header status 200
+      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust | on_behalf_of | metadata                           |
+      | BankAccId2 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false    | CUSTOMER     | {"key": "TransactionIntegration1"} |
+
+    Then I wait until max time to verify the bank account BankAccId1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
+
+    Given I deposit an amount of <deposit_amount> into BankAccId1 using cash DevDeposit and expect the header status 200
+      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+
+    Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
+
+    Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
+      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     | BankAccId2          |
+
+    Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
+
+    Then I settle transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction_status as <txn_status>
+      | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed | metadata              |
+      | TxId1          | BCPID1              | <requested_amount> | <transaction_rail> | false                | {"key": "MyMetaData"} |
+
+    Then I wait until max time to verify the transaction TxId1 status as <txn_status> for customerProfileId BCPID1
+
+    Then I wait until max time to verify bank account BankAccId1 with an available balance of <updated_available_balance> and total balance of <updated_total_balance> for customerProfileId BCPID1
+
+    Then I get the transaction details for bank account BankAccId2 for customerProfileId BCPID1
+
+    Then I initiate refund for transaction with below details expect the header statuscode <status_code>
+      | original_transaction_id | customer_profile_id | refund_amount   | purpose          | metadata              |
+      | TxId3                   | BCPID1              | <refund_amount> | Integration Test | {"key": "MyMetaData"} |
+
+    Then I wait until max time to verify the transaction TxId2 status as <txn_status> for customerProfileId BCPID1
+
+    Examples:
+      | deposit_amount | initiate_transaction_amount | requested_amount | refund_amount | currency | bank_name    | account_type | transaction_rail | initial_total_balance | initial_available_balance | updated_total_balance | updated_available_balance | status_code | txn_status          | country | balance_policy_limit | balance_policy_type |
+      | 150            | 100                         | 100              | 50            | SGD      | DBS Bank Ltd | e-money      | FAST             | 150                   | 50                        | 50                    | 50                        | 200         | TRANSACTION_SETTLED | SGP     | 0                    | LENIENT             |

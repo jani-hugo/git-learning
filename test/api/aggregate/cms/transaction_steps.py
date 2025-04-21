@@ -3,7 +3,7 @@ from hugoutils.utilities.dataclass_util import DataClassParser
 from retry import retry
 
 from test.api.aggregate.cms import cms_helper
-from test.api.aggregate.cms.cms_dataclass import TransactionRequestDTO
+from test.api.aggregate.cms.cms_dataclass import TransactionRequestDTO, CreateTransactionLimitDTO
 from test.util.common_util import check_status
 
 
@@ -76,8 +76,8 @@ def create_transaction(context, expected_txn_status, expected_status_code):
 
     for transaction in transaction_data:
         if (
-            transaction.credit_account_id in context.data
-            and context.data[transaction.credit_account_id]
+                transaction.credit_account_id in context.data
+                and context.data[transaction.credit_account_id]
         ):
             account_id = context.data[transaction.credit_account_id]
         data = transaction.get_dict(
@@ -141,3 +141,63 @@ def verify_latest_credit_account_balance(context, expected_status_code):
 
     response = get_credit_account_balance(request, customer_profile_id, account_id)
     assert_balance_settlement_status(response, settled_amount, approved_limit)
+
+
+@Then(
+    "I create below transaction limit and verify the transaction status code as ([^']*)"
+)
+def create_transaction_limit(context, expected_status_code):
+    request = context.request
+    customer_profile_id = context.data["config_data"]["customer_profile_id"]
+    transaction_limit_data = DataClassParser.parse_rows(
+        context.table.rows, data_class=CreateTransactionLimitDTO
+    )
+    product_id = ""
+
+    for row in context.table:
+        if row["product_id"] != "EMPTY":
+            product_id = row["product_id"]
+
+    for transaction in transaction_limit_data:
+        if (
+                transaction.product_id in context.data
+                and context.data[transaction.product_id]
+        ):
+            product_id = context.data[transaction.product_id]
+        data = transaction.get_dict(
+            cms_helper.get_txn_rule_group(transaction.rule_group), product_id
+        )
+
+        response = request.hugoserve_post_request(
+            cms_helper.txn_limit_urls["create"],
+            data=data,
+            headers=cms_helper.get_headers(customer_profile_id),
+        )
+
+        if expected_status_code != "200":
+            check_status(response, expected_status_code)
+        else:
+            limit_id = response["data"]["limit_id"]
+            if limit_id:
+
+                if product_id not in context.data:
+                    context.data[product_id] = []
+
+                context.data[product_id].append(
+                    {"limit_id": limit_id}
+                )
+            else:
+                raise Exception("Limit ID not found in the response")
+
+            check_status(response, expected_status_code)
+
+            @retry(exceptions=AssertionError, tries=60, delay=2, logger=None)
+            def retry_for_txn_limit_get_status():
+                request.hugoserve_get_request(
+                    cms_helper.txn_limit_urls["get"].replace("$transaction-limit-id$", limit_id),
+                    headers=cms_helper.get_headers(customer_profile_id),
+                )
+                check_status(response, expected_status_code)
+
+            if expected_status_code == "200":
+                retry_for_txn_limit_get_status()

@@ -1,4 +1,5 @@
 cms_base_url = "/cms/v1"
+core_base_url = "/core/v1"
 
 payment_provider_ids = {"DBS": "DBS-SG"}
 
@@ -53,12 +54,17 @@ txn_urls = {
     "get": cms_base_url + "/transaction/$transaction_id$",
 }
 
+txn_limit_urls = {
+    "create": cms_base_url + "/transaction-limit",
+    "get": cms_base_url + "/transaction-limit/$transaction-limit-id$"
+}
+
 txn_code_urls = {
     'create': core_base_url + '/transaction-code'
 }
 
 bucket_config_urls = {
-    'create':  cms_base_url +'/bucket-config'
+    'create': cms_base_url + '/bucket-config'
 }
 
 card_txn_urls = {
@@ -112,6 +118,21 @@ TRANSACTION_RECEIVER_GROUPS = {
         "bank_name": "DBS Bank Ltd",
     },
     "empty_receiver_details": {},
+}
+
+TRANSACTION_LIMIT_RULE = {
+    "rule_group": {
+        "logical_operator": "AND",
+        "rules": [
+            {
+                "condition": {
+                    "condition_key": "$.transaction.transaction_type",
+                    "comparison_operator": "EQUALS",
+                    "value": "DEBIT"
+                }
+            }
+        ]
+    }
 }
 
 PRODUCT_PARAMS = {
@@ -201,7 +222,7 @@ PRODUCT_PARAMS = {
             }
         }
     ]
-,
+    ,
     "normal_case_params_group": [
         {
             "param_name": "ANNUAL_PERCENTAGE_RATE",
@@ -347,6 +368,10 @@ PRODUCT_PARAMS = {
 
 def get_txn_receiver_group(receiver_group):
     return TRANSACTION_RECEIVER_GROUPS[receiver_group]
+
+
+def get_txn_rule_group(rule_group):
+    return TRANSACTION_LIMIT_RULE[rule_group]
 
 
 def get_product_params(param_group):

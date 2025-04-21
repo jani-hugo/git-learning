@@ -295,3 +295,19 @@ class TransactionRequestDTO:
             "currency": self.currency,
             "receiver": receiver,
         }
+
+
+@dataclasses.dataclass
+class CreateTransactionLimitDTO:
+    product_id: str
+    limit_code: str
+    limit_description: str
+    rule_group: Optional[str]
+
+    def get_dict(self, rule_group, product_id):
+        return {
+            "product_id": product_id,
+            "limit_code": self.limit_code,
+            "limit_description": self.limit_description,
+            "rule_group": rule_group
+        }

@@ -59,8 +59,13 @@ def submit_journey(context, journey_type, uid, expected_status):
     url = ah.progress_onboarding_urls["submit-onboarding-journey"].format(
         **{"journey-id": journey_id}
     )
+    json_string = json.dumps(context.data["users"][uid]["initiate_journey_response"]["data"])
+
+    request_body = {
+        "data": json_string
+    }
     journey_submit_response = request.hugosave_post_request(
-        path=url, headers=ah.get_user_header(user_profile_id, context), data={}
+        path=url, headers=ah.get_user_header(user_profile_id, context), data=request_body
     )
     if not check_status_distribute(journey_submit_response, expected_status):
         assert (

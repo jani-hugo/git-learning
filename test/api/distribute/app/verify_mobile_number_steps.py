@@ -46,7 +46,7 @@ def verify_mobile_number(context, uid):
         headers=ah.get_mobile_verification_header(
             x_initiation_signature, device_info, context
         ),
-        params={"user-id": generated_mobile_number},
+        params={"user-name": generated_mobile_number},
     )
     if not check_status_distribute(initiate_mobile_verification_response, 200):
         assert (

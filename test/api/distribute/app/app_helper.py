@@ -238,6 +238,7 @@ def get_create_account_header(context, uid):
 def get_initial_onboarding_headers(user_profile_id, context, uid):
     return {
         "x-user-profile-id": user_profile_id,
+        "x-origin-id": "MOBILE",
         "x-authentication-token": context.data["users"][uid][
             "create_new_user_response"
         ]["authenticationToken"],
@@ -247,6 +248,7 @@ def get_initial_onboarding_headers(user_profile_id, context, uid):
 def get_user_header(uid, context):
     return {
         "x-user-profile-id": uid,
+        "x-origin-id":"MOBILE",
         "app-build-version": context.data["config_data"]["app-build-version"],
         "x-device-id": "123456",
     }

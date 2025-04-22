@@ -3,6 +3,7 @@ import test.api.aggregate.cash.customer_end_customer_profile_steps
 import test.api.aggregate.cash.dbs_sg_deposits_steps
 import test.api.aggregate.cash.product_steps
 import test.api.aggregate.cash.transaction_steps
+import test.api.aggregate.cash.card_steps
 import test.api.aggregate.profile.customer_profile_steps
 import test.api.aggregate.profile.customer_steps
 import test.api.aggregate.profile.end_customer_profile_steps

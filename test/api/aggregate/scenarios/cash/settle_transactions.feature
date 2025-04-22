@@ -521,11 +521,13 @@ Feature: Banking Service Settle transactions various cases
       | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust    | on_behalf_of | metadata                           |
       | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false       | CUSTOMER     | {"key": "TransactionIntegration1"} |
 
+    Then I wait until max time to verify the bank account BankAccId1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
+
     Given I create account for EndCustomerProfile with id ECPID1 for CustomerProfile BCPID1 with product id ProductID2 with bank account type as <account_type> with provider <bank_name> and expect the header status 200
       | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust | on_behalf_of | metadata                           |
       | BankAccId2 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false    | CUSTOMER     | {"key": "TransactionIntegration1"} |
 
-    Then I wait until max time to verify the bank account BankAccId1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
+    Then I wait until max time to verify the bank account BankAccId2 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I deposit an amount of <deposit_amount> into BankAccId1 using cash DevDeposit and expect the header status 200
       | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
@@ -547,7 +549,7 @@ Feature: Banking Service Settle transactions various cases
 
     Then I wait until max time to verify bank account BankAccId1 with an available balance of <updated_available_balance> and total balance of <updated_total_balance> for customerProfileId BCPID1
 
-    Then I get the transaction details for bank account BankAccId2 for customerProfileId BCPID1
+    Then I get the deposit transaction TxId3 details for bank account BankAccId2 for customerProfileId BCPID1
 
     Then I initiate refund for transaction with below details expect the header statuscode <status_code>
       | original_transaction_id | customer_profile_id | refund_amount   | purpose          | metadata              |

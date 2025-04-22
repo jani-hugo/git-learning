@@ -49,19 +49,6 @@ def __get_account_type_id(
         if each_account_type["account_type_name"] == account_type
     )
 
-
-def __get_account_details(
-        context,account_id: str, customer_profile_id: str
-):
-    account_details=context.request.hugoserve_get_request(
-        path=f"/cash/v1/account/{account_id}/details",
-        headers=__get_default_cash_headers(customer_profile_id),
-    )["data"]["account_details"]
-
-    return account_details
-
-
-
 def __get_corporate_account_type_id(
     context, provider_id: str, account_type: str, customer_profile_id: str
 ):

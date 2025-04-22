@@ -1,4 +1,4 @@
-Feature: Banking Service Settle transactions various cases
+Feature: Cash Service Settle transactions of various cases on wallets with Cash Accounts
 
   Background: Setup customer and end-customer profile on banking
 

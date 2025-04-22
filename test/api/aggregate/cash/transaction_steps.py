@@ -130,13 +130,13 @@ def initiate_transaction_and_verify_status(context, status_code, txn_status):
             context.table.rows[0]["receiver_account_id"]
         ].account_details
         transfer_out_details = {
-            "account_holder_name": account_details["account_holder_name"],
-            "country": account_details["country"],
-            "currency": account_details["currency"],
+            "account_holder_name": account_details.account_holder_name,
+            "country": account_details.country,
+            "currency": account_details.currency,
             "code_details": {
                 "sg_bank_details": {
-                    "account_number": account_details["code_details"]["sg_code_details"]["account_number"],
-                    "swift_bic": account_details["code_details"]["sg_code_details"]["swift_bic"],
+                    "account_number": account_details.code_details.sg_code_details.account_number,
+                    "swift_bic": account_details.code_details.sg_code_details.swift_bic,
                 }
             },
         }
@@ -675,12 +675,13 @@ def idempotency_and_verify_status(context, txid1, txid2):
 
 
 @Then(
-    "I get the transaction details for bank account ([^']*) for customerProfileId ([^']*)"
+    "I get the deposit transaction ([^']*) details for bank account ([^']*) for customerProfileId ([^']*)"
 )
 def get_transactions(
         context,
-        identifier,
-        customer_profile_identifier,
+        transaction_identifier: str,
+        identifier: str,
+        customer_profile_identifier: str,
 ):
     request = context.request
     bank_account_id = context.data[identifier].account_id
@@ -697,6 +698,6 @@ def get_transactions(
             path = f"/cash/v1/account/{bank_account_id}/transactions",
             headers=cash_helper.__get_default_cash_headers(customer_profile_id ),
         )
-        context.data["TxId3"] = [txn["transaction_id"] for txn in response["data"]["transactions"] if txn["transaction_type"] == "CREDIT"][0]
+        context.data[transaction_identifier] = [txn["transaction_id"] for txn in response["data"]["transactions"] if txn["transaction_type"] == "CREDIT"][0]
 
     retry_for_transaction_details()

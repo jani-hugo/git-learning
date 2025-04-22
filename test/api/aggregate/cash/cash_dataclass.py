@@ -647,7 +647,7 @@ class CashDevDepositRequestDTO:
             "purpose": self.purpose,
             "currency": self.currency,
             "transaction_rail": self.transaction_rail,
-            "metadata": self.metadata,
+            "metadata": self.metadata
         }
 
 
@@ -863,3 +863,46 @@ class ParamRequestDTO:
                 "metadata": self.metadata,
             }
         )
+
+@dataclasses.dataclass
+class PayRequestDTO:
+    amount: float
+    purpose: str
+    currency: str
+    push_overdraft: bool
+    source_account_id: Optional[String] = ''
+    transfer_out_account_details: Optional[TransferOutAccountDetails] = None
+
+    def get_dict(self):
+        return {
+            "source_account_id": self.source_account_id,
+            "amount": self.amount,
+            "purpose": self.purpose,
+            "currency": self.currency,
+            "push_overdraft": self.push_overdraft,
+            "transfer_out_account_details": self.transfer_out_account_details
+        }
+
+@dataclasses.dataclass
+class FloatAccountResponseDTO:
+    account_id: str
+
+    def get_dict(self):
+        return {
+            "account_id": self.account_id
+        }
+
+@dataclasses.dataclass
+class ApplyFeeRequestDTO:
+    amount: float
+    currency: str
+    push_overdraft: bool
+    account_id: Optional[str]
+
+    def get_dict(self):
+        return {
+            "amount": self.amount,
+            "currency": self.currency,
+            "push_overdraft": self.push_overdraft,
+            "account_id": self.account_id
+        }

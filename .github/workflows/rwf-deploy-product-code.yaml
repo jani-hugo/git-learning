@@ -1,0 +1,125 @@
+# This is a reusable workflow file that can be used in other workflows. This cannot be a Github action
+# because it won't support inputs.
+name: rwf-deploy-product-code
+
+on:
+  workflow_call:
+    inputs:
+      stack_name:
+        required: true
+        type: string
+      product:
+        required: true
+        type: string
+      app_name:
+        required: false
+        type: string
+        default: all
+      deployment_profile:
+        required: true
+        type: string
+      warp_tunnel:
+        required: true
+        type: string
+
+jobs:
+  build-images:
+    # runs-on: ubuntu-latest
+    # runs-on: buildjet-2vcpu-ubuntu-2204
+    runs-on: ubicloud-standard-8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Machine
+        uses: ./.github/actions/setup-machine
+        with:
+          secret_context: ${{ toJSON(secrets) }}
+          warp_tunnel: ${{ inputs.warp_tunnel }}
+          deployment_profile: ${{ inputs.deployment_profile }}
+
+      - name: Checkout backend
+        uses: ./.github/actions/checkout-backend
+        with:
+          repo_access_token: ${{ secrets.CROSS_REPO_ACCESS }}
+
+      - name: Build Images
+        timeout-minutes: 40
+        run: python3 backend/deployment/products/scripts/build_images.py  --action build --product ${{ inputs.product }} --stack-name ${{ inputs.stack_name }} --app-name ${{ inputs.app_name }}
+
+  update-paramstore:
+    # runs-on: ubuntu-latest
+    # runs-on: buildjet-2vcpu-ubuntu-2204
+    runs-on: ubicloud-standard-4
+    needs: build-images
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Machine
+        uses: ./.github/actions/setup-machine
+        with:
+          secret_context: ${{ toJSON(secrets) }}
+          warp_tunnel: ${{ inputs.warp_tunnel }}
+          deployment_profile: ${{ inputs.deployment_profile }}
+
+      - name: Checkout backend repo
+        uses: ./.github/actions/checkout-backend
+        with:
+          repo_access_token: ${{ secrets.CROSS_REPO_ACCESS }}
+
+      - name: Update Paramstore
+        run: python3 backend/deployment/products/scripts/refresh_datastore.py --action param_store --product ${{ inputs.product }} --stack-name ${{ inputs.stack_name }} --app-name ${{ inputs.app_name }}
+
+  update-schema:
+    # runs-on: ubuntu-latest
+    # runs-on: buildjet-2vcpu-ubuntu-2204
+    runs-on: ubicloud-standard-4
+    needs: build-images
+    env:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Machine
+        uses: ./.github/actions/setup-machine
+        with:
+          secret_context: ${{ toJSON(secrets) }}
+          warp_tunnel: ${{ inputs.warp_tunnel }}
+          deployment_profile: ${{ inputs.deployment_profile }}
+
+      - name: Checkout backend repo
+        uses: ./.github/actions/checkout-backend
+        with:
+          repo_access_token: ${{ secrets.CROSS_REPO_ACCESS }}
+
+      - name: Update Schema
+        run: python3 backend/deployment/products/scripts/refresh_datastore.py --action schema --product ${{ inputs.product }} --stack-name ${{ inputs.stack_name }} --app-name ${{ inputs.app_name }}
+
+  deploy-code:
+    # runs-on: ubuntu-latest
+    # runs-on: buildjet-2vcpu-ubuntu-2204
+    runs-on: ubicloud-standard-2
+    needs: [update-paramstore, update-schema]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Machine
+        uses: ./.github/actions/setup-machine
+        with:
+          secret_context: ${{ toJSON(secrets) }}
+          warp_tunnel: ${{inputs.warp_tunnel}}
+          deployment_profile: ${{ inputs.deployment_profile }}
+
+      - name: Checkout backend repo
+        uses: ./.github/actions/checkout-backend
+        with:
+          repo_access_token: ${{ secrets.CROSS_REPO_ACCESS }}
+
+      - name: Deploy Stack
+        timeout-minutes: 20
+        run: python3 backend/deployment/products/scripts/deploy_code.py  --action setup --product ${{ inputs.product }} --stack-name ${{ inputs.stack_name }} --app-name ${{ inputs.app_name }}
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}

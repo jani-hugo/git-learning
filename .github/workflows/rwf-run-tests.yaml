@@ -1,0 +1,72 @@
+# This is a reusable workflow file that can be used in other workflows. This cannot be a Github action
+# because it won't support inputs.
+name: rwf-run-tests
+
+on:
+  workflow_call:
+    inputs:
+      stack_name:
+        required: true
+        type: string
+      product:
+        required: true
+        type: string
+      app:
+        required: true
+        type: string
+      threads:
+        required: true
+        type: string
+      test_type:
+        required: false
+        type: string
+      warp_tunnel:
+        required: true
+        type: string
+      deployment_profile:
+        required: true
+        type: string
+
+env:
+  test_results_bucket: integration-test-results-atlas
+  slack_channel_id: C0538RX985V
+
+jobs:
+  run-tests:
+    #    runs-on: buildjet-2vcpu-ubuntu-2204
+    runs-on: ubicloud-standard-4
+    env:
+      PRODUCT: ${{ inputs.product }}
+      APP_NAME: ${{ inputs.app }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Machine
+        uses: ./.github/actions/setup-machine
+        with:
+          secret_context: ${{ toJSON(secrets) }}
+          warp_tunnel: ${{ inputs.warp_tunnel }}
+          deployment_profile: ${{ inputs.deployment_profile }}
+
+      - name: Install Allure Reports
+        run: bash tests/api/install-allure.sh
+
+      - name: Run ${{ inputs.app }} tests
+        continue-on-error: true
+        id: it_test
+        env:
+          STACK_NAME: ${{ inputs.stack_name }}
+          THREADS: ${{ inputs.threads }}
+        run: bash tests/api/run-tests.sh
+
+      - name: Upload results to S3 Bucket and post link to slack channel
+        env:
+          TEST_OUTCOME: ${{ steps.it_test.outcome }}
+          TEST_RESULTS_BUCKET: ${{ env.test_results_bucket }}
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ env.slack_channel_id }}
+          BRANCH: ${{ github.ref_name }}
+          AWS_PROFILE: ${{ inputs.deployment_profile }}
+          TEST_TYPE: ${{ inputs.test_type }}
+        run: bash tests/api/upload-report.sh

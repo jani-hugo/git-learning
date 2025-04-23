@@ -1,0 +1,74 @@
+name: Integration Tests
+
+on:
+  workflow_dispatch:
+
+env:
+  cloudfront_dist_id: E2CE14OGI93E4N
+  warp_tunnel_id: d66060cb-f117-43e4-a071-4e923358bca7
+
+concurrency:
+  group: integration-tests
+
+permissions:
+  contents: read
+
+jobs:
+  setup-stack:
+#    if: ${{ github.ref_name == 'main' || github.ref_name == 'eng' }}
+    name: setup-stack-${{ matrix.product }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - product: atlas_core_mt01
+
+    uses: ./.github/workflows/setup-stack.yaml
+    secrets: inherit
+    with:
+      stack_name: int
+      product: ${{ matrix.product }}
+      warp_tunnel: atlas_tunnel
+      deployment_profile: deployment-atlas-core-mt01-int
+
+  run-tests:
+    if: ${{ github.ref_name == 'main' || github.ref_name == 'eng' }}
+    needs: [ setup-stack ]
+    name: ${{ matrix.product }}-${{ matrix.app }}-${{ matrix.threads }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - product: aggregate
+            app: profile
+            threads: 500
+          - product: aggregate
+            app: notification
+            threads: 500
+          - product: aggregate
+            app: compliance
+            threads: 500
+          - product: aggregate
+            app: ledger
+            threads: 500
+          - product: aggregate
+            app: cash
+            threads: 500
+          - product: aggregate
+            app: payment
+            threads: 1
+          - product: aggregate
+            app: card
+            threads: 500
+
+    uses: ./.github/workflows/rwf-run-tests.yaml
+    secrets: inherit
+    with:
+      stack_name: int
+      product: ${{ matrix.product }}
+      app: ${{ matrix.app }}
+      threads: ${{ matrix.threads }}
+      test_type: ""
+      warp_tunnel: atlas_tunnel
+      deployment_profile: deployment-atlas-core-mt01-int
+

@@ -1,0 +1,24 @@
+name: checkout-backend
+description: To setup a machine with backend checkout
+
+inputs:
+  repo_access_token:
+    description: "All Github Secrets"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout backend repo
+      uses: actions/checkout@v4
+      with:
+        repository: HugoSave-SG/backend
+        ref: main
+        path: backend
+        token: ${{ inputs.repo_access_token }}
+
+    - name: Setup Python Env
+      shell: bash
+      run: |
+        echo "PYTHONPATH=${{ github.workspace }}/backend/deployment" >> $GITHUB_ENV
+        pip install ./backend/modules/common/utility/src/main/python/dist/hugo_lib-0.0.149-py3-none-any.whl

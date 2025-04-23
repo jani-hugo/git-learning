@@ -1,0 +1,3 @@
+import tests.api.aggregate.profile.customer_profile_steps
+import tests.api.aggregate.profile.customer_steps
+import tests.api.aggregate.profile.end_customer_profile_steps

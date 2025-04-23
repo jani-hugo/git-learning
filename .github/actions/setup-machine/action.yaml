@@ -1,0 +1,103 @@
+name: setup-machine
+description: To setup a machine with all needed tools
+
+inputs:
+  secret_context:
+    description: "All Github Secrets"
+    required: true
+  warp_tunnel:
+    description: "Warp Tunnel"
+    required: true
+  deployment_profile:
+    description: "Deployment Profile"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      id: cache
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
+
+    - name: Install python requirements
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: pip install -r requirements.txt
+
+    - name: Setup JDK 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'corretto'
+        java-version: 21
+
+    - name: Install AWS CLI
+      uses: unfor19/install-aws-cli-action@master
+      with:
+        version: "2.11.10"
+
+    - name: Install Kubectl
+      uses: azure/setup-kubectl@v4
+      with:
+        version: 'v1.28.2'
+
+    - name: Install Helm
+      uses: azure/setup-helm@v4.2.0
+      with:
+        version: 'v3.14.0'
+
+    - name: Export PYTHONPATH for deployment
+      shell: bash
+      run: |
+        echo PYTHONPATH=$(pwd)/deployment >> "$GITHUB_ENV"
+
+    - name: Map Tunnel Name to Tunnel ID
+      shell: bash
+      run: |
+        declare -A tunnel_map
+        tunnel_map["pk_tunnel"]=170a06c7-d3ce-4aa0-abc4-7329acd35b49
+        tunnel_map["sg_tunnel"]=cdcba211-0384-47c2-b7b6-ce665d35bd2d
+        tunnel_map["atlas_tunnel"]=25e963f0-1e22-4681-a9ca-b4ce6d8363e1
+
+        selected_tunnel="${{ inputs.warp_tunnel }}"
+        echo "warp_tunnel_id=${tunnel_map[$selected_tunnel]}" >> "$GITHUB_ENV"
+
+    - name: Install Warp Client
+      uses: ./.github/actions/install-warp
+      env: ${{ fromJSON(inputs.secret_context) }}
+      with:
+        warp_auth_client_id: ${{ env.ATLAS_WARP_AUTH_CLIENT_ID }}
+        warp_auth_client_secret: ${{ env.ATLAS_WARP_AUTH_CLIENT_SECRET }}
+        warp_tunnel_id: ${{ env.warp_tunnel_id }}
+
+    - name: Create AWS Credentials file
+      shell: bash
+      run: |
+        mkdir ~/.aws
+        touch ~/.aws/credentials
+
+    # Atlas Stacks
+    - name: Create Profile Atlas-Core-MT01-Int
+      shell: bash
+      if: inputs.deployment_profile == 'deployment-atlas-core-mt01-int'
+      env: ${{ fromJSON(inputs.secret_context) }}
+      run: |
+        echo "[deployment-atlas-core-mt01-int]" >> ~/.aws/credentials
+        echo "aws_access_key_id=${{ env.ATLAS_DEPLOYMENT_ATLAS_CORE_MT01_INT_AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+        echo "aws_secret_access_key=${{ env.ATLAS_DEPLOYMENT_ATLAS_CORE_MT01_INT_AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+
+    - name: Create Profile Atlas-Engagement-ST01-Int
+      shell: bash
+      if: inputs.deployment_profile == 'deployment-atlas-engagement-st01-int'
+      env: ${{ fromJSON(inputs.secret_context) }}
+      run: |
+        echo "[deployment-atlas-engagement-st01-int]" >> ~/.aws/credentials
+        echo "aws_access_key_id=${{ env.ATLAS_DEPLOYMENT_ATLAS_ENGAGEMENT_ST01_INT_AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+        echo "aws_secret_access_key=${{ env.ATLAS_DEPLOYMENT_ATLAS_ENGAGEMENT_ST01_INT_AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials

@@ -1,0 +1,104 @@
+# This is a reusable workflow file that can be used in other workflows. This cannot be a Github action
+# because it won't support inputs.
+name: setup-stack
+
+on:
+  workflow_call:
+    inputs:
+      stack_name:
+        required: true
+        type: string
+      product:
+        required: true
+        type: string
+      warp_tunnel:
+        required: true
+        type: string
+      deployment_profile:
+        required: true
+        type: string
+
+env:
+  test_results_bucket: integration-test-results-hugo
+  slack_channel_id: C0538RX985V
+  cloudfront_dist_id: E2CE14OGI93E4N
+  warp_tunnel_id: d66060cb-f117-43e4-a071-4e923358bca7
+
+permissions:
+  contents: read
+
+jobs:
+  clean-setup:
+    runs-on: ubicloud-standard-4
+    env:
+      PRODUCT: ${{ inputs.product }}
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.op_service_account_token }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Machine
+        uses: ./.github/actions/setup-machine
+        with:
+          secret_context: ${{ toJSON(secrets) }}
+          warp_tunnel: ${{ inputs.warp_tunnel }}
+          deployment_profile: ${{ inputs.deployment_profile }}
+
+      - name: Install Allure Reports
+        run: bash tests/api/install-allure.sh
+
+      - name: Checkout backend repo
+        uses: ./.github/actions/checkout-backend
+        with:
+          repo_access_token: ${{ secrets.CROSS_REPO_ACCESS }}
+
+      - name: Start Pods
+        run: |
+          python3 backend/deployment/products/scripts/refresh_pods.py --product ${{ inputs.product }} --stack-name int --action scale_pods_up
+          sleep 300
+
+      - name: Purge Queues
+        run: |
+          python3 backend/scripts/utilities/infrastructure/purge_stack_data.py --product ${{ inputs.product }} --stack-name int --purge-queues
+
+      - name: Drop Tables
+        run: |
+          python3 backend/scripts/utilities/infrastructure/purge_stack_data.py --product ${{ inputs.product }} --stack-name int --drop-tables
+
+  deploy-hugohub-core:
+    uses: ./.github/workflows/rwf-deploy-product-code.yaml
+    secrets: inherit
+    needs: [ clean-setup ]
+    with:
+      stack_name: ${{ inputs.stack_name }}
+      product: ${{ inputs.product }}
+      warp_tunnel: ${{ inputs.warp_tunnel }}
+      deployment_profile: ${{ inputs.deployment_profile }}
+
+  onboard:
+    if: ${{ github.ref_name == 'main' || github.ref_name == 'eng' }}
+    needs: [ deploy-hugohub-core ]
+    runs-on: ubicloud-standard-4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Machine
+        uses: ./.github/actions/setup-machine
+        with:
+          secret_context: ${{ toJSON(secrets) }}
+          warp_tunnel: ${{ inputs.warp_tunnel }}
+          deployment_profile: ${{ inputs.deployment_profile }}
+
+      - name: Checkout backend repo
+        uses: ./.github/actions/checkout-backend
+        with:
+          repo_access_token: ${{ secrets.CROSS_REPO_ACCESS }}
+
+      - name: Onboard
+        run: |
+          python3 backend/deployment/scripts/setups/aggregate/setup_customer.py --file-path $(pwd)/deployment/scripts/setups/aggregate/customers/sg/hugohub_sg/int/hugosave.yaml
+          python3 backend/deployment/scripts/setups/aggregate/setup_customer.py --file-path $(pwd)/deployment/scripts/setups/aggregate/customers/sg/hugohub_sg/int/silverbullion.yaml
+          python3 backend/deployment/scripts/setups/aggregate/setup_customer.py --file-path $(pwd)/deployment/scripts/setups/aggregate/customers/sg/hugohub_sg/int/hugobank.yaml
+

@@ -1,0 +1,15 @@
+import tests.api.aggregate.card.card_account_steps
+import tests.api.aggregate.card.card_steps
+import tests.api.aggregate.card.customer_profile_steps
+import tests.api.aggregate.card.dds_transaction_steps
+import tests.api.aggregate.card.end_customer_profile_steps
+import tests.api.aggregate.cash.account_steps
+import tests.api.aggregate.cash.product_steps
+import tests.api.aggregate.cash.customer_end_customer_profile_steps
+import tests.api.aggregate.cash.dbs_sg_deposits_steps
+import tests.api.aggregate.compliance.compliance_customer_profile_steps
+import tests.api.aggregate.compliance.compliance_steps
+import tests.api.aggregate.profile.customer_profile_steps
+import tests.api.aggregate.profile.customer_steps
+import tests.api.aggregate.profile.end_customer_profile_steps
+import tests.api.aggregate.card.nymcard_transaction_steps

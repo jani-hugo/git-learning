@@ -20,6 +20,22 @@ class DevDepositRequestDTO:
 
 
 @dataclasses.dataclass
+class DevCARepaymentRequestDTO:
+    customer_profile_id: Optional[str]
+    credit_account_id: Optional[str]
+    amount: float
+    currency: str
+
+    def get_dict(self, credit_account_id, customer_profile_id):
+        return {
+            "customer_profile_id": customer_profile_id,
+            "credit_account_id": credit_account_id,
+            "amount": self.amount,
+            "currency": self.currency,
+        }
+
+
+@dataclasses.dataclass
 class ProductDTO:
     product_id: Optional[str]
     product_code: Optional[str]
@@ -68,6 +84,7 @@ class UpdateProductDTO:
     def get_dict(self):
         return {k: v for k, v in self.__dict__.items() if v is not None}
 
+
 @dataclasses.dataclass
 class CreateLoanAccountRequestDTO:
     end_customer_profile_id: Optional[str]
@@ -85,6 +102,7 @@ class CreateLoanAccountRequestDTO:
             "tenure": self.tenure,
             "interest_rate": self.interest_rate,
         }
+
 
 @dataclasses.dataclass
 class CreateAccountRequestDTO:

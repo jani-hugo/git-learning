@@ -12,6 +12,8 @@ dev_urls = {
     "deposit_funds": cms_base_url + "/dev/deposit-funds",
     "collection_balance": cms_base_url + "/dev/collection-balance",
     "ledger_balance": cms_base_url + "/dev/$account_id$/ledger-balance",
+    "credit_account_repayment": cms_base_url + "/dev/credit-account-repayment",
+    "get_fund_txn": cms_base_url + "/dev/fund-transaction/$payment-transaction-id$"
 }
 
 customer_profile_urls = {

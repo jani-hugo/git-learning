@@ -36,10 +36,6 @@ Feature: CMS service's Transactions Scenarios
       | product_id |
       | Pid1       |
 
-    Then I deposit funds into the following funding account for Customer Profile
-      | account_type | amount | currency | txn_mode |
-      | FLOAT        | 1000   | SGD      | FAST     |
-
     Then I onboard End Customer Profile ECPid1 to CMS and verify onboard status as ONBOARD_SUCCESS and status code as 200
 
     Then I create below credit accounts and verify account status is ACCOUNT_CREATED and status code is 200
@@ -117,3 +113,125 @@ Feature: CMS service's Transactions Scenarios
       | receiver_group         | status_code |
       | empty_receiver_details | E9400       |
       | empty_code_details     | E9400       |
+
+  #Credit Repayment Scenarios
+
+  Scenario: No dues at all -> Credit Repayment -> Top Repayment Priority Ledger -> -ve balance
+
+    Given I fetch the original ledgers balances for credit account and verify status code as 200
+      | credit_account_id |
+      | CAid1             |
+
+    Then I Initiate Dev CA Repayment and verify transaction status as TRANSACTION_SETTLED and status code as 200
+      | credit_account_id | amount | currency | customer_profile_id |
+      | CAid1             | 15     | SGD      | Cid1                |
+
+    Then I fetch and verify the service transaction from fund transaction and verify status code as 200
+
+    Then I fetch the credit repayment transaction and verify transaction status as TRANSACTION_SETTLED and status code as 200
+
+    Then I fetch and verify the latest ledgers balances for credit account and verify status code as 200
+      | credit_account_id | case    |
+      | CAid1             | no_dues |
+
+  Scenario: RC_DEBIT_TXN -> Available Ledger Balance Deduction -> Credit Repayment -> Due Deducted for Highest Priority
+
+    Given I fetch and set approved limit for the below credit account
+      | credit_account_id |
+      | CAid1             |
+
+    Then I create below transaction and verify the transaction status as TRANSACTION_SETTLED and status code as 200
+      | credit_account_id | amount | currency | txn_code | receiver              |
+      | CAid1             | 300    | SGD      | TXN1     | create_receiver_group |
+      | CAid1             | 200    | SGD      | TXN2     | create_receiver_group |
+      | CAid1             | 100    | SGD      | TXN3     | create_receiver_group |
+
+    Given I fetch the original ledgers balances for credit account and verify status code as 200
+      | credit_account_id |
+      | CAid1             |
+
+    Then I Initiate Dev CA Repayment and verify transaction status as TRANSACTION_SETTLED and status code as 200
+      | credit_account_id | amount | currency | customer_profile_id |
+      | CAid1             | 50     | SGD      | Cid1                |
+
+    Then I fetch and verify the service transaction from fund transaction and verify status code as 200
+
+    Then I fetch the credit repayment transaction and verify transaction status as TRANSACTION_SETTLED and status code as 200
+
+    Then I fetch and verify the latest ledgers balances for credit account and verify status code as 200
+      | credit_account_id | case             |
+      | CAid1             | highest_priority |
+
+  Scenario: RC_DEBIT_TXN -> Available Ledger Balance Deduction -> Credit Repayment -> Dues Deducted Priority Wise
+
+    Given I fetch and set approved limit for the below credit account
+      | credit_account_id |
+      | CAid1             |
+
+    Then I create below transaction and verify the transaction status as TRANSACTION_SETTLED and status code as 200
+      | credit_account_id | amount | currency | txn_code | receiver              |
+      | CAid1             | 300    | SGD      | TXN1     | create_receiver_group |
+      | CAid1             | 200    | SGD      | TXN2     | create_receiver_group |
+      | CAid1             | 100    | SGD      | TXN3     | create_receiver_group |
+
+    Given I fetch the original ledgers balances for credit account and verify status code as 200
+      | credit_account_id |
+      | CAid1             |
+
+    Then I Initiate Dev CA Repayment and verify transaction status as TRANSACTION_SETTLED and status code as 200
+      | credit_account_id | amount | currency | customer_profile_id |
+      | CAid1             | 550    | SGD      | Cid1                |
+
+    Then I fetch and verify the service transaction from fund transaction and verify status code as 200
+
+    Then I fetch the credit repayment transaction and verify transaction status as TRANSACTION_SETTLED and status code as 200
+
+    Then I fetch and verify the latest ledgers balances for credit account and verify status code as 200
+      | credit_account_id | case                       |
+      | CAid1             | dues_spread_across_buckets |
+
+  Scenario: RC_DEBIT_TXN -> Available Ledger Balance Deduction -> Credit Repayment -> Excess Amount -> Deducted from Topmost Priority to -ve balance
+
+    Given I fetch and set approved limit for the below credit account
+      | credit_account_id |
+      | CAid1             |
+
+    Then I create below transaction and verify the transaction status as TRANSACTION_SETTLED and status code as 200
+      | credit_account_id | amount | currency | txn_code | receiver              |
+      | CAid1             | 300    | SGD      | TXN1     | create_receiver_group |
+      | CAid1             | 200    | SGD      | TXN2     | create_receiver_group |
+      | CAid1             | 100    | SGD      | TXN3     | create_receiver_group |
+
+    Given I fetch the original ledgers balances for credit account and verify status code as 200
+      | credit_account_id |
+      | CAid1             |
+
+    Then I Initiate Dev CA Repayment and verify transaction status as TRANSACTION_SETTLED and status code as 200
+      | credit_account_id | amount | currency | customer_profile_id |
+      | CAid1             | 700    | SGD      | Cid1                |
+
+    Then I fetch and verify the service transaction from fund transaction and verify status code as 200
+
+    Then I fetch the credit repayment transaction and verify transaction status as TRANSACTION_SETTLED and status code as 200
+
+    Then I fetch and verify the latest ledgers balances for credit account and verify status code as 200
+      | credit_account_id | case             |
+      | CAid1             | excess_repayment |
+
+  Scenario: Credit Repayment -> Empty Credit Account ID
+
+    Then I Initiate Dev CA Repayment and verify transaction status as TRANSACTION_SETTLED and status code as E9400
+      | credit_account_id | amount | currency | customer_profile_id |
+      | EMPTY             | 100    | SGD      | Cid1                |
+
+  Scenario: Credit Repayment -> Empty Customer Profile ID
+
+    Then I Initiate Dev CA Repayment and verify transaction status as TRANSACTION_SETTLED and status code as E9400
+      | credit_account_id | amount | currency | customer_profile_id |
+      | CAid1             | 100    | SGD      | EMPTY               |
+
+  Scenario: Credit Repayment -> Invalid Currency
+
+    Then I Initiate Dev CA Repayment and verify transaction status as TRANSACTION_SETTLED and status code as E9400
+      | credit_account_id | amount | currency | customer_profile_id |
+      | CAid1             | 100    | SGDA     | Cid1                |

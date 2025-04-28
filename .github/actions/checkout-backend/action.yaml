@@ -21,4 +21,4 @@ runs:
       shell: bash
       run: |
         echo "PYTHONPATH=${{ github.workspace }}/backend/deployment" >> $GITHUB_ENV
-        pip install ./backend/modules/common/utility/src/main/python/dist/hugo_lib-0.0.149-py3-none-any.whl
+        pip install ./backend/modules/common/utility/src/main/python/dist/hugo_lib-0.0.152-py3-none-any.whl

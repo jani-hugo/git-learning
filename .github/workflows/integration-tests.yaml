@@ -2,6 +2,8 @@ name: Integration Tests
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '30 18 * * *'
 
 env:
   cloudfront_dist_id: E2CE14OGI93E4N
@@ -15,7 +17,7 @@ permissions:
 
 jobs:
   setup-stack:
-#    if: ${{ github.ref_name == 'main' || github.ref_name == 'eng' }}
+    if: ${{ github.ref_name == 'main' || github.ref_name == 'eng' }}
     name: setup-stack-${{ matrix.product }}
     strategy:
       fail-fast: false
@@ -59,6 +61,9 @@ jobs:
             threads: 1
           - product: aggregate
             app: card
+            threads: 500
+          - product: aggregate
+            app: cms
             threads: 500
 
     uses: ./.github/workflows/rwf-run-tests.yaml

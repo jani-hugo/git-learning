@@ -6,6 +6,6 @@
 dist/** @HugoSave-SG/common-utility
 
 # API
-test/api/** @HugoSave-SG/Testing @HugoSave-SG/aggregate-common @HugoSave-SG/distribute-backend
-test/ui/** @HugoSave-SG/Testing
-test/util/** @HugoSave-SG/Testing
+tests/api/** @HugoSave-SG/Testing @HugoSave-SG/aggregate-common @HugoSave-SG/distribute-backend
+tests/ui/** @HugoSave-SG/Testing
+tests/util/** @HugoSave-SG/Testing

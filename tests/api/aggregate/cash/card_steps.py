@@ -2,10 +2,10 @@ from behave import *
 from hugoutils.utilities.dataclass_util import DataClassParser
 from retry import retry
 
-import test.api.aggregate.cash.helper as cash_helper
+import tests.api.aggregate.cash.helper as cash_helper
 import decimal
 
-from test.api.aggregate.cash.cash_dataclass import PayRequestDTO, CashDevDepositRequestDTO, FloatAccountResponseDTO, ApplyFeeRequestDTO
+from tests.api.aggregate.cash.cash_dataclass import PayRequestDTO, CashDevDepositRequestDTO, FloatAccountResponseDTO, ApplyFeeRequestDTO
 
 use_step_matcher("re")
 

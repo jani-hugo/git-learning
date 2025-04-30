@@ -2,7 +2,7 @@ Feature: Card Service requests to Cash Service scenarios
 
   # Note:
   # All these below scenarios should pass successfully for the next scenario to be successfully pass, as they are dependant on each other since all end customers have same card_cust_float_refund_account.
-  # And also due to that same dependency they will all run successfully only once per customer profiule.
+  # And also due to that same dependency they will all run successfully only once per customer profile.
 
   Background: Customer-Profile
     Given I set and verify customer BCID1, customer profile BCPID1 in the context

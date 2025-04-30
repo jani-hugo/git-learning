@@ -6,6 +6,7 @@ import tests.api.aggregate.cash.transaction_steps
 import tests.api.aggregate.profile.customer_profile_steps
 import tests.api.aggregate.profile.customer_steps
 import tests.api.aggregate.profile.end_customer_profile_steps
+import tests.api.aggregate.cash.card_steps
 
 # By default, behave ONLY look for step definitions in the root feature/steps directory
 # If we put our files in subdirectories or directory outside feature/steps then behave will not recognize them

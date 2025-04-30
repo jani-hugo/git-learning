@@ -52,7 +52,7 @@ def wait_and_verify_transaction_status(
             assert response["data"]["transaction_status"] == transaction_status, print(
                 f"\nExpect data.transaction_status: {transaction_status}"
                 f"\nActual data.transaction_status: {response['data']['transaction_status']}, data: {response['data']}"
-            )
+        )
 
         # Validate other fields values
 
@@ -675,7 +675,7 @@ def idempotency_and_verify_status(context, txid1, txid2):
 
 
 @Then(
-    "I get the deposit transaction ([^']*) details for bank account ([^']*) for customerProfileId ([^']*)"
+    "I get the deposit transaction ([^']*) details for cash wallet ([^']*) for customerProfileId ([^']*)"
 )
 def get_transactions(
         context,
@@ -701,3 +701,43 @@ def get_transactions(
         context.data[transaction_identifier] = [txn["transaction_id"] for txn in response["data"]["transactions"] if txn["transaction_type"] == "CREDIT"][0]
 
     retry_for_transaction_details()
+
+
+@Then(
+    "I confirm the deposit transaction ([^']*) for customerProfileId ([^']*) and expect the header status as ([^']*) transaction status as ([^']*)"
+)
+def get_transactions(
+        context,
+        transaction_identifier: str,
+        customer_profile_identifier: str,
+        status_code: str,
+        message: str
+):
+    request = context.request
+    customer_profile_id = context.data[customer_profile_identifier].customer_profile_id
+    transaction_id = context.data[transaction_identifier]
+
+    response = request.hugoserve_put_request(
+        path = f"/cash/v1/transaction/{transaction_id}/confirm",
+        data={
+            "accept": True if context.table.rows[0]["accept"] == "true" else False
+        },
+        headers=cash_helper.__get_default_cash_headers(customer_profile_id),
+    )
+
+    assert (
+            response["headers"]["status_code"] == status_code
+    ), (
+        f"\nExpect Status Code: {status_code}"
+        f"\nActual Status Code: {response['headers']['status_code']}"
+    )
+
+    if response["headers"]["status_code"] == "200":
+        assert (
+                response["data"]["transaction_status"] == message
+        ), (
+            f"\nExpect Initialisation Status: {message}"
+            f"\nActual Initialisation Status: {response['data']['transaction_status']}"
+        )
+    else:
+        assert response["headers"]["message"] == message

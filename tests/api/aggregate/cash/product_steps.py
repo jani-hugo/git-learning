@@ -104,6 +104,17 @@ def create_product(
             account_type_param,
         ]
 
+        if "deposit_mode" in context.table.headings and context.table.rows[0]["deposit_mode"] == "NOTIFY":
+            product_request_dict["product_params"].append(ParamRequestDTO(
+                param_name="DEPOSIT_MODE",
+                value=Value(
+                    string_list_value=StringList(
+                        value="NOTIFY"
+                    ).to_dict()
+                ),
+            ).to_dict()
+            )
+
         response = context.request.hugoserve_post_request(
             path="/cash/v1/product",
             data=product_request_dict,

@@ -549,6 +549,8 @@ Feature: Banking Service Settle transactions various cases
 
     Then I wait until max time to verify bank account BankAccId1 with an available balance of <updated_available_balance> and total balance of <updated_total_balance> for customerProfileId BCPID1
 
+    Then I wait until max time to verify bank account BankAccId2 with an available balance of <initiate_transaction_amount> and total balance of <initiate_transaction_amount> for customerProfileId BCPID1
+
     Then I get the deposit transaction TxId3 details for cash wallet BankAccId2 for customerProfileId BCPID1
 
     Then I initiate refund for transaction with below details expect the header statuscode <status_code>

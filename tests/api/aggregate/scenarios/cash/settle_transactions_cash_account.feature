@@ -25,14 +25,14 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
     Then I wait until max time to verify EndCustomerProfile ECPID1 of CustomerProfile BCPID1 onboard status as ONBOARD_SUCCESS
 
     Given I create a cash account product with customer profile BCPID1 provider as DBS Bank Ltd and expect product_status PRODUCT_DRAFT
-      | identifier           | product_type         | profile_type | product_class | num_of_active_account |
-      | CashAccProductId1    | CASH_ACCOUNT         | CUSTOMER     |  SHARIAH      | 1                     |
+      | identifier        | product_type | profile_type | product_class | num_of_active_account |
+      | CashAccProductId1 | CASH_ACCOUNT | CUSTOMER     | SHARIAH       | 1                     |
 
     Then I approve the product CashAccProductId1 and verify status as PRODUCT_SUCCESS with provider DBS Bank Ltd for customerProfileId BCPID1
 
     Given I create a cash account product with customer profile BCPID1 provider as DBS Bank Ltd and expect product_status PRODUCT_DRAFT
-      | identifier          | product_type         | profile_type     | product_class | num_of_active_account |
-      | CashAccProductId2   | CASH_ACCOUNT         | END_CUSTOMER     |  SHARIAH      | 1                     |
+      | identifier        | product_type | profile_type | product_class | num_of_active_account |
+      | CashAccProductId2 | CASH_ACCOUNT | END_CUSTOMER | SHARIAH       | 1                     |
 
     Then I approve the product CashAccProductId2 and verify status as PRODUCT_SUCCESS with provider DBS Bank Ltd for customerProfileId BCPID1
 
@@ -41,42 +41,42 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
   Scenario Outline: User has available balance, then user initiate a transaction with an amount less than the available balance. now user Settle transaction with settle amount is equal to initial blocked amount.
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID1    | WALLET         | CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | 0                       | STRICT                 |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit | balance_policy_type |
+      | ProductID1 | WALLET       | CUSTOMER     | SHARIAH       | <currency> | <country> | SAVINGS      | 0                    | STRICT              |
 
     Then I approve the product ProductID1 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a cash account with id CashAccId1 customerProfileId BCPID1 with product id CashAccProductId1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create account for CustomerProfile with id BCPID1 with product id as ProductID1 with bank account type as Payments Account with provider DBS Bank Ltd and expect the header status 200
-      | identifier         | customer_profile_id | currency | country | in_trust  | on_behalf_of | metadata              | kyc_completed | trust_verification_completed | cash_account_id |
-      | CustomerProfileBA1 | IntegrationTest1    | SGD      | SGP     | false     | CUSTOMER     | {"key": "MyMetaData"} | false         | false                        | CashAccId1      |
+      | identifier         | customer_profile_id | currency | country | in_trust | on_behalf_of | metadata              | kyc_completed | trust_verification_completed | cash_account_id |
+      | CustomerProfileBA1 | IntegrationTest1    | SGD      | SGP     | false    | CUSTOMER     | {"key": "MyMetaData"} | false         | false                        | CashAccId1      |
 
     Then I wait until max time to verify the bank account CustomerProfileBA1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a end customer cash account with id CashAccId2 customerProfileID BCPID1 with product id CashAccProductId2 and endCustomerProfileId ECPID1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type  | profile_type     | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID2    | WALLET        | END_CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | <balance_policy_limit>  | <balance_policy_type>  |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit   | balance_policy_type   |
+      | ProductID2 | WALLET       | END_CUSTOMER | SHARIAH       | <currency> | <country> | SAVINGS      | <balance_policy_limit> | <balance_policy_type> |
 
     Then I approve the product ProductID2 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Given I create account for EndCustomerProfile with id ECPID1 for CustomerProfile BCPID1 with product id ProductID2 with bank account type as <account_type> with provider <bank_name> and expect the header status 200
-      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust    | on_behalf_of | metadata                           | cash_account_id |
-      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false       | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
+      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust | on_behalf_of | metadata                           | cash_account_id |
+      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false    | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
 
     Then I wait until max time to verify the bank account BankAccId1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I deposit an amount of <deposit_amount> into BankAccId1 using cash DevDeposit and expect the header status 200
-      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
-      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+      | identifier           | customer_profile_id | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1              | TRANSFER | SGD      | FAST             |
 
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
+      | identifier | customer_profile_id | cash_account_id | amount                        | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | CashAccId2      | <initiate_transaction_amount> | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -95,8 +95,8 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
   Scenario Outline: User has available balance, then user initiates a transaction with an amount, less than the available balance. now user settles the transaction with settle amount greater than the initial blocked amount but less than the user available balance.
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID1    | WALLET         | CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | 0                       | STRICT                 |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit | balance_policy_type |
+      | ProductID1 | WALLET       | CUSTOMER     | SHARIAH       | <currency> | <country> | SAVINGS      | 0                    | STRICT              |
 
     Then I approve the product ProductID1 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
@@ -109,28 +109,28 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
     Then I wait until max time to verify the bank account CustomerProfileBA1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type     | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID2    | WALLET         | END_CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | <balance_policy_limit>  | <balance_policy_type>  |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit   | balance_policy_type   |
+      | ProductID2 | WALLET       | END_CUSTOMER | SHARIAH       | <currency> | <country> | SAVINGS      | <balance_policy_limit> | <balance_policy_type> |
 
     Then I approve the product ProductID2 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a end customer cash account with id CashAccId2 customerProfileID BCPID1 with product id CashAccProductId2 and endCustomerProfileId ECPID1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create account for EndCustomerProfile with id ECPID1 for CustomerProfile BCPID1 with product id ProductID2 with bank account type as <account_type> with provider <bank_name> and expect the header status 200
-      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust    | on_behalf_of | metadata                           | cash_account_id |
-      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false       | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
+      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust | on_behalf_of | metadata                           | cash_account_id |
+      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false    | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
 
     Then I wait until max time to verify the bank account BankAccId1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I deposit an amount of <deposit_amount> into BankAccId1 using cash DevDeposit and expect the header status 200
-      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
-      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+      | identifier           | customer_profile_id | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1              | TRANSFER | SGD      | FAST             |
 
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
+      | identifier | customer_profile_id | cash_account_id | amount                        | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | CashAccId2      | <initiate_transaction_amount> | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -149,8 +149,8 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
   Scenario Outline: Settle transaction with decimal digits greater than permitted for given currency should fail
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID1    | WALLET         | CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | 0                       | STRICT                 |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit | balance_policy_type |
+      | ProductID1 | WALLET       | CUSTOMER     | SHARIAH       | <currency> | <country> | SAVINGS      | 0                    | STRICT              |
 
     Then I approve the product ProductID1 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
@@ -163,28 +163,28 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
     Then I wait until max time to verify the bank account CustomerProfileBA1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type     | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID2    | WALLET         | END_CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | <balance_policy_limit>  | <balance_policy_type>  |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit   | balance_policy_type   |
+      | ProductID2 | WALLET       | END_CUSTOMER | SHARIAH       | <currency> | <country> | SAVINGS      | <balance_policy_limit> | <balance_policy_type> |
 
     Then I approve the product ProductID2 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a end customer cash account with id CashAccId2 customerProfileID BCPID1 with product id CashAccProductId2 and endCustomerProfileId ECPID1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create account for EndCustomerProfile with id ECPID1 for CustomerProfile BCPID1 with product id ProductID2 with bank account type as <account_type> with provider <bank_name> and expect the header status 200
-      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust    | on_behalf_of | metadata                           | cash_account_id |
-      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false       | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
+      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust | on_behalf_of | metadata                           | cash_account_id |
+      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false    | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
 
     Then I wait until max time to verify the bank account BankAccId1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I deposit an amount of <deposit_amount> into BankAccId1 using cash DevDeposit and expect the header status 200
-      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
-      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+      | identifier           | customer_profile_id | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1              | TRANSFER | SGD      | FAST             |
 
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode 200 and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
+      | identifier | customer_profile_id | cash_account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | CashAccId2      | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -193,14 +193,14 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
       | TxId1          | BCPID1              | <requested_amount> | <transaction_rail> | <is_overdraft_allowed> | {"key": "MyMetaData"} |
 
     Examples:
-      | deposit_amount | initiate_transaction_amount | requested_amount | currency | bank_name    | account_type | is_overdraft_allowed | is_overdraft_allowed | is_overdraft_allowed | transaction_rail | initial_total_balance | initial_available_balance | status_code | country  | balance_policy_limit | balance_policy_type |
-      | 150            | 100                         | 120.2345         | SGD      | DBS Bank Ltd | e-money      | true                 | true                 | true                 | FAST             | 150                   | 50                        | E9400       | SGP      | 0                    | LENIENT             |
+      | deposit_amount | initiate_transaction_amount | requested_amount | currency | bank_name    | account_type | is_overdraft_allowed | is_overdraft_allowed | is_overdraft_allowed | transaction_rail | initial_total_balance | initial_available_balance | status_code | country | balance_policy_limit | balance_policy_type |
+      | 150            | 100                         | 120.2345         | SGD      | DBS Bank Ltd | e-money      | true                 | true                 | true                 | FAST             | 150                   | 50                        | E9400       | SGP     | 0                    | LENIENT             |
 
   Scenario Outline: User has a balance then user Initiates a transaction for an amount of less than the user balance, now i settle an amount of which is less than the initial blocked amount
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID1    | WALLET         | CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | 0                       | STRICT                 |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit | balance_policy_type |
+      | ProductID1 | WALLET       | CUSTOMER     | SHARIAH       | <currency> | <country> | SAVINGS      | 0                    | STRICT              |
 
     Then I approve the product ProductID1 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
@@ -213,28 +213,28 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
     Then I wait until max time to verify the bank account CustomerProfileBA1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type     | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID2    | WALLET         | END_CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | <balance_policy_limit>  | <balance_policy_type>  |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit   | balance_policy_type   |
+      | ProductID2 | WALLET       | END_CUSTOMER | SHARIAH       | <currency> | <country> | SAVINGS      | <balance_policy_limit> | <balance_policy_type> |
 
     Then I approve the product ProductID2 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a end customer cash account with id CashAccId2 customerProfileID BCPID1 with product id CashAccProductId2 and endCustomerProfileId ECPID1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create account for EndCustomerProfile with id ECPID1 for CustomerProfile BCPID1 with product id ProductID2 with bank account type as <account_type> with provider <bank_name> and expect the header status 200
-      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust    | on_behalf_of | metadata                           | cash_account_id |
-      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false       | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
+      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust | on_behalf_of | metadata                           | cash_account_id |
+      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false    | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
 
     Then I wait until max time to verify the bank account BankAccId1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I deposit an amount of <deposit_amount> into BankAccId1 using cash DevDeposit and expect the header status 200
-      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
-      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+      | identifier           | customer_profile_id | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1              | TRANSFER | SGD      | FAST             |
 
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
+      | identifier | customer_profile_id | cash_account_id | amount                        | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | CashAccId2      | <initiate_transaction_amount> | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -256,42 +256,42 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
   Scenario Outline: Settle transaction scenario with insufficient balance and negative transfer allowed is false should give Insufficient balance.
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID1    | WALLET         | CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | 0                       | STRICT                 |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit | balance_policy_type |
+      | ProductID1 | WALLET       | CUSTOMER     | SHARIAH       | <currency> | <country> | SAVINGS      | 0                    | STRICT              |
 
     Then I approve the product ProductID1 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a cash account with id CashAccId1 customerProfileId BCPID1 with product id CashAccProductId1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create account for CustomerProfile with id BCPID1 with product id as ProductID1 with bank account type as Payments Account with provider DBS Bank Ltd and expect the header status 200
-      | identifier         | customer_profile_id | currency | country | in_trust  | on_behalf_of | metadata              | kyc_completed | trust_verification_completed | cash_account_id |
-      | CustomerProfileBA1 | IntegrationTest1    | SGD      | SGP     | false     | CUSTOMER     | {"key": "MyMetaData"} | false         | false                        | CashAccId1      |
+      | identifier         | customer_profile_id | currency | country | in_trust | on_behalf_of | metadata              | kyc_completed | trust_verification_completed | cash_account_id |
+      | CustomerProfileBA1 | IntegrationTest1    | SGD      | SGP     | false    | CUSTOMER     | {"key": "MyMetaData"} | false         | false                        | CashAccId1      |
 
     Then I wait until max time to verify the bank account CustomerProfileBA1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type     | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID2    | WALLET         | END_CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | <balance_policy_limit>  | <balance_policy_type>  |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit   | balance_policy_type   |
+      | ProductID2 | WALLET       | END_CUSTOMER | SHARIAH       | <currency> | <country> | SAVINGS      | <balance_policy_limit> | <balance_policy_type> |
 
     Then I approve the product ProductID2 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a end customer cash account with id CashAccId2 customerProfileID BCPID1 with product id CashAccProductId2 and endCustomerProfileId ECPID1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create account for EndCustomerProfile with id ECPID1 for CustomerProfile BCPID1 with product id ProductID2 with bank account type as <account_type> with provider <bank_name> and expect the header status 200
-      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust    | on_behalf_of | metadata                           | cash_account_id |
-      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false       | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
+      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust | on_behalf_of | metadata                           | cash_account_id |
+      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false    | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
 
     Then I wait until max time to verify the bank account BankAccId1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I deposit an amount of <deposit_amount> into BankAccId1 using cash DevDeposit and expect the header status 200
-      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
-      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+      | identifier           | customer_profile_id | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1              | TRANSFER | SGD      | FAST             |
 
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode 200 and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
+      | identifier | customer_profile_id | cash_account_id | amount                        | purpose          | is_overdraft_allowed | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | CashAccId2      | <initiate_transaction_amount> | Integration Test | false                | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I settle transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction_status as <message>
       | transaction_id | customer_profile_id | amount             | transaction_rail   | is_overdraft_allowed | metadata              |
@@ -304,48 +304,48 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
   Scenario Outline: Settle transaction with balance < requested amount and negative txn allowed, for requested amount == blocked amount, lent required.
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID1    | WALLET         | CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | 0                       | STRICT                 |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit | balance_policy_type |
+      | ProductID1 | WALLET       | CUSTOMER     | SHARIAH       | <currency> | <country> | SAVINGS      | 0                    | STRICT              |
 
     Then I approve the product ProductID1 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a cash account with id CashAccId1 customerProfileId BCPID1 with product id CashAccProductId1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create account for CustomerProfile with id BCPID1 with product id as ProductID1 with bank account type as Payments Account with provider DBS Bank Ltd and expect the header status 200
-      | identifier         | customer_profile_id | currency | country | in_trust  | on_behalf_of | metadata              | kyc_completed | trust_verification_completed | cash_account_id |
-      | CustomerProfileBA1 | IntegrationTest1    | SGD      | SGP     | false     | CUSTOMER     | {"key": "MyMetaData"} | false         | false                        | CashAccId1      |
+      | identifier         | customer_profile_id | currency | country | in_trust | on_behalf_of | metadata              | kyc_completed | trust_verification_completed | cash_account_id |
+      | CustomerProfileBA1 | IntegrationTest1    | SGD      | SGP     | false    | CUSTOMER     | {"key": "MyMetaData"} | false         | false                        | CashAccId1      |
 
     Then I wait until max time to verify the bank account CustomerProfileBA1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type     | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID2    | WALLET         | END_CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | <balance_policy_limit>  | <balance_policy_type>  |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit   | balance_policy_type   |
+      | ProductID2 | WALLET       | END_CUSTOMER | SHARIAH       | <currency> | <country> | SAVINGS      | <balance_policy_limit> | <balance_policy_type> |
 
     Then I approve the product ProductID2 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a end customer cash account with id CashAccId2 customerProfileID BCPID1 with product id CashAccProductId2 and endCustomerProfileId ECPID1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create account for EndCustomerProfile with id ECPID1 for CustomerProfile BCPID1 with product id ProductID2 with bank account type as <account_type> with provider <bank_name> and expect the header status 200
-      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust    | on_behalf_of | metadata                           | cash_account_id |
-      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false       | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
+      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust | on_behalf_of | metadata                           | cash_account_id |
+      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false    | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
 
     Then I wait until max time to verify the bank account BankAccId1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I deposit an amount of 1000 into CustomerProfileBA1 using cash DevDeposit and expect the header status 200
-      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
-      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+      | identifier           | customer_profile_id | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1              | TRANSFER | SGD      | FAST             |
 
     Then I wait until max time to verify bank account CustomerProfileBA1 with an increased balance of 1000 for customerProfileId BCPID1
 
     Given I deposit an amount of <deposit_amount> into BankAccId1 using cash DevDeposit and expect the header status 200
-      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
-      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+      | identifier           | customer_profile_id | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1              | TRANSFER | SGD      | FAST             |
 
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
+      | identifier | customer_profile_id | cash_account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | CashAccId2      | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -360,14 +360,14 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
     Then I wait until max time to verify bank account CustomerProfileBA1 with an available balance of <treasury_available_balance> and total balance of <treasury_total_balance> for customerProfileId BCPID1
 
     Examples:
-      | deposit_amount | initiate_transaction_amount | requested_amount | currency | bank_name    | account_type | is_overdraft_allowed | is_overdraft_allowed | is_overdraft_allowed | transaction_rail | initial_total_balance | initial_available_balance | updated_total_balance | updated_available_balance | treasury_total_balance | treasury_available_balance | status_code | txn_status          | country | balance_policy_limit | balance_policy_type   |
-      | 80             | 100                         | 100              | SGD      | DBS Bank Ltd | e-money      | true                 | true                 | true                 | FAST             | 80                    | -20                       | -20                   | -20                       | 980                    | 980                        | 200         | TRANSACTION_SETTLED | SGP     | 0                    | LENIENT               |
+      | deposit_amount | initiate_transaction_amount | requested_amount | currency | bank_name    | account_type | is_overdraft_allowed | is_overdraft_allowed | is_overdraft_allowed | transaction_rail | initial_total_balance | initial_available_balance | updated_total_balance | updated_available_balance | treasury_total_balance | treasury_available_balance | status_code | txn_status          | country | balance_policy_limit | balance_policy_type |
+      | 80             | 100                         | 100              | SGD      | DBS Bank Ltd | e-money      | true                 | true                 | true                 | FAST             | 80                    | -20                       | -20                   | -20                       | 980                    | 980                        | 200         | TRANSACTION_SETTLED | SGP     | 0                    | LENIENT             |
 
   Scenario Outline: Settle transaction with balance < requested amount and negative txn allowed for requested amount greater than blocked amount, lent required.
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID1    | WALLET         | CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | 0                       | STRICT                 |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit | balance_policy_type |
+      | ProductID1 | WALLET       | CUSTOMER     | SHARIAH       | <currency> | <country> | SAVINGS      | 0                    | STRICT              |
 
     Then I approve the product ProductID1 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
@@ -380,34 +380,34 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
     Then I wait until max time to verify the bank account CustomerProfileBA1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type     | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID2    | WALLET         | END_CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | <balance_policy_limit>  | <balance_policy_type>  |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit   | balance_policy_type   |
+      | ProductID2 | WALLET       | END_CUSTOMER | SHARIAH       | <currency> | <country> | SAVINGS      | <balance_policy_limit> | <balance_policy_type> |
 
     Then I approve the product ProductID2 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a end customer cash account with id CashAccId2 customerProfileID BCPID1 with product id CashAccProductId2 and endCustomerProfileId ECPID1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create account for EndCustomerProfile with id ECPID1 for CustomerProfile BCPID1 with product id ProductID2 with bank account type as <account_type> with provider <bank_name> and expect the header status 200
-      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust    | on_behalf_of | metadata                           | cash_account_id |
-      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false       | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
+      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust | on_behalf_of | metadata                           | cash_account_id |
+      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false    | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
 
     Then I wait until max time to verify the bank account BankAccId1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I deposit an amount of 1000 into CustomerProfileBA1 using cash DevDeposit and expect the header status 200
-      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
-      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+      | identifier           | customer_profile_id | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1              | TRANSFER | SGD      | FAST             |
 
     Then I wait until max time to verify bank account CustomerProfileBA1 with an increased balance of 1000 for customerProfileId BCPID1
 
     Given I deposit an amount of <deposit_amount> into BankAccId1 using cash DevDeposit and expect the header status 200
-      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
-      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+      | identifier           | customer_profile_id | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1              | TRANSFER | SGD      | FAST             |
 
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
+      | identifier | customer_profile_id | cash_account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | CashAccId2      | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -422,14 +422,14 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
     Then I wait until max time to verify bank account CustomerProfileBA1 with an available balance of <treasury_available_balance> and total balance of <treasury_total_balance> for customerProfileId BCPID1
 
     Examples:
-      | deposit_amount | initiate_transaction_amount | requested_amount | currency | bank_name    | account_type | is_overdraft_allowed | is_overdraft_allowed | is_overdraft_allowed | transaction_rail | initial_total_balance | initial_available_balance | updated_total_balance | updated_available_balance | treasury_total_balance | treasury_available_balance | status_code | txn_status          | country | balance_policy_limit | balance_policy_type  |
-      | 80             | 100                         | 120              | SGD      | DBS Bank Ltd | e-money      | true                 | true                 | true                 | FAST             | 80                    | -20                       | -40                   | -40                       | 960                    | 960                        | 200         | TRANSACTION_SETTLED | SGP     | 0                    | LENIENT               |
+      | deposit_amount | initiate_transaction_amount | requested_amount | currency | bank_name    | account_type | is_overdraft_allowed | is_overdraft_allowed | is_overdraft_allowed | transaction_rail | initial_total_balance | initial_available_balance | updated_total_balance | updated_available_balance | treasury_total_balance | treasury_available_balance | status_code | txn_status          | country | balance_policy_limit | balance_policy_type |
+      | 80             | 100                         | 120              | SGD      | DBS Bank Ltd | e-money      | true                 | true                 | true                 | FAST             | 80                    | -20                       | -40                   | -40                       | 960                    | 960                        | 200         | TRANSACTION_SETTLED | SGP     | 0                    | LENIENT             |
 
   Scenario Outline: Settle transaction with 0 balance and requesting amount for negative txn allowed, lent required.
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID1    | WALLET         | CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | 0                       | STRICT                 |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit | balance_policy_type |
+      | ProductID1 | WALLET       | CUSTOMER     | SHARIAH       | <currency> | <country> | SAVINGS      | 0                    | STRICT              |
 
     Then I approve the product ProductID1 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
@@ -442,30 +442,30 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
     Then I wait until max time to verify the bank account CustomerProfileBA1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type     | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID2    | WALLET         | END_CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | <balance_policy_limit>  | <balance_policy_type>  |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit   | balance_policy_type   |
+      | ProductID2 | WALLET       | END_CUSTOMER | SHARIAH       | <currency> | <country> | SAVINGS      | <balance_policy_limit> | <balance_policy_type> |
 
     Then I approve the product ProductID2 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a end customer cash account with id CashAccId2 customerProfileID BCPID1 with product id CashAccProductId2 and endCustomerProfileId ECPID1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create account for EndCustomerProfile with id ECPID1 for CustomerProfile BCPID1 with product id ProductID2 with bank account type as <account_type> with provider <bank_name> and expect the header status 200
-      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust    | on_behalf_of | metadata                           | cash_account_id |
-      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false       | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
+      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust | on_behalf_of | metadata                           | cash_account_id |
+      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false    | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
 
     Then I wait until max time to verify the bank account BankAccId1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I deposit an amount of 1000 into CustomerProfileBA1 using cash DevDeposit and expect the header status 200
-      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
-      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+      | identifier           | customer_profile_id | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1              | TRANSFER | SGD      | FAST             |
 
     Then I wait until max time to verify bank account CustomerProfileBA1 with an increased balance of 1000 for customerProfileId BCPID1
 
     Then I verify for bank account BankAccId1 total balance is 0 and available balance is 0 for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
+      | identifier | customer_profile_id | cash_account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | CashAccId2      | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 
@@ -486,48 +486,48 @@ Feature: Cash Service Settle transactions of various cases on wallets with Cash 
   Scenario Outline: Settle transaction with balance < requested amount and negative txn allowed for requested amount less than blocked amount, lent required.
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID1    | WALLET         | CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | 0                       | STRICT                 |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit | balance_policy_type |
+      | ProductID1 | WALLET       | CUSTOMER     | SHARIAH       | <currency> | <country> | SAVINGS      | 0                    | STRICT              |
 
     Then I approve the product ProductID1 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a cash account with id CashAccId1 customerProfileId BCPID1 with product id CashAccProductId1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create account for CustomerProfile with id BCPID1 with product id as ProductID1 with bank account type as Payments Account with provider DBS Bank Ltd and expect the header status 200
-      | identifier         | customer_profile_id | currency | country | in_trust  | on_behalf_of | metadata              | kyc_completed | trust_verification_completed | cash_account_id |
-      | CustomerProfileBA1 | IntegrationTest1    | SGD      | SGP     | false     | CUSTOMER     | {"key": "MyMetaData"} | false         | false                        | CashAccId1      |
+      | identifier         | customer_profile_id | currency | country | in_trust | on_behalf_of | metadata              | kyc_completed | trust_verification_completed | cash_account_id |
+      | CustomerProfileBA1 | IntegrationTest1    | SGD      | SGP     | false    | CUSTOMER     | {"key": "MyMetaData"} | false         | false                        | CashAccId1      |
 
     Then I wait until max time to verify the bank account CustomerProfileBA1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I create a product with customer profile BCPID1 provider as <bank_name> and expect product_status PRODUCT_DRAFT
-      | identifier    | product_type   | profile_type     | product_class | currency   | country   | account_type | balance_policy_limit    | balance_policy_type    |
-      | ProductID2    | WALLET         | END_CUSTOMER     |  SHARIAH      | <currency> | <country> | SAVINGS      | <balance_policy_limit>  | <balance_policy_type>  |
+      | identifier | product_type | profile_type | product_class | currency   | country   | account_type | balance_policy_limit   | balance_policy_type   |
+      | ProductID2 | WALLET       | END_CUSTOMER | SHARIAH       | <currency> | <country> | SAVINGS      | <balance_policy_limit> | <balance_policy_type> |
 
     Then I approve the product ProductID2 and verify status as PRODUCT_SUCCESS with provider <bank_name> for customerProfileId BCPID1
 
     Then I create a end customer cash account with id CashAccId2 customerProfileID BCPID1 with product id CashAccProductId2 and endCustomerProfileId ECPID1 and expect status as CASH_ACCOUNT_CREATED
 
     Given I create account for EndCustomerProfile with id ECPID1 for CustomerProfile BCPID1 with product id ProductID2 with bank account type as <account_type> with provider <bank_name> and expect the header status 200
-      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust  | on_behalf_of | metadata                           | cash_account_id |
-      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false     | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
+      | identifier | customer_profile_id | end_customer_profile_id          | currency   | country | in_trust | on_behalf_of | metadata                           | cash_account_id |
+      | BankAccId1 | BCPID1              | 36974646-3489-47aa-b6c2-w232d543 | <currency> | SGP     | false    | CUSTOMER     | {"key": "TransactionIntegration1"} | CashAccId2      |
 
     Then I wait until max time to verify the bank account BankAccId1 status as ACCOUNT_CREATED with provider <bank_name> for customerProfileId BCPID1
 
     Given I deposit an amount of 1000 into CustomerProfileBA1 using cash DevDeposit and expect the header status 200
-      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
-      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+      | identifier           | customer_profile_id | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1              | TRANSFER | SGD      | FAST             |
 
     Then I wait until max time to verify bank account CustomerProfileBA1 with an increased balance of 1000 for customerProfileId BCPID1
 
     Given I deposit an amount of <deposit_amount> into BankAccId1 using cash DevDeposit and expect the header status 200
-      | identifier           | customer_profile_id             | purpose  | currency | transaction_rail |
-      | DevDepositIdentifier | BCPID1                          | TRANSFER | SGD      | FAST             |
+      | identifier           | customer_profile_id | purpose  | currency | transaction_rail |
+      | DevDepositIdentifier | BCPID1              | TRANSFER | SGD      | FAST             |
 
     Then I wait until max time to verify bank account BankAccId1 with an increased balance of <deposit_amount> for customerProfileId BCPID1
 
     Then I initiate transaction to transfer funds with below details and expect the header statuscode <status_code> and transaction status as TRANSACTION_AMOUNT_BLOCKED
-      | identifier | customer_profile_id | account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
-      | TxId1      | BCPID1              | BankAccId1 | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
+      | identifier | customer_profile_id | cash_account_id | amount                        | purpose          | is_overdraft_allowed   | metadata              | currency | sub_txn_type | receiver_account_id |
+      | TxId1      | BCPID1              | CashAccId2      | <initiate_transaction_amount> | Integration Test | <is_overdraft_allowed> | {"key": "MyMetaData"} | SGD      | CARD_TXN     |                     |
 
     Then I verify for bank account BankAccId1 total balance is <initial_total_balance> and available balance is <initial_available_balance> for customerProfileId BCPID1
 

@@ -369,7 +369,6 @@ class DepositRequestDTO:
 @dataclasses.dataclass
 class InitiateTransactionRequestDTO:
     identifier: str
-    account_id: str
     amount: float
     currency: str
     purpose: str
@@ -379,18 +378,24 @@ class InitiateTransactionRequestDTO:
     customer_profile_id: str
     idempotency_key: Optional[str]
     transfer_out_details: Optional[TransferOutAccountDetails] = None
+    account_id: Optional[str] = ""
+    cash_account_id: Optional[str] = ""
 
     def get_dict(self):
-        return {
-            "account_id": self.account_id,
+        result = {
             "amount": self.amount,
             "currency": self.currency,
             "purpose": self.purpose,
             "is_overdraft_allowed": self.is_overdraft_allowed,
             "metadata": self.metadata,
             "sub_txn_type": self.sub_txn_type,
-            "transfer_out_details": self.transfer_out_details,
+            "transfer_out_details": self.transfer_out_details
         }
+        if self.account_id:
+            result["account_id"] = self.account_id
+        else:
+            result["cash_account_id"] = self.cash_account_id
+        return result
 
 
 @dataclasses.dataclass

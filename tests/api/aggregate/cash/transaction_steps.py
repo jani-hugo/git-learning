@@ -143,9 +143,15 @@ def initiate_transaction_and_verify_status(context, status_code, txn_status):
 
     initiate_tx_request_dto.transfer_out_details = transfer_out_details
 
-    initiate_tx_request_dto.account_id = context.data[
-        initiate_tx_request_dto.account_id
-    ].account_id
+    if initiate_tx_request_dto.account_id:
+        initiate_tx_request_dto.account_id = context.data[
+            initiate_tx_request_dto.account_id
+        ].account_id
+    else:
+        print(context.data[initiate_tx_request_dto.cash_account_id])
+        initiate_tx_request_dto.cash_account_id = context.data[
+            initiate_tx_request_dto.cash_account_id
+        ]
 
     initiate_tx_request_dto.customer_profile_id = context.data[
         initiate_tx_request_dto.customer_profile_id

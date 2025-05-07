@@ -1,7 +1,7 @@
 from typing import Any, Dict
 from appium.options.common import AppiumOptions
 from appium import webdriver
-from Automation.sg_automation.caps.capabilities import dcaps
+from caps.capabilities import dcaps
 from selenium.webdriver.support.ui import WebDriverWait
 import os
 import allure

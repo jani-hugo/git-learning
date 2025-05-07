@@ -13,11 +13,11 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 from appium.webdriver.common.appiumby import AppiumBy
 
-from Automation.sg_automation.pages.utils import Testing
-from Automation.sg_automation.pages.home_screen_locators import HomeScreen
-from Automation.sg_automation.pages.signuplocators import SignUpLocators
-from Automation.sg_automation.features.steps.data_class_parser import DataClassParser
-from Automation.classes.all_path_find_elementt import TestElement
+from pages.utils import Testing
+from pages.home_screen_locators import HomeScreen
+from pages.signuplocators import SignUpLocators
+from features.steps.data_class_parser import DataClassParser
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -69,9 +69,9 @@ def step_enter_mobile_number(context, phone_number: str):
         EC.element_to_be_clickable(SignUpLocators.MOBILE_NUMBER_INPUT_FIELD))
     assert mobile_input.is_enabled(), "mobile input field not found"
     print(phone_number); mobile_input.clear(); mobile_input.send_keys(phone_number)
-    file_path = "/Users/tulasinadhmacs/Desktop/Automation_project/Automation/sg_automation/runner/phone_number.txt"
-    with open(file_path, "a") as file:
-        file.write(f"{phone_number}\n")
+    # file_path = "/Users/tulasinadhmacs/Desktop/Automation_project/Automation/sg_automation/runner/phone_number.txt"
+    # with open(file_path, "a") as file:
+    #     file.write(f"{phone_number}\n")
 
 
 

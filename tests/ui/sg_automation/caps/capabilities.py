@@ -8,12 +8,12 @@ class dcaps:
         # Set the desired capabilities for the Appium session
         self.options.set_capability('platformName', 'Android')
         self.options.set_capability('automationName', 'UiAutomator2')
-        self.options.set_capability('deviceName', 'PIXEL')  # Your device name
+        self.options.set_capability('deviceName', 'janiPython')  # Your device name
         self.options.set_capability('appPackage', 'com.hugosave.nonprod')  # Your app package
         self.options.set_capability('appActivity', 'com.hugosave.SplashActivity')  # Your app activity
         self.options.set_capability('autoGrantPermissions', True)
         # self.options.set_capability('appium:noReset', 'true')
-        self.options.set_capability('udid', 'emulator-5554')
+        #self.options.set_capability('udid', 'emulator-5554')
 
     def get_options(self):
         return self.options

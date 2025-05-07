@@ -4,7 +4,7 @@ use_step_matcher("re")
 from behave import then
 import re
 from selenium.webdriver.common.action_chains import ActionChains
-from Automation.sg_automation.pages.utils import Testing
+from pages.utils import Testing
 
 def is_valid_account_number(account_number):
     if not account_number:  # Handles None and empty strings

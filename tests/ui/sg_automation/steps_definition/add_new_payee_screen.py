@@ -5,10 +5,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 
-from Automation.sg_automation.features.steps.data_class_parser import DataClassParser
-from Automation.sg_automation.pages.payee_locators import PayeeLocators
-from Automation.sg_automation.pages.home_screen_locators import HomeScreen
-from Automation.sg_automation.pages.utils import Testing
+from features.steps.data_class_parser import DataClassParser
+from pages.payee_locators import PayeeLocators
+from pages.home_screen_locators import HomeScreen
+from pages.utils import Testing
 
 from typing import Optional
 import dataclasses

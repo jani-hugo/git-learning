@@ -1,18 +1,18 @@
 from behave import use_step_matcher
 use_step_matcher("re")
 from behave import given, then
-from Automation.classes.all_path_find_elementt import TestElement
+
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait  # Use WebDriverWait from selenium
 from selenium.webdriver.support import expected_conditions as EC
-from Automation.sg_automation.pages.utils import Testing
+from pages.utils import Testing
 import time
 
 
 @given(r'I verify I am on the Home screen')
 def step_home_screen(context ):
-    cash_account_text = TestElement.all_path_find_element(context.driver, element_xpath='//android.widget.TextView[@resource-id="cashAccountText"]',
+    cash_account_text = Testing.all_path_find_element(context.driver, element_xpath='//android.widget.TextView[@resource-id="cashAccountText"]',
                                                                element_ui_automator_path='new UiSelector().resourceId("cashAccountText")', element_id='cashAccountText',
                                                                 note="check cash account text link on the home screen", maxtime=30)
 
@@ -23,7 +23,7 @@ def step_home_screen(context ):
 
 @then(r'I tap on the profile icon on the home screen')
 def step_home_screen(context ):
-    profile_icon =  TestElement.all_path_find_element(context.driver, element_xpath='//android.view.ViewGroup[@resource-id="homeAppMenuIcon"]/android.view.ViewGroup/com.horcrux.svg.SvgView/com.horcrux.svg.GroupView/com.horcrux.svg.PathView',
+    profile_icon =  Testing.all_path_find_element(context.driver, element_xpath='//android.view.ViewGroup[@resource-id="homeAppMenuIcon"]/android.view.ViewGroup/com.horcrux.svg.SvgView/com.horcrux.svg.GroupView/com.horcrux.svg.PathView',
                                                                       element_ui_automator_path='new UiSelector().className("com.horcrux.svg.PathView").instance(0)',element_click=True,
                                                                       note="clicking on the profile icon  on the home screen")
 @then("I scroll down the menu screen")
@@ -55,7 +55,7 @@ def step_tap_on_nonprod_option(context):
                 Testing.perform_touch_action(driver, x, y)
             print("Tapped on Current Version 10 times.")
             time.sleep(2)
-            TestElement.all_path_find_element(context.driver,
+            Testing.all_path_find_element(context.driver,
                                               element_xpath='//android.view.ViewGroup[@content-desc="Nonprod Options"]',
                                               element_ui_automator_path='new UiSelector().resourceId("nonProdButton")',
                                               element_click=True,
@@ -68,14 +68,14 @@ def step_tap_on_nonprod_option(context):
 @then(r'I tap on the Transaction activities option in the non-prod options screen')
 def step_tap_transaction_activities_option(context):
     driver = context.driver
-    TestElement.all_path_find_element(context.driver, element_xpath='//android.widget.TextView[@resource-id="txnText"]',
+    Testing.all_path_find_element(context.driver, element_xpath='//android.widget.TextView[@resource-id="txnText"]',
                                                                       element_ui_automator_path='new UiSelector().resourceId("txnText")',element_id='txnText',element_click=True,
                                                                       note="clicking on the txnText  on the non-prod options screen")
 
 @then(r"I enter the amount ([^']*)")
 def step_tap_transaction_activities_option(context,amount):
     driver = context.driver
-    TestElement().all_path_find_element(driver,element_xpath='//android.widget.EditText[@resource-id="inputAmount"]',
+    Testing().all_path_find_element(driver,element_xpath='//android.widget.EditText[@resource-id="inputAmount"]',
                                         element_ui_automator_path='new UiSelector().resourceId("inputAmount")',
                                         element_id='inputAmount',
                                         is_element_input_field=True, input_field_value=int(amount),
@@ -94,7 +94,7 @@ def step_tap_transaction_activities_option(context):
 
 @then('I tap on the back button on the nonprod screen')
 def step_tap_back(context):
-    TestElement.all_path_find_element(context.driver,
+    Testing.all_path_find_element(context.driver,
                                                     element_xpath='//android.view.ViewGroup[@resource-id="nonProdBackButton"]/android.view.ViewGroup/com.horcrux.svg.SvgView/com.horcrux.svg.GroupView/com.horcrux.svg.PathView',
                                                     element_ui_automator_path='new UiSelector().className("com.horcrux.svg.PathView").instance(0)',
                                                     element_click=True,

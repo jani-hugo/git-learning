@@ -13,6 +13,8 @@ Feature: Gold module
   Scenario: Sell Gold
     When User sells gold
 
+    # sssss
+
   
 
     
